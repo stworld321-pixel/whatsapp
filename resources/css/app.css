@@ -1,0 +1,277 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Dynamic primary color from admin settings */
+@layer base {
+    /* Text colors */
+    .text-brand-50 { color: color-mix(in srgb, var(--primary-color) 10%, white) !important; }
+    .text-brand-100 { color: color-mix(in srgb, var(--primary-color) 20%, white) !important; }
+    .text-brand-200 { color: color-mix(in srgb, var(--primary-color) 40%, white) !important; }
+    .text-brand-300 { color: color-mix(in srgb, var(--primary-color) 60%, white) !important; }
+    .text-brand-400 { color: color-mix(in srgb, var(--primary-color) 80%, white) !important; }
+    .text-brand-500 { color: var(--primary-color) !important; }
+    .text-brand-600 { color: color-mix(in srgb, var(--primary-color) 90%, black) !important; }
+    .text-brand-700 { color: color-mix(in srgb, var(--primary-color) 80%, black) !important; }
+    .text-brand-800 { color: color-mix(in srgb, var(--primary-color) 60%, black) !important; }
+    .text-brand-900 { color: color-mix(in srgb, var(--primary-color) 40%, black) !important; }
+
+    /* Background colors */
+    .bg-brand-50 { background-color: color-mix(in srgb, var(--primary-color) 10%, white) !important; }
+    .bg-brand-100 { background-color: color-mix(in srgb, var(--primary-color) 20%, white) !important; }
+    .bg-brand-200 { background-color: color-mix(in srgb, var(--primary-color) 40%, white) !important; }
+    .bg-brand-300 { background-color: color-mix(in srgb, var(--primary-color) 60%, white) !important; }
+    .bg-brand-400 { background-color: color-mix(in srgb, var(--primary-color) 80%, white) !important; }
+    .bg-brand-500 { background-color: var(--primary-color) !important; }
+    .bg-brand-600 { background-color: color-mix(in srgb, var(--primary-color) 90%, black) !important; }
+    .bg-brand-700 { background-color: color-mix(in srgb, var(--primary-color) 80%, black) !important; }
+    .bg-brand-800 { background-color: color-mix(in srgb, var(--primary-color) 60%, black) !important; }
+    .bg-brand-900 { background-color: color-mix(in srgb, var(--primary-color) 40%, black) !important; }
+
+    /* Border colors */
+    .border-brand-50 { border-color: color-mix(in srgb, var(--primary-color) 10%, white) !important; }
+    .border-brand-100 { border-color: color-mix(in srgb, var(--primary-color) 20%, white) !important; }
+    .border-brand-200 { border-color: color-mix(in srgb, var(--primary-color) 40%, white) !important; }
+    .border-brand-300 { border-color: color-mix(in srgb, var(--primary-color) 60%, white) !important; }
+    .border-brand-400 { border-color: color-mix(in srgb, var(--primary-color) 80%, white) !important; }
+    .border-brand-500 { border-color: var(--primary-color) !important; }
+    .border-brand-600 { border-color: color-mix(in srgb, var(--primary-color) 90%, black) !important; }
+    .border-brand-700 { border-color: color-mix(in srgb, var(--primary-color) 80%, black) !important; }
+
+    /* Ring */
+    .ring-brand-50 { --tw-ring-color: color-mix(in srgb, var(--primary-color) 10%, white) !important; }
+    .ring-brand-100 { --tw-ring-color: color-mix(in srgb, var(--primary-color) 20%, white) !important; }
+    .ring-brand-200 { --tw-ring-color: color-mix(in srgb, var(--primary-color) 40%, white) !important; }
+    .ring-brand-300 { --tw-ring-color: color-mix(in srgb, var(--primary-color) 60%, white) !important; }
+    .ring-brand-400 { --tw-ring-color: color-mix(in srgb, var(--primary-color) 80%, white) !important; }
+    .ring-brand-500 { --tw-ring-color: var(--primary-color) !important; }
+    .ring-brand-600 { --tw-ring-color: color-mix(in srgb, var(--primary-color) 90%, black) !important; }
+
+    /* Dark mode variants */
+    .dark .text-brand-400 { color: color-mix(in srgb, var(--primary-color) 80%, white) !important; }
+    .dark .text-brand-300 { color: color-mix(in srgb, var(--primary-color) 60%, white) !important; }
+
+    .dark .bg-brand-900\/40 { background-color: color-mix(in srgb, var(--primary-color) 40%, black) !important; }
+    .dark .bg-brand-900\/30 { background-color: color-mix(in srgb, var(--primary-color) 30%, black) !important; }
+    .dark .bg-brand-900\/20 { background-color: color-mix(in srgb, var(--primary-color) 20%, black) !important; }
+    .dark .bg-brand-900\/10 { background-color: color-mix(in srgb, var(--primary-color) 10%, black) !important; }
+    .dark .bg-brand-950 { background-color: color-mix(in srgb, var(--primary-color) 95%, black) !important; }
+
+    /* Accent */
+    .accent-brand-500 { accent-color: var(--primary-color) !important; }
+}
+
+/* Override hardcoded hex colors in marketing pages */
+.bg-\[\#5a8b38\]\/15 { background-color: color-mix(in srgb, var(--primary-color) 15%, white) !important; }
+.bg-\[\#5a8b38\]\/10 { background-color: color-mix(in srgb, var(--primary-color) 10%, white) !important; }
+.bg-\[\#5a8b38\]\/20 { background-color: color-mix(in srgb, var(--primary-color) 20%, white) !important; }
+.text-\[\#5a8b38\] { color: color-mix(in srgb, var(--primary-color) 90%, black) !important; }
+.text-\[\#467235\] { color: var(--primary-color) !important; }
+
+/* Hardcoded background colors */
+\[style\*\="background:\s*#5a8b38"\] { background-color: var(--primary-color) !important; }
+\[style\*\="background:\s*#467235"\] { background-color: var(--primary-color) !important; }
+
+/* Hardcoded text colors */
+\[style\*\="color:\s*#5a8b38"\] { color: var(--primary-color) !important; }
+\[style\*\="color:\s*#467235"\] { color: var(--primary-color) !important; }
+
+/* Hover and focus states */
+.hover\:border-\[\#5a8b38\]\/50:hover { border-color: color-mix(in srgb, var(--primary-color) 50%, transparent) !important; }
+.hover\:border-\[\#5a8b38\]\/40:hover { border-color: color-mix(in srgb, var(--primary-color) 40%, transparent) !important; }
+.hover\:border-\[\#5a8b38\]\/30:hover { border-color: color-mix(in srgb, var(--primary-color) 30%, transparent) !important; }
+.hover\:text-\[\#467235\]:hover { color: var(--primary-color) !important; }
+.hover\:text-\[\#5a8b38\]:hover { color: color-mix(in srgb, var(--primary-color) 90%, black) !important; }
+
+/* Gradient overrides */
+.from-\[\#5a8b38\]\/20 { --tw-gradient-from: color-mix(in srgb, var(--primary-color) 20%, white) !important; }
+.via-\[\#5a8b38\]\/50 { --tw-gradient-via: color-mix(in srgb, var(--primary-color) 50%, white) !important; }
+.to-\[\#5a8b38\]\/20 { --tw-gradient-to: color-mix(in srgb, var(--primary-color) 20%, white) !important; }
+
+/* Box shadow overrides */
+.shadow-\[\#5a8b38\]\/10 { --tw-shadow-color: color-mix(in srgb, var(--primary-color) 10%, transparent) !important; }
+.shadow-\[\#5a8b38\]\/30 { --tw-shadow-color: color-mix(in srgb, var(--primary-color) 30%, transparent) !important; }
+
+/* Ring overrides */
+.ring-\[\#5a8b38\]\/15 { --tw-ring-color: color-mix(in srgb, var(--primary-color) 15%, transparent) !important; }
+
+/* Smooth theme transition */
+html {
+    transition: background-color 200ms ease, color 200ms ease;
+}
+html.dark {
+    color-scheme: dark;
+}
+
+/* When the Bangla locale is active, render the whole UI in Anek Bangla.
+   Space Grotesk has no Bengali glyphs, so without this Bangla text falls back
+   to an arbitrary system font. lang="bn" is set on <html> by both the Blade
+   layout (initial load) and applyLocaleToDocument() (client-side switch).
+   The .font-sans override is needed because Tailwind's utility sets
+   font-family directly on elements (e.g. <body>), which would otherwise win
+   over inheritance from <html>. */
+html[lang="bn"],
+html[lang="bn"] .font-sans {
+    font-family: 'Anek Bangla', 'Space Grotesk', ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+body {
+    @apply bg-surface dark:bg-neutral-900 text-gray-900 dark:text-neutral-100;
+}
+
+@layer components {
+    .card {
+        @apply bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-xl shadow-sm dark:shadow-none;
+    }
+    .sidebar {
+        @apply bg-surface dark:bg-neutral-950;
+    }
+    .topbar {
+        @apply bg-surface/80 dark:bg-neutral-900/80 backdrop-blur;
+    }
+
+    /* Sidebar / panels: Windows often shows a light classic scrollbar in dark UI */
+    .dark .scrollbar-themed-dark {
+        scrollbar-width: thin;
+        scrollbar-color: theme('colors.neutral.600') theme('colors.neutral.950');
+    }
+    .dark .scrollbar-themed-dark::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    .dark .scrollbar-themed-dark::-webkit-scrollbar-track {
+        background: theme('colors.neutral.950');
+    }
+    .dark .scrollbar-themed-dark::-webkit-scrollbar-thumb {
+        background: theme('colors.neutral.600');
+        border-radius: 4px;
+    }
+    .dark .scrollbar-themed-dark::-webkit-scrollbar-thumb:hover {
+        background: theme('colors.neutral.500');
+    }
+
+    /* Dark mode: ensure all form controls have visible text and background */
+    .dark input:not([type="checkbox"]):not([type="radio"]),
+    .dark select,
+    .dark textarea {
+        @apply bg-neutral-800 border-neutral-600 text-neutral-100 placeholder-neutral-500;
+    }
+    .dark input:focus,
+    .dark select:focus,
+    .dark textarea:focus {
+        @apply border-brand-500 ring-brand-500/20;
+    }
+}
+
+/* Dark mode: checkbox/radio accent for visibility */
+.dark input[type="checkbox"],
+.dark input[type="radio"] {
+    @apply accent-brand-500;
+}
+
+/* Sidebar dark scrollbar */
+.scrollbar-thin {
+    scrollbar-width: thin;
+}
+.scrollbar-track-transparent {
+    scrollbar-color: rgba(255,255,255,0.08) transparent;
+}
+.scrollbar-thumb-white\/10::-webkit-scrollbar-thumb {
+    background-color: rgba(255,255,255,0.10);
+    border-radius: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar { width: 4px; }
+.scrollbar-track-transparent::-webkit-scrollbar-track { background: transparent; }
+
+/* Sidebar hover utility */
+.hover\:bg-white\/8:hover { background-color: rgba(255,255,255,0.08); }
+.border-white\/8 { border-color: rgba(255,255,255,0.08); }
+
+/* ─── AI buttons: animated gradient border + glow ───────────────────────────
+   Add the `ai-glow` class to any AI-related button (e.g. "Generate with AI").
+   It keeps the button's own background and layers a rotating gradient ring on
+   the edge plus a soft animated halo behind it. Works on solid / outline /
+   brand / purple variants of any size. The `@property` makes the conic-gradient
+   angle animatable for a smooth spin (Chrome/Edge/Safari 16.4+/Firefox 128+);
+   where unsupported it gracefully shows a static gradient ring + glow. */
+@property --ai-glow-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+@keyframes ai-glow-spin {
+    to { --ai-glow-angle: 360deg; }
+}
+
+.ai-glow {
+    position: relative;
+    isolation: isolate;
+    /* Glow lives in box-shadow so it stays OUTSIDE the button — it never
+       washes the button face or bleeds through transparent/outline buttons. */
+    animation: ai-glow-pulse 3.5s ease-in-out infinite;
+}
+
+/* Rotating gradient border ring (masked so only the ~1.5px edge shows, and
+   kept above the face so the moving colors read clearly on any background). */
+.ai-glow::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    padding: 1.5px;
+    border-radius: inherit;
+    background: conic-gradient(from var(--ai-glow-angle),
+        #a855f7, #6366f1, #22d3ee, #ec4899, #a855f7);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    animation: ai-glow-spin 4s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes ai-glow-pulse {
+    0%, 100% { box-shadow: 0 0 7px 0 rgba(168, 85, 247, 0.45), 0 0 15px 0 rgba(99, 102, 241, 0.28); }
+    50%      { box-shadow: 0 0 11px 1px rgba(34, 211, 238, 0.50), 0 0 20px 1px rgba(236, 72, 153, 0.32); }
+}
+
+/* Livelier glow on hover */
+.ai-glow:hover {
+    animation-duration: 1.8s;
+}
+
+/* Disabled: calm the effect so it doesn't look interactive */
+.ai-glow:disabled,
+.ai-glow[disabled] {
+    cursor: not-allowed;
+    animation: none;
+    box-shadow: none;
+}
+.ai-glow:disabled::before,
+.ai-glow[disabled]::before {
+    animation-play-state: paused;
+    opacity: 0.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ai-glow {
+        animation: none;
+        box-shadow: 0 0 8px 0 rgba(99, 102, 241, 0.35);
+    }
+    .ai-glow::before {
+        animation: none;
+    }
+}
+
+/* RTL: logical spacing where needed (Tailwind rtl: variant used in components) */
+[dir="rtl"] .text-left {
+    text-align: right;
+}
+[dir="rtl"] .text-right {
+    text-align: left;
+}
+/* Keep numbers/codes LTR in RTL layout */
+[dir="rtl"] .ltr-inline {
+    direction: ltr;
+    unicode-bidi: embed;
+}
