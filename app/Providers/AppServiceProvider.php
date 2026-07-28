@@ -73,6 +73,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureHttpClientSsl();
+        $this->configureMailClientSsl();
         $this->forceHttpsForWebhookUrls();
 
         Gate::define('viewAdmin', fn ($user) => $user?->isAdmin());
@@ -184,5 +185,15 @@ class AppServiceProvider extends ServiceProvider
         if (config('http.verify_ssl') === false) {
             Http::globalOptions(['verify' => false]);
         }
+    }
+
+    private function configureMailClientSsl(): void
+    {
+        $appUrl = config('app.url', '');
+        $verifyPeer = ! (str_contains($appUrl, 'localhost') || str_contains($appUrl, '127.0.0.1'));
+
+        config([
+            'mail.mailers.smtp.verify_peer' => $verifyPeer,
+        ]);
     }
 }

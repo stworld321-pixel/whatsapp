@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use GuzzleHttp\Client as GuzzleClient;
 use Pusher\Pusher;
 
 class PusherSettingsController extends Controller
@@ -72,10 +73,16 @@ class PusherSettingsController extends Controller
         }
 
         try {
+            $client = new GuzzleClient([
+                'connect_timeout' => 10,
+                'timeout' => 30,
+                'verify' => $this->pusherVerifyOption(),
+            ]);
+
             $pusher = new Pusher($key, $secret, $appId, [
                 'cluster' => $cluster,
                 'useTLS'  => true,
-            ]);
+            ], $client);
 
             // Trigger a test event on a private channel to verify credentials
             $pusher->trigger('test-channel', 'test-event', ['message' => 'Connection test']);
@@ -84,5 +91,25 @@ class PusherSettingsController extends Controller
         } catch (\Throwable $e) {
             return response()->json(['success' => false, 'message' => 'Connection failed: '.$e->getMessage()], 422);
         }
+    }
+
+    private function pusherVerifyOption(): bool|string
+    {
+        $appUrl = config('app.url', '');
+
+        if (str_contains($appUrl, 'localhost') || str_contains($appUrl, '127.0.0.1')) {
+            return false;
+        }
+
+        foreach ([
+            'C:\\xamp\\php\\extras\\ssl\\cacert.pem',
+            'C:\\xampp\\php\\extras\\ssl\\cacert.pem',
+        ] as $caBundlePath) {
+            if (is_file($caBundlePath)) {
+                return $caBundlePath;
+            }
+        }
+
+        return true;
     }
 }

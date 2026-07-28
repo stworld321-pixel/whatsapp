@@ -116,12 +116,20 @@ class MailService
             'username' => $smtp->username,
             'password' => $smtp->getDecryptedPassword(),
             'encryption' => $encryption,
+            'verify_peer' => $this->smtpVerifyPeerOption(),
             'timeout' => null,
             'from' => [
                 'address' => $smtp->from_email,
                 'name' => $smtp->from_name,
             ],
         ]);
+    }
+
+    private function smtpVerifyPeerOption(): bool
+    {
+        $appUrl = config('app.url', '');
+
+        return ! (str_contains($appUrl, 'localhost') || str_contains($appUrl, '127.0.0.1'));
     }
 
     private function replacePlaceholders(string $text, array $replacements): string
