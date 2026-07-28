@@ -131,7 +131,7 @@ export default function AdminLayout({ title = 'Admin', header, children }) {
     const logoUrl = branding?.logo_url;
 
     return (
-        <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
+        <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950" style={{ backgroundImage: 'radial-gradient(ellipse 65% 45% at top left, color-mix(in srgb, var(--primary-color) 8%, transparent) 0%, transparent 60%)' }}>
             <Sidebar
                 open={sidebarOpen}
                 onClose={() => setSidebarOpen(false)}

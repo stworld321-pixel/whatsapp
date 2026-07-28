@@ -5,6 +5,9 @@ import SeoHead from '@/Components/SeoHead';
 import { BrandMark } from '@/Components/BrandIcons';
 import { useTranslation } from 'react-i18next';
 
+const BRAND_SOLID = 'var(--brand-600)';
+const BRAND_DEEP = 'var(--brand-950)';
+
 // ─── Icon map ─────────────────────────────────────────────────────────────────
 
 function FeatureIcon({ name, className = 'h-6 w-6' }) {
@@ -122,7 +125,7 @@ const CHANNEL_STYLES = {
     'whatsapp':  { bg: 'bg-[#25D366]/12', text: 'text-[#25D366]' },
     'messenger': { bg: 'bg-[#0084FF]/12', text: 'text-[#0084FF]' },
     'instagram': { bg: 'bg-[#E1306C]/12', text: 'text-[#E1306C]' },
-    'sms':       { bg: 'bg-[#5a8b38]/15', text: 'text-[#467235] dark:text-[#5a8b38]' },
+    'sms':       { bg: 'bg-brand-50 dark:bg-brand-900/20', text: 'text-brand-600 dark:text-brand-400' },
     'email':     { bg: 'bg-[#F59E0B]/12', text: 'text-[#F59E0B]' },
 };
 
@@ -149,7 +152,7 @@ function HeroSection({ landing, canLogin, canRegister, auth }) {
         <section
             className="relative overflow-hidden"
             style={{
-                background: 'radial-gradient(ellipse 70% 65% at 62% 45%, rgba(118,168,78,0.22) 0%, rgba(74,222,128,0.08) 40%, transparent 70%), #162610',
+                background: `radial-gradient(ellipse 70% 65% at 62% 45%, color-mix(in srgb, var(--primary-color) 22%, transparent) 0%, color-mix(in srgb, var(--primary-color) 8%, transparent) 40%, transparent 70%), ${BRAND_DEEP}`,
             }}
         >
             {/* Background grid */}
@@ -186,7 +189,7 @@ function HeroSection({ landing, canLogin, canRegister, auth }) {
                         <Link
                             href={route('client.dashboard')}
                             className="inline-flex items-center gap-2 rounded-xl px-7 py-3.5 text-base font-bold text-white shadow-lg transition-all duration-200 hover:opacity-90"
-                            style={{ background: '#5a8b38' }}
+                            style={{ background: BRAND_SOLID }}
                         >
                             {t('welcome.goToDashboard')}
                         </Link>
@@ -196,7 +199,7 @@ function HeroSection({ landing, canLogin, canRegister, auth }) {
                                 <Link
                                     href={route('register')}
                                     className="inline-flex items-center gap-2 rounded-xl px-7 py-3.5 text-base font-bold text-white shadow-lg transition-all duration-200 hover:opacity-90"
-                                    style={{ background: '#5a8b38' }}
+                                    style={{ background: BRAND_SOLID }}
                                 >
                                     {s('hero_cta_primary')}
                                 </Link>
@@ -224,7 +227,7 @@ function HeroSection({ landing, canLogin, canRegister, auth }) {
                                     key={idx}
                                     className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/8 backdrop-blur-sm px-4 py-2 text-sm font-medium text-white/90"
                                 >
-                                    <svg className="h-4 w-4 flex-shrink-0 text-[#5a8b38]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                                    <svg className="h-4 w-4 flex-shrink-0 text-brand-600" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                     {badge}
@@ -310,7 +313,7 @@ function ProblemSolutionSection({ landing }) {
                     {/* Solution */}
                     <div
                         className="rounded-2xl p-8"
-                        style={{ background: 'linear-gradient(135deg, rgba(118,168,78,0.15) 0%, rgba(118,168,78,0.05) 100%)', border: '1px solid rgba(118,168,78,0.3)' }}
+                        style={{ background: `linear-gradient(135deg, color-mix(in srgb, var(--primary-color) 15%, transparent) 0%, color-mix(in srgb, var(--primary-color) 5%, transparent) 100%)`, border: '1px solid color-mix(in srgb, var(--primary-color) 30%, transparent)' }}
                     >
                         <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-2">{solutionTitle}</h3>
                         {solutionDesc && (
@@ -319,8 +322,8 @@ function ProblemSolutionSection({ landing }) {
                         <ul className="space-y-4">
                             {solutions.map((item, idx) => (
                                 <li key={idx} className="flex items-start gap-3">
-                                    <span className="mt-0.5 flex-shrink-0 h-5 w-5 rounded-full flex items-center justify-center" style={{ background: 'rgba(118,168,78,0.2)' }}>
-                                        <svg className="h-3 w-3" style={{ color: '#5a8b38' }} fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                                    <span className="mt-0.5 flex-shrink-0 h-5 w-5 rounded-full flex items-center justify-center" style={{ background: 'color-mix(in srgb, var(--primary-color) 20%, transparent)' }}>
+                                        <svg className="h-3 w-3" style={{ color: BRAND_SOLID }} fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                                         </svg>
                                     </span>
@@ -366,19 +369,19 @@ function FeaturesSection({ landing }) {
                     {features.map((feat, idx) => (
                         <div
                             key={idx}
-                            className="group relative overflow-hidden rounded-2xl border border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-7 transition-all duration-300 hover:-translate-y-1 hover:border-[#5a8b38]/40 hover:shadow-xl hover:shadow-[#5a8b38]/10"
+                            className="group relative overflow-hidden rounded-2xl border border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-7 transition-all duration-300 hover:-translate-y-1 hover:border-brand-400 hover:shadow-xl hover:shadow-brand-600/10"
                         >
                             {/* Soft glow that fades in on hover */}
                             <div
                                 className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full opacity-0 blur-2xl transition-opacity duration-300 group-hover:opacity-100"
-                                style={{ background: 'radial-gradient(circle, rgba(118,168,78,0.18) 0%, transparent 70%)' }}
+                                style={{ background: 'radial-gradient(circle, color-mix(in srgb, var(--primary-color) 18%, transparent) 0%, transparent 70%)' }}
                             />
 
                             <div className="relative">
-                                <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[#5a8b38]/10 text-[#467235] dark:text-[#5a8b38] ring-1 ring-inset ring-[#5a8b38]/15 transition-all duration-300 group-hover:bg-[#5a8b38] group-hover:text-white group-hover:ring-[#5a8b38] group-hover:shadow-lg group-hover:shadow-[#5a8b38]/30">
+                                <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-brand-600 dark:text-brand-400 ring-1 ring-inset ring-brand-200 transition-all duration-300 group-hover:bg-brand-600 group-hover:text-white group-hover:ring-brand-600 group-hover:shadow-lg group-hover:shadow-brand-600/30">
                                     <FeatureIcon name={feat.icon} className="h-6 w-6" />
                                 </div>
-                                <h3 className="text-base font-semibold text-neutral-900 dark:text-white mb-2 transition-colors group-hover:text-[#467235] dark:group-hover:text-[#5a8b38]">{feat.title}</h3>
+                                <h3 className="text-base font-semibold text-neutral-900 dark:text-white mb-2 transition-colors group-hover:text-brand-600 dark:group-hover:text-brand-400">{feat.title}</h3>
                                 <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">{feat.desc}</p>
                             </div>
                         </div>
@@ -415,13 +418,13 @@ function HowItWorksSection({ landing, canRegister }) {
                 </div>
 
                 <div className="relative">
-                    <div className="hidden lg:block absolute top-12 left-1/6 right-1/6 h-0.5 bg-gradient-to-r from-[#5a8b38]/20 via-[#5a8b38]/50 to-[#5a8b38]/20" />
+                    <div className="hidden lg:block absolute top-12 left-1/6 right-1/6 h-0.5 bg-gradient-to-r from-brand-200 via-brand-500 to-brand-200" />
                     <div className="grid gap-10 lg:grid-cols-3">
                         {steps.map((step, idx) => (
                             <div key={idx} className="relative text-center">
                                 <div
                                     className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full font-bold text-xl shadow-lg ring-4 ring-white dark:ring-neutral-950 text-white"
-                                    style={{ background: '#5a8b38', boxShadow: '0 8px 24px rgba(118,168,78,0.3)' }}
+                                    style={{ background: BRAND_SOLID, boxShadow: '0 8px 24px color-mix(in srgb, var(--primary-color) 30%, transparent)' }}
                                 >
                                     {idx + 1}
                                 </div>
@@ -437,7 +440,7 @@ function HowItWorksSection({ landing, canRegister }) {
                         <Link
                             href={route('register')}
                             className="inline-flex items-center gap-2 rounded-xl px-7 py-3.5 text-base font-bold text-white shadow-lg transition-all duration-200 hover:opacity-90"
-                            style={{ background: '#5a8b38' }}
+                            style={{ background: BRAND_SOLID }}
                         >
                             {t('welcome.get_started_free')}
                             <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
@@ -480,7 +483,7 @@ function PricingSection({ plans }) {
                             className={`rounded-lg px-5 py-2 text-sm font-semibold transition-all ${yearly ? 'bg-white dark:bg-neutral-700 shadow-sm text-neutral-900 dark:text-white' : 'text-neutral-500 dark:text-neutral-400'}`}
                         >
                             {t('welcome.yearly')}
-                            <span className="ml-1.5 rounded-full bg-[#5a8b38]/20 text-[#467235] dark:text-[#5a8b38] text-xs px-1.5 py-0.5 font-bold">-20%</span>
+                            <span className="ml-1.5 rounded-full bg-brand-100 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400 text-xs px-1.5 py-0.5 font-bold">-20%</span>
                         </button>
                     </div>
                 </div>
@@ -491,15 +494,15 @@ function PricingSection({ plans }) {
                         return (
                             <div
                                 key={plan.id}
-                                className={`relative rounded-2xl border p-7 flex flex-col ${
-                                    plan.is_featured
-                                        ? 'border-[#5a8b38]/50 bg-[#162610] text-white shadow-2xl shadow-[#5a8b38]/10 lg:scale-105'
+                                    className={`relative rounded-2xl border p-7 flex flex-col ${
+                                        plan.is_featured
+                                        ? 'border-brand-400 bg-brand-950 text-white shadow-2xl shadow-brand-600/10 lg:scale-105'
                                         : 'border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900'
                                 }`}
                             >
                                 {plan.is_featured && (
                                     <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                                        <span className="rounded-full text-xs font-bold px-3 py-1 shadow" style={{ background: '#5a8b38', color: '#ffffff' }}>{t('welcome.most_popular')}</span>
+                                        <span className="rounded-full text-xs font-bold px-3 py-1 shadow" style={{ background: BRAND_SOLID, color: '#ffffff' }}>{t('welcome.most_popular')}</span>
                                     </div>
                                 )}
 
@@ -528,7 +531,7 @@ function PricingSection({ plans }) {
                                     <ul className="space-y-2.5 flex-1 mb-7">
                                         {plan.features.map((feat, fi) => (
                                             <li key={fi} className="flex items-start gap-2.5 text-sm">
-                                                <svg className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: '#5a8b38' }} fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                                                <svg className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: BRAND_SOLID }} fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                                                 </svg>
                                                 <span className={plan.is_featured ? 'text-neutral-300' : 'text-neutral-700 dark:text-neutral-300'}>{feat}</span>
@@ -537,14 +540,14 @@ function PricingSection({ plans }) {
                                     </ul>
                                 )}
 
-                                <Link
-                                    href={route('register')}
-                                    className={`block text-center rounded-xl py-3 text-sm font-bold transition-all duration-200 ${
-                                        plan.is_featured
-                                            ? 'text-white hover:opacity-90'
-                                            : 'border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:border-[#5a8b38]/50 hover:text-[#467235] dark:hover:text-[#5a8b38]'
-                                    }`}
-                                    style={plan.is_featured ? { background: '#5a8b38' } : {}}
+                                        <Link
+                                            href={route('register')}
+                                            className={`block text-center rounded-xl py-3 text-sm font-bold transition-all duration-200 ${
+                                                plan.is_featured
+                                                    ? 'text-white hover:opacity-90'
+                                                    : 'border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:border-brand-400 hover:text-brand-600 dark:hover:text-brand-400'
+                                            }`}
+                                    style={plan.is_featured ? { background: BRAND_SOLID } : {}}
                                 >
                                     {plan.is_featured ? t('welcome.get_started_plan') : t('welcome.upgrade')}
                                 </Link>
@@ -588,9 +591,9 @@ function WhySection({ landing }) {
 
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {items.map((item, idx) => (
-                        <div key={idx} className="flex gap-4 p-6 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#5a8b38]/30 transition-colors">
-                            <div className="flex-shrink-0 h-11 w-11 rounded-xl flex items-center justify-center" style={{ background: 'rgba(118,168,78,0.12)' }}>
-                                <FeatureIcon name={item.icon} className="h-5 w-5" style={{ color: '#5a8b38' }} />
+                        <div key={idx} className="flex gap-4 p-6 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-brand-300 transition-colors">
+                            <div className="flex-shrink-0 h-11 w-11 rounded-xl flex items-center justify-center" style={{ background: 'color-mix(in srgb, var(--primary-color) 12%, transparent)' }}>
+                                <FeatureIcon name={item.icon} className="h-5 w-5" style={{ color: BRAND_SOLID }} />
                             </div>
                             <div>
                                 <h3 className="text-base font-semibold text-neutral-900 dark:text-white mb-1">{item.title}</h3>
@@ -658,7 +661,7 @@ function TestimonialsSection({ landing }) {
                                 {t.avatar ? (
                                     <img src={t.avatar} alt={t.name} className="h-9 w-9 rounded-full object-cover" />
                                 ) : (
-                                    <div className="h-9 w-9 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0" style={{ background: '#5a8b38' }}>
+                                    <div className="h-9 w-9 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0" style={{ background: BRAND_SOLID }}>
                                         {t.name.charAt(0)}
                                     </div>
                                 )}
@@ -745,8 +748,8 @@ function CtaSection({ landing, canRegister }) {
                 <div
                     className="relative overflow-hidden rounded-3xl px-6 py-12 sm:px-8 sm:py-16 text-center"
                     style={{
-                        background: 'radial-gradient(ellipse 60% 80% at 50% 50%, rgba(118,168,78,0.15) 0%, transparent 70%), #162610',
-                        border: '1px solid rgba(118,168,78,0.2)',
+                        background: `radial-gradient(ellipse 60% 80% at 50% 50%, color-mix(in srgb, var(--primary-color) 15%, transparent) 0%, transparent 70%), ${BRAND_DEEP}`,
+                        border: '1px solid color-mix(in srgb, var(--primary-color) 20%, transparent)',
                     }}
                 >
                     {/* Grid overlay */}
@@ -773,7 +776,7 @@ function CtaSection({ landing, canRegister }) {
                             <Link
                                 href={route('register')}
                                 className="inline-flex items-center gap-2 rounded-xl px-7 py-3.5 text-base font-bold text-white shadow-lg transition-all duration-200 hover:opacity-90"
-                                style={{ background: '#5a8b38' }}
+                                style={{ background: BRAND_SOLID }}
                             >
                                 {s('cta_primary')}
                                 <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
@@ -808,12 +811,12 @@ function MetricsSection({ landing }) {
     if (!metrics.length) return null;
 
     return (
-        <section className="relative -mt-px border-b border-white/10" style={{ background: '#162610' }}>
+        <section className="relative -mt-px border-b border-white/10" style={{ background: BRAND_DEEP }}>
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                     {metrics.map((m, idx) => (
                         <div key={idx} className="text-center">
-                            <p className="text-3xl sm:text-4xl font-bold tracking-tight" style={{ color: '#5a8b38' }}>{m.value}</p>
+                            <p className="text-3xl sm:text-4xl font-bold tracking-tight" style={{ color: BRAND_SOLID }}>{m.value}</p>
                             <p className="mt-1 text-sm text-neutral-400">{m.label}</p>
                         </div>
                     ))}
@@ -911,7 +914,7 @@ function IntegrationsStripSection({ landing }) {
                 )}
 
                 <div className="mt-10">
-                    <Link href="/integrations" className="inline-flex items-center gap-2 text-sm font-semibold text-[#467235] dark:text-[#5a8b38] hover:underline">
+                    <Link href="/integrations" className="inline-flex items-center gap-2 text-sm font-semibold text-brand-600 dark:text-brand-400 hover:underline">
                         {t('welcome.view_all_integrations', { defaultValue: 'View all integrations' })}
                         <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
                     </Link>
@@ -951,8 +954,8 @@ function SecuritySection({ landing }) {
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                     {items.map((item, idx) => (
                         <div key={idx} className="text-center p-6 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
-                            <div className="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl" style={{ background: 'rgba(118,168,78,0.12)' }}>
-                                <FeatureIcon name={item.icon} className="h-6 w-6" style={{ color: '#5a8b38' }} />
+                            <div className="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl" style={{ background: 'color-mix(in srgb, var(--primary-color) 12%, transparent)' }}>
+                                <FeatureIcon name={item.icon} className="h-6 w-6" style={{ color: BRAND_SOLID }} />
                             </div>
                             <h3 className="text-base font-semibold text-neutral-900 dark:text-white mb-1">{item.title}</h3>
                             <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">{item.desc}</p>

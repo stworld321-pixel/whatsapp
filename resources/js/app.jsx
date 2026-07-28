@@ -8,6 +8,7 @@ import { createRoot } from 'react-dom/client';
 import i18n, { initI18n } from '@/i18n';
 import LocaleSync from '@/Components/LocaleSync';
 import BrandingFavicon from '@/Components/BrandingFavicon';
+import BrandingSync from '@/Components/BrandingSync';
 import ErrorBoundary from '@/Components/ErrorBoundary';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { toast } from 'sonner';
@@ -75,12 +76,13 @@ createInertiaApp({
             const Page = module.default;
             if (!wrappedPages.has(Page)) {
                 const Wrapped = function WrappedWithThemeAndLocale(props) {
-                    return (
-                        <ThemeProvider>
-                            <LocaleSync />
-                            <BrandingFavicon />
-                            <Page {...props} />
-                        </ThemeProvider>
+                return (
+                    <ThemeProvider>
+                        <LocaleSync />
+                        <BrandingSync />
+                        <BrandingFavicon />
+                        <Page {...props} />
+                    </ThemeProvider>
                     );
                 };
                 Wrapped.layout = Page.layout;

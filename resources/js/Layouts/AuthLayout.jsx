@@ -44,13 +44,26 @@ function LeftPane({ variant }) {
     const appName = import.meta.env.VITE_APP_NAME || 'WhatsMine';
 
     return (
-        <div className="relative hidden lg:flex lg:w-[45%] flex-col justify-between overflow-hidden p-10 text-white" style={{ background: '#283f24' }}>
+        <div
+            className="relative hidden lg:flex lg:w-[45%] flex-col justify-between overflow-hidden p-10 text-white"
+            style={{
+                background: `
+                    radial-gradient(ellipse 80% 65% at 65% 50%,
+                        color-mix(in srgb, var(--primary-color) 34%, white) 0%,
+                        color-mix(in srgb, var(--primary-color) 14%, transparent) 45%,
+                        transparent 70%),
+                    linear-gradient(135deg,
+                        color-mix(in srgb, var(--primary-color) 30%, #0f172a) 0%,
+                        color-mix(in srgb, var(--primary-color) 60%, #020617) 100%)
+                `,
+            }}
+        >
             {/* Brand radial glow */}
             <div
                 aria-hidden
                 className="pointer-events-none absolute inset-0"
                 style={{
-                    background: 'radial-gradient(ellipse 80% 65% at 65% 50%, rgba(118,168,78,0.30) 0%, rgba(118,168,78,0.10) 45%, transparent 70%)',
+                    background: 'radial-gradient(ellipse 80% 65% at 65% 50%, color-mix(in srgb, var(--primary-color) 26%, white) 0%, color-mix(in srgb, var(--primary-color) 12%, transparent) 45%, transparent 70%)',
                 }}
             />
             {/* Subtle grid overlay */}
@@ -81,7 +94,7 @@ function LeftPane({ variant }) {
             {/* Middle copy */}
             <div className="relative space-y-6">
                 {variant !== 'admin' && (
-                    <div className="inline-flex items-center gap-1.5 rounded-full bg-brand-500/20 border border-brand-500/30 px-3 py-1">
+                    <div className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1" style={{ backgroundColor: 'color-mix(in srgb, var(--primary-color) 18%, transparent)', borderColor: 'color-mix(in srgb, var(--primary-color) 35%, transparent)' }}>
                         <span className="flex gap-0.5">
                             {[...Array(5)].map((_, i) => (
                                 <Star key={i} className="h-3 w-3 fill-brand-400 text-brand-400" />
@@ -111,7 +124,7 @@ function LeftPane({ variant }) {
                 <ul className="space-y-3">
                     {features.map(({ icon: Icon, key, fallback }) => (
                         <li key={key} className="flex items-start gap-3">
-                            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-brand-500/20 border border-brand-500/30">
+                            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md border" style={{ backgroundColor: 'color-mix(in srgb, var(--primary-color) 18%, transparent)', borderColor: 'color-mix(in srgb, var(--primary-color) 35%, transparent)' }}>
                                 <Icon className="h-3.5 w-3.5 text-brand-400" />
                             </span>
                             <span className="text-sm text-neutral-300">{t(key) || fallback}</span>
@@ -131,7 +144,7 @@ function LeftPane({ variant }) {
                 )}
 
                 {variant !== 'admin' && (
-                    <div className="rounded-xl bg-white/5 border border-white/10 p-4">
+                    <div className="rounded-xl border p-4" style={{ backgroundColor: 'color-mix(in srgb, var(--primary-color) 8%, rgba(255,255,255,0.05))', borderColor: 'color-mix(in srgb, var(--primary-color) 18%, rgba(255,255,255,0.10))' }}>
                         <p className="text-sm text-neutral-300 italic leading-relaxed">
                             {t('auth.testimonial_quote')}
                         </p>
@@ -206,7 +219,7 @@ export default function AuthLayout({
             <LeftPane variant={variant} />
 
             {/* Right pane */}
-            <div className="flex flex-1 flex-col bg-neutral-50 dark:bg-neutral-950">
+            <div className="flex flex-1 flex-col bg-neutral-50 dark:bg-neutral-950" style={{ backgroundImage: 'radial-gradient(ellipse 70% 55% at top right, color-mix(in srgb, var(--primary-color) 8%, transparent) 0%, transparent 65%)' }}>
                 {/* Top bar */}
                 <div className="flex items-center justify-between px-6 py-4">
                     {/* Mobile logo */}

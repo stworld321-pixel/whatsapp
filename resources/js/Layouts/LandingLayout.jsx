@@ -6,6 +6,8 @@ import { useTheme } from '@/context/ThemeContext';
 import { useLocale } from '@/hooks/useLocale';
 import { Globe } from 'lucide-react';
 
+const BRAND_DEEP = 'var(--brand-950)';
+
 function SunIcon({ className }) {
     return (
         <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -83,7 +85,7 @@ export default function LandingLayout({ children }) {
     return (
         <div className="min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 flex flex-col">
             {/* ── Header ── */}
-            <header className="sticky top-0 z-50 border-b border-white/10" style={{ background: '#162610' }}>
+            <header className="sticky top-0 z-50 border-b border-white/10" style={{ background: BRAND_DEEP }}>
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-6">
                     {/* Logo */}
                     <Link href={route('home')} className="flex items-center group flex-shrink-0">
@@ -215,7 +217,7 @@ export default function LandingLayout({ children }) {
 
                 {/* Mobile menu */}
                 {mobileOpen && (
-                    <div className="sm:hidden border-t border-white/10 bg-[#162610]/95 backdrop-blur-md px-4 py-4 space-y-1">
+                    <div className="sm:hidden border-t border-white/10 backdrop-blur-md px-4 py-4 space-y-1" style={{ background: 'color-mix(in srgb, var(--brand-950) 95%, transparent)' }}>
                         {NAV_LINKS.map((link) => (
                             <Link
                                 key={link.href}
@@ -267,7 +269,7 @@ export default function LandingLayout({ children }) {
             <main className="flex-1">{children}</main>
 
             {/* ── Footer ── */}
-            <footer style={{ background: '#162610', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            <footer style={{ background: BRAND_DEEP, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 mb-12">
                         {/* Brand */}

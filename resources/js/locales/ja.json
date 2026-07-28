@@ -175,8 +175,13 @@
     "client": {
         "profile": {
             "edit": "編集",
-            "2fa": "2Fa",
-            "sessions": "Sessions",
+            "2fa": {
+                "enable": "Enable",
+                "disable": "Disable"
+            },
+            "sessions": {
+                "destroy": "Destroy"
+            },
             "update": "Update",
             "destroy": "Destroy"
         },
@@ -340,7 +345,10 @@
             "index": "一覧",
             "store": "保存",
             "destroy": "削除",
-            "contacts": "Contacts"
+            "contacts": {
+                "attach": "Attach",
+                "detach": "Detach"
+            }
         },
         "whatsapp": {
             "templates": {
@@ -362,9 +370,7 @@
                 "create": "作成",
                 "edit": "編集"
             },
-            "setup": {
-                "destroy": "Destroy"
-            }
+            "setup": "Setup"
         },
         "broadcasts": {
             "campaigns": {
@@ -395,7 +401,9 @@
             "start": "開始",
             "templates": "テンプレート",
             "assign": "割り当て",
-            "setup": "Setup"
+            "setup": {
+                "destroy": "Destroy"
+            }
         },
         "ai": {
             "providers": {
@@ -545,11 +553,7 @@
                 "connect": "接続"
             }
         },
-        "workspaces": {
-            "switch": "Switch",
-            "index": "Index",
-            "store": "Store"
-        },
+        "workspaces": "Workspaces",
         "settings": {
             "update": "更新",
             "notifications": "通知",
@@ -808,11 +812,7 @@
         "tax_rates": "税率",
         "landing_page": "サイトコンテンツ",
         "cms_pages": "CMSページ",
-        "license": {
-            "index": "Index",
-            "deactivate": "Deactivate",
-            "activate": "Activate"
-        },
+        "license": "License",
         "cron_setup": "Cron設定",
         "support": {
             "index": "一覧",
@@ -927,40 +927,38 @@
         "secret_key_hint": "サーバーサイドのシークレットキー — 厳重に管理してください",
         "stripe_webhook_hint": "Stripeダッシュボードで確認できるWebhook署名シークレット（whsec_…）",
         "webhook_hint": "受信したゲートウェイイベントの検証に使用するWebhookシークレット",
-        "clients": {
+        "clients": "Clients",
+        "subscriptions": {
             "index": "Index",
-            "users": {
-                "index": "Index",
-                "store": "Store",
-                "update": "Update",
-                "destroy": "Destroy"
-            },
-            "impersonate": "Impersonate",
-            "destroy": "Destroy",
-            "export": "Export",
             "store": "Store",
-            "update": "Update"
+            "export": "Export"
         },
-        "subscriptions": "Subscriptions",
-        "payments": {
-            "index": "Index"
-        },
-        "plans": {
+        "payments": "Payments",
+        "plans": "Plans",
+        "currencies": {
             "index": "Index",
             "update": "Update",
-            "store": "Store",
-            "duplicate": "Duplicate",
-            "destroy": "Destroy",
-            "reorder": "Reorder"
+            "store": "Store"
         },
-        "currencies": "Currencies",
-        "admins": {
+        "admins": "Admins",
+        "settings": {
             "index": "Index",
-            "destroy": "Destroy",
-            "store": "Store",
-            "update": "Update"
+            "general": {
+                "update": "Update"
+            },
+            "logo": {
+                "upload": "Upload",
+                "delete": "Delete"
+            },
+            "favicon": {
+                "upload": "Upload",
+                "delete": "Delete"
+            },
+            "update": "Update",
+            "firebase": {
+                "update": "Update"
+            }
         },
-        "settings": "Settings",
         "ai": {
             "index": "一覧"
         },
@@ -4027,14 +4025,14 @@
     "37": {
         "4220": "4220"
     },
+    "v20": [
+        "0"
+    ],
     "127": [
         [
             {
                 "1": "1"
             }
         ]
-    ],
-    "v20": [
-        "0"
     ]
 }

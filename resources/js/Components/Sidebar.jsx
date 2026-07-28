@@ -81,11 +81,14 @@ export default function Sidebar({
     const appName = import.meta.env.VITE_APP_NAME || 'WhatsMine';
     const { branding } = usePage().props;
     const logoUrl = branding?.logo_url;
+    const shellStyle = {
+        background: 'linear-gradient(180deg, color-mix(in srgb, var(--primary-color) 24%, #0f172a) 0%, color-mix(in srgb, var(--primary-color) 10%, #111827) 100%)',
+    };
 
     const content = (
-        <aside className="flex h-full w-64 flex-col bg-secondary-900 dark:bg-neutral-900">
+        <aside className="flex h-full w-64 flex-col bg-secondary-900 dark:bg-neutral-900" style={shellStyle}>
             {/* Brand header */}
-            <div className="flex h-14 shrink-0 items-center gap-2.5 px-4 border-b border-white/8">
+            <div className="flex h-14 shrink-0 items-center gap-2.5 px-4 border-b border-white/8" style={{ backgroundColor: 'color-mix(in srgb, var(--primary-color) 12%, transparent)' }}>
                 {logoUrl ? (
                     <img src={logoUrl} alt={appName} className="h-7 max-w-[140px] object-contain" />
                 ) : logo ? (

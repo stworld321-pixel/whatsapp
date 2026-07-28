@@ -175,8 +175,13 @@
     "client": {
         "profile": {
             "edit": "Редактирование",
-            "2fa": "2Fa",
-            "sessions": "Sessions",
+            "2fa": {
+                "enable": "Enable",
+                "disable": "Disable"
+            },
+            "sessions": {
+                "destroy": "Destroy"
+            },
             "update": "Update",
             "destroy": "Destroy"
         },
@@ -340,7 +345,10 @@
             "index": "Список",
             "store": "Создание",
             "destroy": "Удаление",
-            "contacts": "Contacts"
+            "contacts": {
+                "attach": "Attach",
+                "detach": "Detach"
+            }
         },
         "whatsapp": {
             "templates": {
@@ -362,9 +370,7 @@
                 "create": "Создание",
                 "edit": "Редактирование"
             },
-            "setup": {
-                "destroy": "Destroy"
-            }
+            "setup": "Setup"
         },
         "broadcasts": {
             "campaigns": {
@@ -395,7 +401,9 @@
             "start": "Начало",
             "templates": "Шаблоны",
             "assign": "Назначение",
-            "setup": "Setup"
+            "setup": {
+                "destroy": "Destroy"
+            }
         },
         "ai": {
             "providers": {
@@ -545,11 +553,7 @@
                 "connect": "Подключение"
             }
         },
-        "workspaces": {
-            "switch": "Switch",
-            "index": "Index",
-            "store": "Store"
-        },
+        "workspaces": "Workspaces",
         "settings": {
             "update": "Обновление",
             "notifications": "Уведомления",
@@ -808,11 +812,7 @@
         "tax_rates": "Налоговые ставки",
         "landing_page": "Контент сайта",
         "cms_pages": "Страницы CMS",
-        "license": {
-            "index": "Index",
-            "deactivate": "Deactivate",
-            "activate": "Activate"
-        },
+        "license": "License",
         "cron_setup": "Настройка Cron",
         "support": {
             "index": "Список",
@@ -927,40 +927,38 @@
         "secret_key_hint": "Серверный секретный ключ — не разглашайте его",
         "stripe_webhook_hint": "Секрет подписи Webhook (whsec_…) из панели Stripe",
         "webhook_hint": "Секрет Webhook для проверки входящих событий шлюза",
-        "clients": {
+        "clients": "Clients",
+        "subscriptions": {
             "index": "Index",
-            "users": {
-                "index": "Index",
-                "store": "Store",
-                "update": "Update",
-                "destroy": "Destroy"
-            },
-            "impersonate": "Impersonate",
-            "destroy": "Destroy",
-            "export": "Export",
             "store": "Store",
-            "update": "Update"
+            "export": "Export"
         },
-        "subscriptions": "Subscriptions",
-        "payments": {
-            "index": "Index"
-        },
-        "plans": {
+        "payments": "Payments",
+        "plans": "Plans",
+        "currencies": {
             "index": "Index",
             "update": "Update",
-            "store": "Store",
-            "duplicate": "Duplicate",
-            "destroy": "Destroy",
-            "reorder": "Reorder"
+            "store": "Store"
         },
-        "currencies": "Currencies",
-        "admins": {
+        "admins": "Admins",
+        "settings": {
             "index": "Index",
-            "destroy": "Destroy",
-            "store": "Store",
-            "update": "Update"
+            "general": {
+                "update": "Update"
+            },
+            "logo": {
+                "upload": "Upload",
+                "delete": "Delete"
+            },
+            "favicon": {
+                "upload": "Upload",
+                "delete": "Delete"
+            },
+            "update": "Update",
+            "firebase": {
+                "update": "Update"
+            }
         },
-        "settings": "Settings",
         "ai": {
             "index": "Список"
         },
@@ -4027,14 +4025,14 @@
     "37": {
         "4220": "4220"
     },
+    "v20": [
+        "0"
+    ],
     "127": [
         [
             {
                 "1": "1"
             }
         ]
-    ],
-    "v20": [
-        "0"
     ]
 }

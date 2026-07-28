@@ -107,12 +107,32 @@ class FirebaseLoginController extends Controller
             // Firebase ID tokens are signed by securetoken.google.com, not the
             // Google OAuth tokeninfo service. Verify the JWT locally using the
             // public signing certificates published by Firebase instead.
-            $certificates = Cache::remember('firebase_auth_signing_certificates', now()->addHour(), function (): array {
-                $response = Http::acceptJson()
-                    ->timeout(10)
-                    ->get('https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com');
+            $caBundle = $this->firebaseCaBundlePath();
+            $certificates = Cache::remember('firebase_auth_signing_certificates', now()->addHour(), function () use ($caBundle): array {
+                $request = Http::acceptJson()->timeout(10);
 
-                return $response->successful() && is_array($response->json())
+                if ($caBundle) {
+                    $request = $request->withOptions(['verify' => $caBundle]);
+                }
+
+                try {
+                    $response = $request->get('https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com');
+                } catch (\Throwable) {
+                    $response = null;
+                }
+
+                if ((! $response || ! $response->successful() || ! is_array($response->json())) && $this->shouldSkipTlsVerification()) {
+                    try {
+                        $response = Http::acceptJson()
+                            ->timeout(10)
+                            ->withoutVerifying()
+                            ->get('https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com');
+                    } catch (\Throwable) {
+                        $response = null;
+                    }
+                }
+
+                return $response && $response->successful() && is_array($response->json())
                     ? $response->json()
                     : [];
             });
@@ -149,5 +169,26 @@ class FirebaseLoginController extends Controller
         } catch (\Throwable) {
             return null;
         }
+    }
+
+    private function firebaseCaBundlePath(): ?string
+    {
+        foreach ([
+            'C:\\xamp\\php\\extras\\ssl\\cacert.pem',
+            'C:\\xampp\\php\\extras\\ssl\\cacert.pem',
+        ] as $caBundlePath) {
+            if (is_file($caBundlePath)) {
+                return $caBundlePath;
+            }
+        }
+
+        return null;
+    }
+
+    private function shouldSkipTlsVerification(): bool
+    {
+        $appUrl = config('app.url', '');
+
+        return str_contains($appUrl, 'localhost') || str_contains($appUrl, '127.0.0.1');
     }
 }

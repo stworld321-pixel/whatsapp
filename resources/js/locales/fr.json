@@ -175,13 +175,8 @@
     "client": {
         "profile": {
             "edit": "Modifier",
-            "2fa": {
-                "enable": "Enable",
-                "disable": "Disable"
-            },
-            "sessions": {
-                "destroy": "Destroy"
-            },
+            "2fa": "2Fa",
+            "sessions": "Sessions",
             "update": "Update",
             "destroy": "Destroy"
         },
@@ -345,10 +340,7 @@
             "index": "Index",
             "store": "Enregistrer",
             "destroy": "Détruire",
-            "contacts": {
-                "attach": "Attach",
-                "detach": "Detach"
-            }
+            "contacts": "Contacts"
         },
         "whatsapp": {
             "templates": {
@@ -370,7 +362,9 @@
                 "create": "Créer",
                 "edit": "Modifier"
             },
-            "setup": "Setup"
+            "setup": {
+                "destroy": "Destroy"
+            }
         },
         "broadcasts": {
             "campaigns": {
@@ -401,9 +395,7 @@
             "start": "Démarrer",
             "templates": "Modèles",
             "assign": "Attribuer",
-            "setup": {
-                "destroy": "Destroy"
-            }
+            "setup": "Setup"
         },
         "ai": {
             "providers": {
@@ -553,7 +545,11 @@
                 "connect": "Connecter"
             }
         },
-        "workspaces": "Workspaces",
+        "workspaces": {
+            "switch": "Switch",
+            "index": "Index",
+            "store": "Store"
+        },
         "settings": {
             "update": "Mettre à jour",
             "notifications": "Notifications",
@@ -812,7 +808,11 @@
         "tax_rates": "Taux de taxe",
         "landing_page": "Contenu du site",
         "cms_pages": "Pages CMS",
-        "license": "License",
+        "license": {
+            "index": "Index",
+            "deactivate": "Deactivate",
+            "activate": "Activate"
+        },
         "cron_setup": "Configuration du Cron",
         "support": {
             "index": "Index",
@@ -927,38 +927,40 @@
         "secret_key_hint": "Clé secrète côté serveur — gardez-la confidentielle",
         "stripe_webhook_hint": "Secret de signature du Webhook (whsec_…) issu du tableau de bord Stripe",
         "webhook_hint": "Secret du Webhook utilisé pour vérifier les événements entrants de la passerelle",
-        "clients": "Clients",
-        "subscriptions": {
+        "clients": {
             "index": "Index",
+            "users": {
+                "index": "Index",
+                "store": "Store",
+                "update": "Update",
+                "destroy": "Destroy"
+            },
+            "impersonate": "Impersonate",
+            "destroy": "Destroy",
+            "export": "Export",
             "store": "Store",
-            "export": "Export"
+            "update": "Update"
         },
-        "payments": "Payments",
-        "plans": "Plans",
-        "currencies": {
+        "subscriptions": "Subscriptions",
+        "payments": {
+            "index": "Index"
+        },
+        "plans": {
             "index": "Index",
             "update": "Update",
+            "duplicate": "Duplicate",
+            "destroy": "Destroy",
+            "reorder": "Reorder",
             "store": "Store"
         },
-        "admins": "Admins",
-        "settings": {
+        "currencies": "Currencies",
+        "admins": {
             "index": "Index",
-            "general": {
-                "update": "Update"
-            },
-            "logo": {
-                "upload": "Upload",
-                "delete": "Delete"
-            },
-            "favicon": {
-                "upload": "Upload",
-                "delete": "Delete"
-            },
-            "update": "Update",
-            "firebase": {
-                "update": "Update"
-            }
+            "destroy": "Destroy",
+            "store": "Store",
+            "update": "Update"
         },
+        "settings": "Settings",
         "ai": {
             "index": "Index"
         },
@@ -4025,14 +4027,14 @@
     "37": {
         "4220": "4220"
     },
+    "v20": [
+        "0"
+    ],
     "127": [
         [
             {
                 "1": "1"
             }
         ]
-    ],
-    "v20": [
-        "0"
     ]
 }

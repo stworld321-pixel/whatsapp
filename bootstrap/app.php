@@ -30,6 +30,19 @@ use Illuminate\Support\Facades\Route;
 use Sentry\Laravel\Integration;
 use Sentry\State\Scope;
 
+foreach ([
+    'C:\\xamp\\php\\extras\\ssl\\cacert.pem',
+    'C:\\xampp\\php\\extras\\ssl\\cacert.pem',
+] as $caBundlePath) {
+    if (is_file($caBundlePath)) {
+        @ini_set('curl.cainfo', $caBundlePath);
+        @ini_set('openssl.cafile', $caBundlePath);
+        @putenv('CURL_CA_BUNDLE='.$caBundlePath);
+        @putenv('SSL_CERT_FILE='.$caBundlePath);
+        break;
+    }
+}
+
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',

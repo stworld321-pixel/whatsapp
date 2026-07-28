@@ -175,8 +175,13 @@
     "client": {
         "profile": {
             "edit": "Modifica",
-            "2fa": "2Fa",
-            "sessions": "Sessions",
+            "2fa": {
+                "enable": "Enable",
+                "disable": "Disable"
+            },
+            "sessions": {
+                "destroy": "Destroy"
+            },
             "update": "Update",
             "destroy": "Destroy"
         },
@@ -340,7 +345,10 @@
             "index": "Elenco",
             "store": "Salva",
             "destroy": "Elimina",
-            "contacts": "Contacts"
+            "contacts": {
+                "attach": "Attach",
+                "detach": "Detach"
+            }
         },
         "whatsapp": {
             "templates": {
@@ -362,9 +370,7 @@
                 "create": "Crea",
                 "edit": "Modifica"
             },
-            "setup": {
-                "destroy": "Destroy"
-            }
+            "setup": "Setup"
         },
         "broadcasts": {
             "campaigns": {
@@ -395,7 +401,9 @@
             "start": "Avvia",
             "templates": "Modelli",
             "assign": "Assegna",
-            "setup": "Setup"
+            "setup": {
+                "destroy": "Destroy"
+            }
         },
         "ai": {
             "providers": {
@@ -545,11 +553,7 @@
                 "connect": "Connetti"
             }
         },
-        "workspaces": {
-            "switch": "Switch",
-            "index": "Index",
-            "store": "Store"
-        },
+        "workspaces": "Workspaces",
         "settings": {
             "update": "Aggiorna",
             "notifications": "Notifiche",
@@ -808,11 +812,7 @@
         "tax_rates": "Aliquote fiscali",
         "landing_page": "Contenuti del sito",
         "cms_pages": "Pagine CMS",
-        "license": {
-            "index": "Index",
-            "deactivate": "Deactivate",
-            "activate": "Activate"
-        },
+        "license": "License",
         "cron_setup": "Configurazione cron",
         "support": {
             "index": "Elenco",
@@ -927,40 +927,38 @@
         "secret_key_hint": "Chiave segreta lato server — mantienila privata",
         "stripe_webhook_hint": "Segreto di firma del webhook (whsec_…) dalla dashboard Stripe",
         "webhook_hint": "Segreto webhook usato per verificare gli eventi in arrivo dal gateway",
-        "clients": {
+        "clients": "Clients",
+        "subscriptions": {
             "index": "Index",
-            "users": {
-                "index": "Index",
-                "store": "Store",
-                "update": "Update",
-                "destroy": "Destroy"
-            },
-            "impersonate": "Impersonate",
-            "destroy": "Destroy",
-            "export": "Export",
             "store": "Store",
-            "update": "Update"
+            "export": "Export"
         },
-        "subscriptions": "Subscriptions",
-        "payments": {
-            "index": "Index"
-        },
-        "plans": {
+        "payments": "Payments",
+        "plans": "Plans",
+        "currencies": {
             "index": "Index",
             "update": "Update",
-            "store": "Store",
-            "duplicate": "Duplicate",
-            "destroy": "Destroy",
-            "reorder": "Reorder"
+            "store": "Store"
         },
-        "currencies": "Currencies",
-        "admins": {
+        "admins": "Admins",
+        "settings": {
             "index": "Index",
-            "destroy": "Destroy",
-            "store": "Store",
-            "update": "Update"
+            "general": {
+                "update": "Update"
+            },
+            "logo": {
+                "upload": "Upload",
+                "delete": "Delete"
+            },
+            "favicon": {
+                "upload": "Upload",
+                "delete": "Delete"
+            },
+            "update": "Update",
+            "firebase": {
+                "update": "Update"
+            }
         },
-        "settings": "Settings",
         "ai": {
             "index": "Elenco"
         },
@@ -4027,14 +4025,14 @@
     "37": {
         "4220": "4220"
     },
+    "v20": [
+        "0"
+    ],
     "127": [
         [
             {
                 "1": "1"
             }
         ]
-    ],
-    "v20": [
-        "0"
     ]
 }
