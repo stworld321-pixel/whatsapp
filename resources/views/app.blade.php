@@ -26,6 +26,18 @@
         <style>
             :root {
                 --primary-color: {{ $primaryColor }};
+                --accent-color: {{ $primaryColor }};
+                --primary-50: color-mix(in srgb, var(--primary-color) 10%, white);
+                --primary-100: color-mix(in srgb, var(--primary-color) 20%, white);
+                --primary-200: color-mix(in srgb, var(--primary-color) 40%, white);
+                --primary-300: color-mix(in srgb, var(--primary-color) 60%, white);
+                --primary-400: color-mix(in srgb, var(--primary-color) 80%, white);
+                --primary-500: var(--primary-color);
+                --primary-600: color-mix(in srgb, var(--primary-color) 90%, black);
+                --primary-700: color-mix(in srgb, var(--primary-color) 80%, black);
+                --primary-800: color-mix(in srgb, var(--primary-color) 60%, black);
+                --primary-900: color-mix(in srgb, var(--primary-color) 40%, black);
+                --primary-950: color-mix(in srgb, var(--primary-color) 25%, black);
                 --brand-50: color-mix(in srgb, var(--primary-color) 6%, white);
                 --brand-100: color-mix(in srgb, var(--primary-color) 15%, white);
                 --brand-200: color-mix(in srgb, var(--primary-color) 30%, white);
@@ -37,11 +49,34 @@
                 --brand-800: color-mix(in srgb, var(--primary-color) 65%, black);
                 --brand-900: color-mix(in srgb, var(--primary-color) 50%, black);
                 --brand-950: color-mix(in srgb, var(--primary-color) 30%, black);
+                --accent-50: color-mix(in srgb, var(--accent-color) 10%, white);
+                --accent-100: color-mix(in srgb, var(--accent-color) 20%, white);
+                --accent-200: color-mix(in srgb, var(--accent-color) 40%, white);
+                --accent-300: color-mix(in srgb, var(--accent-color) 60%, white);
+                --accent-400: color-mix(in srgb, var(--accent-color) 80%, white);
+                --accent-500: var(--accent-color);
+                --accent-600: color-mix(in srgb, var(--accent-color) 90%, black);
+                --accent-700: color-mix(in srgb, var(--accent-color) 80%, black);
+                --accent-800: color-mix(in srgb, var(--accent-color) 60%, black);
+                --accent-900: color-mix(in srgb, var(--accent-color) 40%, black);
+                --accent-950: color-mix(in srgb, var(--accent-color) 25%, black);
             }
 
             /* Tailwind generates the brand palette at build time. These runtime
                overrides make the admin-selected colour apply without rebuilding. */
             @foreach ([50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950] as $shade)
+            .bg-primary-{{ $shade }} { background-color: var(--primary-{{ $shade }}) !important; }
+            .text-primary-{{ $shade }} { color: var(--primary-{{ $shade }}) !important; }
+            .border-primary-{{ $shade }} { border-color: var(--primary-{{ $shade }}) !important; }
+            .ring-primary-{{ $shade }} { --tw-ring-color: var(--primary-{{ $shade }}) !important; }
+            .hover\:bg-primary-{{ $shade }}:hover { background-color: var(--primary-{{ $shade }}) !important; }
+            .hover\:text-primary-{{ $shade }}:hover { color: var(--primary-{{ $shade }}) !important; }
+            .bg-accent-{{ $shade }} { background-color: var(--accent-{{ $shade }}) !important; }
+            .text-accent-{{ $shade }} { color: var(--accent-{{ $shade }}) !important; }
+            .border-accent-{{ $shade }} { border-color: var(--accent-{{ $shade }}) !important; }
+            .ring-accent-{{ $shade }} { --tw-ring-color: var(--accent-{{ $shade }}) !important; }
+            .hover\:bg-accent-{{ $shade }}:hover { background-color: var(--accent-{{ $shade }}) !important; }
+            .hover\:text-accent-{{ $shade }}:hover { color: var(--accent-{{ $shade }}) !important; }
             .bg-brand-{{ $shade }} { background-color: var(--brand-{{ $shade }}) !important; }
             .text-brand-{{ $shade }} { color: var(--brand-{{ $shade }}) !important; }
             .border-brand-{{ $shade }} { border-color: var(--brand-{{ $shade }}) !important; }
@@ -63,7 +98,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="vapid-public-key" content="{{ config('webpush.vapid_public_key') }}">
 
-        <title inertia>{{ config('app.name', 'WhatsMine') }}</title>
+        <title inertia>{{ config('app.name', 'SocialSyncBot') }}</title>
         @php
             try {
                 $faviconPath = \App\Models\SystemSetting::get('app_favicon_path');
@@ -241,3 +276,4 @@
         @inertia
     </body>
 </html>
+

@@ -2,7 +2,7 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "whatsmine/whatsmine",
     "type": "project",
-    "description": "WhatsMine — multi-channel customer messaging, AI chatbots, broadcasting and automation platform.",
+    "description": "SocialSyncBot — multi-channel customer messaging, AI chatbots, broadcasting and automation platform.",
     "keywords": ["whatsapp", "messaging", "saas", "inbox", "automation"],
     "license": "proprietary",
     "require": {
@@ -108,3 +108,4 @@
     "minimum-stability": "dev",
     "prefer-stable": true
 }
+

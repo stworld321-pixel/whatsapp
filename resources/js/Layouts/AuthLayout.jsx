@@ -41,7 +41,7 @@ const SOCIAL_PROOF = [
 function LeftPane({ variant }) {
     const { t } = useTranslation();
     const features = variant === 'admin' ? ADMIN_FEATURES : CLIENT_FEATURES;
-    const appName = import.meta.env.VITE_APP_NAME || 'WhatsMine';
+    const appName = import.meta.env.VITE_APP_NAME || 'SocialSyncBot';
 
     return (
         <div
@@ -226,7 +226,7 @@ export default function AuthLayout({
                     <Link href={route('home')} className="flex items-center gap-2 lg:hidden">
                         <ApplicationLogo className="h-7 w-7 fill-current text-brand-600 dark:text-brand-400" />
                         <span className="text-sm font-semibold text-neutral-900 dark:text-white">
-                            {import.meta.env.VITE_APP_NAME || 'WhatsMine'}
+                            {import.meta.env.VITE_APP_NAME || 'SocialSyncBot'}
                         </span>
                     </Link>
                     <span className="hidden lg:block" />
@@ -280,3 +280,4 @@ export default function AuthLayout({
         </div>
     );
 }
+

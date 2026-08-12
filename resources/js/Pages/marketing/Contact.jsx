@@ -7,20 +7,27 @@ import SeoHead from '@/Components/SeoHead';
 function Badge({ text }) {
     if (!text) return null;
     return (
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#5a8b38]/15 text-[#5a8b38] text-xs font-semibold px-3 py-1 border border-[#5a8b38]/30">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#5a8b38] inline-block" />
+        <span
+            className="inline-flex items-center gap-1.5 rounded-full text-xs font-semibold px-3 py-1 border"
+            style={{
+                backgroundColor: 'color-mix(in srgb, var(--primary-color) 15%, transparent)',
+                color: 'var(--primary-color)',
+                borderColor: 'color-mix(in srgb, var(--primary-color) 30%, transparent)',
+            }}
+        >
+            <span className="h-1.5 w-1.5 rounded-full inline-block" style={{ backgroundColor: 'var(--primary-color)' }} />
             {text}
         </span>
     );
 }
 
 const inputClass =
-    'w-full rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-4 py-2.5 text-sm text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors focus:border-[#5a8b38] focus:outline-none focus:ring-2 focus:ring-[#5a8b38]/30';
+    'w-full rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-4 py-2.5 text-sm text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30';
 
 export default function Contact({ landing = {} }) {
     const { t } = useTranslation();
     const { flash } = usePage().props;
-    const appName = import.meta.env.VITE_APP_NAME || 'WhatsMine';
+    const appName = import.meta.env.VITE_APP_NAME || 'SocialSyncBot';
     const contactEmail = landing['landing.contact_email'] || `support@${appName.toLowerCase().replace(/\s+/g, '')}.com`;
 
     const { data, setData, post, processing, errors, recentlySuccessful } = useForm({
@@ -64,8 +71,8 @@ export default function Contact({ landing = {} }) {
 
             {/* Hero */}
             <section
-                className="relative overflow-hidden"
-                style={{ background: 'radial-gradient(ellipse 70% 65% at 50% 0%, rgba(118,168,78,0.18) 0%, transparent 60%), #162610' }}
+                className="relative overflow-hidden bg-neutral-50 dark:bg-neutral-950"
+                style={{ backgroundImage: 'radial-gradient(ellipse 70% 65% at 50% 0%, color-mix(in srgb, #3ba6e8 18%, transparent) 0%, transparent 60%)' }}
             >
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20 text-center">
                     <div className="flex justify-center mb-6">
@@ -94,8 +101,8 @@ export default function Contact({ landing = {} }) {
                                     const Icon = card.icon;
                                     const inner = (
                                         <>
-                                            <div className="inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl" style={{ background: 'rgba(118,168,78,0.12)' }}>
-                                                <Icon className="h-5 w-5" style={{ color: '#5a8b38' }} />
+                                            <div className="inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl" style={{ background: 'color-mix(in srgb, var(--primary-color) 12%, transparent)' }}>
+                                                <Icon className="h-5 w-5" style={{ color: 'var(--primary-color)' }} />
                                             </div>
                                             <div>
                                                 <h3 className="text-sm font-semibold text-neutral-900 dark:text-white">{card.label}</h3>
@@ -108,7 +115,7 @@ export default function Contact({ landing = {} }) {
                                     );
                                     const cls = 'flex items-start gap-4 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 transition-all duration-200';
                                     return card.href ? (
-                                        <a key={idx} href={card.href} className={`${cls} hover:border-[#5a8b38]/40 hover:shadow-md`}>
+                                        <a key={idx} href={card.href} className={`${cls} hover:border-brand-500/40 hover:shadow-md`}>
                                             {inner}
                                         </a>
                                     ) : (
@@ -126,8 +133,8 @@ export default function Contact({ landing = {} }) {
                                 </h2>
 
                                 {(flash?.success || recentlySuccessful) && (
-                                    <div className="mb-6 flex items-start gap-2.5 rounded-xl bg-[#5a8b38]/10 border border-[#5a8b38]/30 px-4 py-3 text-sm text-neutral-800 dark:text-neutral-100">
-                                        <CheckCircle2 className="h-5 w-5 flex-shrink-0" style={{ color: '#65A30D' }} />
+                                    <div className="mb-6 flex items-start gap-2.5 rounded-xl border px-4 py-3 text-sm text-neutral-800 dark:text-neutral-100" style={{ background: 'color-mix(in srgb, var(--primary-color) 10%, transparent)', borderColor: 'color-mix(in srgb, var(--primary-color) 30%, transparent)' }}>
+                                        <CheckCircle2 className="h-5 w-5 flex-shrink-0" style={{ color: 'var(--primary-color)' }} />
                                         <span>{flash?.success || t('contact_page.title')}</span>
                                     </div>
                                 )}
@@ -186,7 +193,7 @@ export default function Contact({ landing = {} }) {
                                         type="submit"
                                         disabled={processing}
                                         className="inline-flex w-full items-center justify-center gap-2 rounded-xl px-7 py-3 text-base font-bold text-white shadow-lg transition-all duration-200 hover:opacity-90 disabled:opacity-50 sm:w-auto"
-                                        style={{ background: '#5a8b38' }}
+                                        style={{ background: 'var(--primary-color)' }}
                                     >
                                         <Send className="h-4 w-4" />
                                         {processing ? t('contact_page.sending', { defaultValue: 'Sending…' }) : t('contact_page.send_message')}
@@ -200,3 +207,4 @@ export default function Contact({ landing = {} }) {
         </LandingLayout>
     );
 }
+

@@ -16,7 +16,7 @@ export default {
             fontFamily: {
                 sans: ['Space Grotesk', ...defaultTheme.fontFamily.sans],
             },
-            // WhatsMine palette — brand (forest-green #467235), accent (amber
+            // SocialSyncBot palette — brand (forest-green #467235), accent (amber
             // #FFBF00 / light-yellow #FFF78D), secondary (dark-green #283F24).
             // Source of truth: ./.branding
             colors: {
@@ -135,3 +135,4 @@ export default {
 
     plugins: [forms],
 };
+

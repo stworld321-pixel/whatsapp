@@ -4,7 +4,47 @@
 
 /* Dynamic primary color from admin settings */
 @layer base {
+    /* Runtime theme palette */
+    :root {
+        --primary-color: #467235;
+        --accent-color: #467235;
+        --primary-50: color-mix(in srgb, var(--primary-color) 10%, white);
+        --primary-100: color-mix(in srgb, var(--primary-color) 20%, white);
+        --primary-200: color-mix(in srgb, var(--primary-color) 40%, white);
+        --primary-300: color-mix(in srgb, var(--primary-color) 60%, white);
+        --primary-400: color-mix(in srgb, var(--primary-color) 80%, white);
+        --primary-500: var(--primary-color);
+        --primary-600: color-mix(in srgb, var(--primary-color) 90%, black);
+        --primary-700: color-mix(in srgb, var(--primary-color) 80%, black);
+        --primary-800: color-mix(in srgb, var(--primary-color) 60%, black);
+        --primary-900: color-mix(in srgb, var(--primary-color) 40%, black);
+        --primary-950: color-mix(in srgb, var(--primary-color) 25%, black);
+        --accent-50: color-mix(in srgb, var(--accent-color) 10%, white);
+        --accent-100: color-mix(in srgb, var(--accent-color) 20%, white);
+        --accent-200: color-mix(in srgb, var(--accent-color) 40%, white);
+        --accent-300: color-mix(in srgb, var(--accent-color) 60%, white);
+        --accent-400: color-mix(in srgb, var(--accent-color) 80%, white);
+        --accent-500: var(--accent-color);
+        --accent-600: color-mix(in srgb, var(--accent-color) 90%, black);
+        --accent-700: color-mix(in srgb, var(--accent-color) 80%, black);
+        --accent-800: color-mix(in srgb, var(--accent-color) 60%, black);
+        --accent-900: color-mix(in srgb, var(--accent-color) 40%, black);
+        --accent-950: color-mix(in srgb, var(--accent-color) 25%, black);
+    }
+
     /* Text colors */
+    .text-primary-50 { color: var(--primary-50) !important; }
+    .text-primary-100 { color: var(--primary-100) !important; }
+    .text-primary-200 { color: var(--primary-200) !important; }
+    .text-primary-300 { color: var(--primary-300) !important; }
+    .text-primary-400 { color: var(--primary-400) !important; }
+    .text-primary-500 { color: var(--primary-500) !important; }
+    .text-primary-600 { color: var(--primary-600) !important; }
+    .text-primary-700 { color: var(--primary-700) !important; }
+    .text-primary-800 { color: var(--primary-800) !important; }
+    .text-primary-900 { color: var(--primary-900) !important; }
+    .text-primary-950 { color: var(--primary-950) !important; }
+
     .text-brand-50 { color: color-mix(in srgb, var(--primary-color) 10%, white) !important; }
     .text-brand-100 { color: color-mix(in srgb, var(--primary-color) 20%, white) !important; }
     .text-brand-200 { color: color-mix(in srgb, var(--primary-color) 40%, white) !important; }
@@ -17,6 +57,18 @@
     .text-brand-900 { color: color-mix(in srgb, var(--primary-color) 40%, black) !important; }
 
     /* Background colors */
+    .bg-primary-50 { background-color: var(--primary-50) !important; }
+    .bg-primary-100 { background-color: var(--primary-100) !important; }
+    .bg-primary-200 { background-color: var(--primary-200) !important; }
+    .bg-primary-300 { background-color: var(--primary-300) !important; }
+    .bg-primary-400 { background-color: var(--primary-400) !important; }
+    .bg-primary-500 { background-color: var(--primary-500) !important; }
+    .bg-primary-600 { background-color: var(--primary-600) !important; }
+    .bg-primary-700 { background-color: var(--primary-700) !important; }
+    .bg-primary-800 { background-color: var(--primary-800) !important; }
+    .bg-primary-900 { background-color: var(--primary-900) !important; }
+    .bg-primary-950 { background-color: var(--primary-950) !important; }
+
     .bg-brand-50 { background-color: color-mix(in srgb, var(--primary-color) 10%, white) !important; }
     .bg-brand-100 { background-color: color-mix(in srgb, var(--primary-color) 20%, white) !important; }
     .bg-brand-200 { background-color: color-mix(in srgb, var(--primary-color) 40%, white) !important; }
@@ -29,6 +81,18 @@
     .bg-brand-900 { background-color: color-mix(in srgb, var(--primary-color) 40%, black) !important; }
 
     /* Border colors */
+    .border-primary-50 { border-color: var(--primary-50) !important; }
+    .border-primary-100 { border-color: var(--primary-100) !important; }
+    .border-primary-200 { border-color: var(--primary-200) !important; }
+    .border-primary-300 { border-color: var(--primary-300) !important; }
+    .border-primary-400 { border-color: var(--primary-400) !important; }
+    .border-primary-500 { border-color: var(--primary-500) !important; }
+    .border-primary-600 { border-color: var(--primary-600) !important; }
+    .border-primary-700 { border-color: var(--primary-700) !important; }
+    .border-primary-800 { border-color: var(--primary-800) !important; }
+    .border-primary-900 { border-color: var(--primary-900) !important; }
+    .border-primary-950 { border-color: var(--primary-950) !important; }
+
     .border-brand-50 { border-color: color-mix(in srgb, var(--primary-color) 10%, white) !important; }
     .border-brand-100 { border-color: color-mix(in srgb, var(--primary-color) 20%, white) !important; }
     .border-brand-200 { border-color: color-mix(in srgb, var(--primary-color) 40%, white) !important; }
@@ -39,6 +103,15 @@
     .border-brand-700 { border-color: color-mix(in srgb, var(--primary-color) 80%, black) !important; }
 
     /* Ring */
+    .ring-primary-50 { --tw-ring-color: var(--primary-50) !important; }
+    .ring-primary-100 { --tw-ring-color: var(--primary-100) !important; }
+    .ring-primary-200 { --tw-ring-color: var(--primary-200) !important; }
+    .ring-primary-300 { --tw-ring-color: var(--primary-300) !important; }
+    .ring-primary-400 { --tw-ring-color: var(--primary-400) !important; }
+    .ring-primary-500 { --tw-ring-color: var(--primary-500) !important; }
+    .ring-primary-600 { --tw-ring-color: var(--primary-600) !important; }
+    .ring-primary-700 { --tw-ring-color: var(--primary-700) !important; }
+
     .ring-brand-50 { --tw-ring-color: color-mix(in srgb, var(--primary-color) 10%, white) !important; }
     .ring-brand-100 { --tw-ring-color: color-mix(in srgb, var(--primary-color) 20%, white) !important; }
     .ring-brand-200 { --tw-ring-color: color-mix(in srgb, var(--primary-color) 40%, white) !important; }
@@ -46,6 +119,49 @@
     .ring-brand-400 { --tw-ring-color: color-mix(in srgb, var(--primary-color) 80%, white) !important; }
     .ring-brand-500 { --tw-ring-color: var(--primary-color) !important; }
     .ring-brand-600 { --tw-ring-color: color-mix(in srgb, var(--primary-color) 90%, black) !important; }
+
+    /* Accent palette follows the same runtime brand colour unless the app
+       intentionally overrides --accent-color later. */
+    .text-accent-50 { color: var(--accent-50) !important; }
+    .text-accent-100 { color: var(--accent-100) !important; }
+    .text-accent-200 { color: var(--accent-200) !important; }
+    .text-accent-300 { color: var(--accent-300) !important; }
+    .text-accent-400 { color: var(--accent-400) !important; }
+    .text-accent-500 { color: var(--accent-500) !important; }
+    .text-accent-600 { color: var(--accent-600) !important; }
+    .text-accent-700 { color: var(--accent-700) !important; }
+    .text-accent-800 { color: var(--accent-800) !important; }
+    .text-accent-900 { color: var(--accent-900) !important; }
+    .text-accent-950 { color: var(--accent-950) !important; }
+
+    .bg-accent-50 { background-color: var(--accent-50) !important; }
+    .bg-accent-100 { background-color: var(--accent-100) !important; }
+    .bg-accent-200 { background-color: var(--accent-200) !important; }
+    .bg-accent-300 { background-color: var(--accent-300) !important; }
+    .bg-accent-400 { background-color: var(--accent-400) !important; }
+    .bg-accent-500 { background-color: var(--accent-500) !important; }
+    .bg-accent-600 { background-color: var(--accent-600) !important; }
+    .bg-accent-700 { background-color: var(--accent-700) !important; }
+    .bg-accent-800 { background-color: var(--accent-800) !important; }
+    .bg-accent-900 { background-color: var(--accent-900) !important; }
+    .bg-accent-950 { background-color: var(--accent-950) !important; }
+
+    .border-accent-50 { border-color: var(--accent-50) !important; }
+    .border-accent-100 { border-color: var(--accent-100) !important; }
+    .border-accent-200 { border-color: var(--accent-200) !important; }
+    .border-accent-300 { border-color: var(--accent-300) !important; }
+    .border-accent-400 { border-color: var(--accent-400) !important; }
+    .border-accent-500 { border-color: var(--accent-500) !important; }
+    .border-accent-600 { border-color: var(--accent-600) !important; }
+    .border-accent-700 { border-color: var(--accent-700) !important; }
+
+    .ring-accent-50 { --tw-ring-color: var(--accent-50) !important; }
+    .ring-accent-100 { --tw-ring-color: var(--accent-100) !important; }
+    .ring-accent-200 { --tw-ring-color: var(--accent-200) !important; }
+    .ring-accent-300 { --tw-ring-color: var(--accent-300) !important; }
+    .ring-accent-400 { --tw-ring-color: var(--accent-400) !important; }
+    .ring-accent-500 { --tw-ring-color: var(--accent-500) !important; }
+    .ring-accent-600 { --tw-ring-color: var(--accent-600) !important; }
 
     /* Dark mode variants */
     .dark .text-brand-400 { color: color-mix(in srgb, var(--primary-color) 80%, white) !important; }
@@ -59,6 +175,7 @@
 
     /* Accent */
     .accent-brand-500 { accent-color: var(--primary-color) !important; }
+    .accent-accent-500 { accent-color: var(--accent-500) !important; }
 }
 
 /* Override hardcoded hex colors in marketing pages */

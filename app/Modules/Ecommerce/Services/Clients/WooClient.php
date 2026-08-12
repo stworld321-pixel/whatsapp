@@ -48,7 +48,7 @@ class WooClient implements EcommerceClientInterface
         try {
             foreach (self::WEBHOOK_TOPICS as $topic) {
                 $resp = $this->http()->post('/webhooks', [
-                    'name' => 'WhatsMine '.$topic,
+                    'name' => 'SocialSyncBot '.$topic,
                     'topic' => $topic,
                     'delivery_url' => $callbackUrl,
                     'secret' => $this->webhookSecret,
@@ -170,3 +170,4 @@ class WooClient implements EcommerceClientInterface
         ];
     }
 }
+

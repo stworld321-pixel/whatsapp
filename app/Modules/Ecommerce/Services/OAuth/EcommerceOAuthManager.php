@@ -82,7 +82,7 @@ class EcommerceOAuthManager
     public function wooAuthUrl(string $storeUrl, string $userId, string $callbackUrl, string $returnUrl): string
     {
         return rtrim($storeUrl, '/').'/wc-auth/v1/authorize?'.http_build_query([
-            'app_name' => config('app.name', 'WhatsMine'),
+            'app_name' => config('app.name', 'SocialSyncBot'),
             'scope' => 'read_write',
             'user_id' => $userId,
             'return_url' => $returnUrl,
@@ -122,3 +122,4 @@ class EcommerceOAuthManager
         ];
     }
 }
+

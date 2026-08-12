@@ -6,8 +6,15 @@ import { useTranslation } from 'react-i18next';
 function Badge({ text }) {
     if (!text) return null;
     return (
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#5a8b38]/15 text-[#5a8b38] text-xs font-semibold px-3 py-1 border border-[#5a8b38]/30">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#5a8b38] inline-block" />
+        <span
+            className="inline-flex items-center gap-1.5 rounded-full text-xs font-semibold px-3 py-1 border"
+            style={{
+                backgroundColor: 'color-mix(in srgb, var(--primary-color) 15%, transparent)',
+                color: 'var(--primary-color)',
+                borderColor: 'color-mix(in srgb, var(--primary-color) 30%, transparent)',
+            }}
+        >
+            <span className="h-1.5 w-1.5 rounded-full inline-block" style={{ backgroundColor: 'var(--primary-color)' }} />
             {text}
         </span>
     );
@@ -126,8 +133,8 @@ export default function UseCases({ landing = {}, canRegister }) {
 
             {/* ── Page hero ── */}
             <section
-                className="relative overflow-hidden py-20 text-center"
-                style={{ background: 'radial-gradient(ellipse 60% 60% at 50% 0%, rgba(118,168,78,0.18) 0%, transparent 70%), #162610' }}
+                className="relative overflow-hidden py-20 text-center bg-neutral-50 dark:bg-neutral-950"
+                style={{ backgroundImage: 'radial-gradient(ellipse 60% 60% at 50% 0%, color-mix(in srgb, #3ba6e8 18%, transparent) 0%, transparent 70%)' }}
             >
                 <div
                     className="pointer-events-none absolute inset-0"
@@ -148,7 +155,7 @@ export default function UseCases({ landing = {}, canRegister }) {
                         <Link
                             href={route('register')}
                             className="mt-8 inline-flex items-center gap-2 rounded-xl px-7 py-3.5 text-base font-bold text-white shadow-lg transition-all duration-200 hover:opacity-90"
-                            style={{ background: '#5a8b38' }}
+                            style={{ background: 'var(--primary-color)' }}
                         >
                             {t('use_cases.start_free_trial')}
                         </Link>
@@ -163,7 +170,7 @@ export default function UseCases({ landing = {}, canRegister }) {
                         {USE_CASES.map((uc, idx) => (
                             <div
                                 key={idx}
-                                className={`rounded-2xl border bg-gradient-to-br p-6 cursor-pointer transition-all duration-300 ${uc.border} ${uc.color} ${active === idx ? 'ring-2 ring-[#5a8b38]/50 shadow-lg' : 'hover:shadow-md'}`}
+                                className={`rounded-2xl border bg-gradient-to-br p-6 cursor-pointer transition-all duration-300 ${uc.border} ${uc.color} ${active === idx ? 'ring-2 ring-brand-500/50 shadow-lg' : 'hover:shadow-md'}`}
                                 onClick={() => setActive(active === idx ? null : idx)}
                             >
                                 <div className={`inline-flex h-12 w-12 items-center justify-center rounded-xl mb-4 ${uc.iconBg}`}>
@@ -177,7 +184,7 @@ export default function UseCases({ landing = {}, canRegister }) {
                                     <ul className="mt-4 space-y-2 border-t border-neutral-200 dark:border-neutral-700 pt-4">
                                         {uc.bulletKeys.map((b, bi) => (
                                             <li key={bi} className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
-                                                <svg className="h-4 w-4 flex-shrink-0" style={{ color: '#5a8b38' }} fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                                                <svg className="h-4 w-4 flex-shrink-0" style={{ color: 'var(--primary-color)' }} fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                                                 </svg>
                                                 {t(b)}
@@ -186,7 +193,7 @@ export default function UseCases({ landing = {}, canRegister }) {
                                     </ul>
                                 )}
 
-                                <div className={`mt-4 flex items-center gap-1 text-xs font-semibold transition-colors ${active === idx ? 'text-[#5a8b38]' : 'text-neutral-400'}`}>
+                                <div className={`mt-4 flex items-center gap-1 text-xs font-semibold transition-colors ${active === idx ? 'text-brand-600' : 'text-neutral-400'}`}>
                                     {active === idx ? t('use_cases.show_less') : t('use_cases.see_details')}
                                     <svg className={`h-3.5 w-3.5 transition-transform ${active === idx ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -203,7 +210,7 @@ export default function UseCases({ landing = {}, canRegister }) {
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
                     {stats.map((stat, idx) => (
                         <div key={idx}>
-                            <p className="text-3xl font-bold" style={{ color: '#5a8b38' }}>{stat.value}</p>
+                            <p className="text-3xl font-bold" style={{ color: 'var(--primary-color)' }}>{stat.value}</p>
                             <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">{stat.label}</p>
                         </div>
                     ))}
@@ -222,7 +229,7 @@ export default function UseCases({ landing = {}, canRegister }) {
                             <div key={idx} className="text-center">
                                 <div
                                     className="mx-auto mb-4 h-12 w-12 rounded-full flex items-center justify-center font-bold text-lg text-white"
-                                    style={{ background: '#5a8b38', boxShadow: '0 4px 16px rgba(118,168,78,0.35)' }}
+                                    style={{ background: 'var(--primary-color)', boxShadow: '0 4px 16px color-mix(in srgb, var(--primary-color) 35%, transparent)' }}
                                 >
                                     {step.n}
                                 </div>
@@ -237,7 +244,7 @@ export default function UseCases({ landing = {}, canRegister }) {
             {/* ── CTA ── */}
             <section
                 className="py-20"
-                style={{ background: 'radial-gradient(ellipse 60% 80% at 50% 50%, rgba(118,168,78,0.12) 0%, transparent 70%), #162610' }}
+                style={{ background: 'radial-gradient(ellipse 60% 80% at 50% 50%, color-mix(in srgb, #3ba6e8 14%, transparent) 0%, transparent 70%)' }}
             >
                 <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <h2 className="text-3xl font-bold text-white tracking-tight">{t('use_cases.cta_title')}</h2>
@@ -247,7 +254,7 @@ export default function UseCases({ landing = {}, canRegister }) {
                             <Link
                                 href={route('register')}
                                 className="inline-flex items-center gap-2 rounded-xl px-7 py-3.5 text-base font-bold text-white shadow-lg transition-all duration-200 hover:opacity-90"
-                                style={{ background: '#5a8b38' }}
+                                style={{ background: 'var(--primary-color)' }}
                             >
                                 {t('use_cases.start_free_trial')}
                                 <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>

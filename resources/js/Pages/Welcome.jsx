@@ -141,12 +141,38 @@ function Badge({ text }) {
     );
 }
 
+function HeroPreview() {
+    return (
+        <div className="relative mx-auto w-full max-w-[1200px]">
+            <div
+                className="absolute -inset-6 rounded-[2rem] blur-3xl opacity-50"
+                style={{
+                    background: 'radial-gradient(circle at 30% 20%, color-mix(in srgb, var(--primary-color) 22%, transparent) 0%, transparent 55%), radial-gradient(circle at 80% 70%, rgba(59,130,246,0.16) 0%, transparent 50%)',
+                }}
+            />
+            <div className="relative overflow-hidden rounded-[2rem] border border-white/15 bg-white p-2 shadow-2xl shadow-black/10">
+                <img
+                    src="/home-hero-socialsyncbot.png"
+                    alt="SocialSyncBot dashboard preview"
+                    className="h-auto w-full rounded-[1.5rem] object-cover"
+                />
+            </div>
+        </div>
+    );
+}
+
+// ─── Hero Section
 // ─── Hero Section ─────────────────────────────────────────────────────────────
 
 function HeroSection({ landing, canLogin, canRegister, auth }) {
     const { t } = useTranslation();
     const s = (key, def = '') => landing[`landing.${key}`] ?? def;
     if (s('hero_enabled') !== '1') return null;
+    const heroBadge = 'New: AI Automated Chatbots Now Live';
+    const heroTitle = 'Every Customer Conversation, One Smart Inbox.';
+    const heroSubtitle = 'Unify WhatsApp, Messenger and Instagram in one workspace, automate replies with AI, and hand off to your team without losing context.';
+    const primaryLabel = s('hero_cta_primary', 'Start Free Trial');
+    const secondaryLabel = 'Watch Demo';
 
     return (
         <section
@@ -163,25 +189,25 @@ function HeroSection({ landing, canLogin, canRegister, auth }) {
                         linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
                         linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)
                     `,
-                    backgroundSize: '60px 60px',
-                    maskImage: 'radial-gradient(ellipse 80% 80% at 50% 0%, black 40%, transparent 100%)',
-                    WebkitMaskImage: 'radial-gradient(ellipse 80% 80% at 50% 0%, black 40%, transparent 100%)',
+                backgroundSize: '60px 60px',
+                maskImage: 'radial-gradient(ellipse 80% 80% at 50% 0%, black 40%, transparent 100%)',
+                WebkitMaskImage: 'radial-gradient(ellipse 80% 80% at 50% 0%, black 40%, transparent 100%)',
                 }}
             />
 
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-16 sm:pt-24 sm:pb-20 text-center relative">
-                {s('hero_badge') && (
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-16 sm:pt-24 sm:pb-20 relative text-center">
+                {heroBadge && (
                     <div className="mb-6 flex justify-center">
-                        <Badge text={s('hero_badge')} />
+                        <Badge text={heroBadge} />
                     </div>
                 )}
 
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white max-w-4xl mx-auto leading-tight">
-                    {s('hero_title')}
+                    {heroTitle}
                 </h1>
 
                 <p className="mt-6 text-lg sm:text-xl text-neutral-300 max-w-2xl mx-auto leading-relaxed">
-                    {s('hero_subtitle')}
+                    {heroSubtitle}
                 </p>
 
                 <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
@@ -195,47 +221,30 @@ function HeroSection({ landing, canLogin, canRegister, auth }) {
                         </Link>
                     ) : (
                         <>
-                            {canRegister && s('hero_cta_primary') && (
+                            {canRegister && primaryLabel && (
                                 <Link
                                     href={route('register')}
                                     className="inline-flex items-center gap-2 rounded-xl px-7 py-3.5 text-base font-bold text-white shadow-lg transition-all duration-200 hover:opacity-90"
                                     style={{ background: BRAND_SOLID }}
                                 >
-                                    {s('hero_cta_primary')}
+                                    {primaryLabel}
                                 </Link>
                             )}
-                            {s('hero_cta_secondary') && (
+                            {secondaryLabel && (
                                 <Link
                                     href={route('pricing')}
                                     className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 backdrop-blur-sm px-7 py-3.5 text-base font-semibold text-white hover:bg-white/15 transition-all duration-200"
                                 >
-                                    {s('hero_cta_secondary')}
+                                    {secondaryLabel}
                                 </Link>
                             )}
                         </>
                     )}
                 </div>
 
-                {/* Trust badges */}
-                {(() => {
-                    const badges = [1, 2, 3].map((i) => s(`hero_trust_${i}`)).filter(Boolean);
-                    if (!badges.length) return null;
-                    return (
-                        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-                            {badges.map((badge, idx) => (
-                                <span
-                                    key={idx}
-                                    className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/8 backdrop-blur-sm px-4 py-2 text-sm font-medium text-white/90"
-                                >
-                                    <svg className="h-4 w-4 flex-shrink-0 text-brand-600" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    {badge}
-                                </span>
-                            ))}
-                        </div>
-                    );
-                })()}
+                <div className="mt-12">
+                    <HeroPreview />
+                </div>
             </div>
         </section>
     );
@@ -970,7 +979,7 @@ function SecuritySection({ landing }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function Welcome({ auth, canLogin, canRegister, landing = {}, plans = [] }) {
-    const appName = import.meta.env.VITE_APP_NAME || 'WhatsMine';
+    const appName = import.meta.env.VITE_APP_NAME || 'SocialSyncBot';
     const s = (key, def = '') => landing[`landing.${key}`] ?? def;
 
     const metaTitle = s('seo_title') || s('hero_title') || appName;
@@ -1042,3 +1051,4 @@ export default function Welcome({ auth, canLogin, canRegister, landing = {}, pla
         </LandingLayout>
     );
 }
+
