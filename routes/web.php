@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CmsPageController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\I18nController;
@@ -9,9 +10,13 @@ use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\WebhookController;
 use App\Models\CmsPage;
+use App\Models\BlogPost;
+use App\Models\SystemSetting;
+use App\Services\StorageManager;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -27,9 +32,42 @@ Route::get('/i18n/{locale}', [I18nController::class, 'show'])->name('i18n.show')
 Route::put('/currency', [CurrencyController::class, 'update'])->name('currency.update');
 Route::post('/theme/update', [ThemeController::class, 'update'])->name('theme.update');
 
+// Branding assets are served through the application so logo/favicon updates do
+// not depend on a public storage symlink or web-server alias.
+Route::get('/branding/{type}', function (string $type) {
+    $map = [
+        'logo' => ['app_logo_path', 'app_logo_disk'],
+        'favicon' => ['app_favicon_path', 'app_favicon_disk'],
+    ];
+
+    if (! isset($map[$type])) {
+        abort(404);
+    }
+
+    [$pathKey, $diskKey] = $map[$type];
+    $path = SystemSetting::get($pathKey);
+    if (! $path) {
+        abort(404);
+    }
+
+    $disk = SystemSetting::get($diskKey, 'public');
+    app(StorageManager::class)->ensureDiskReady($disk);
+
+    if (! Storage::disk($disk)->exists($path)) {
+        abort(404);
+    }
+
+    return Storage::disk($disk)->response($path, null, [
+        'Cache-Control' => 'public, max-age=86400',
+    ]);
+})->name('branding.asset');
+
 // Public marketing pages
 Route::get('/contact', [ContactController::class, 'show'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+Route::get('/blog/{slug}/image', [BlogController::class, 'image'])->name('blog.image');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
 // Public marketing landing pages
 Route::get('/pricing', [LandingController::class, 'pricing'])->name('pricing');
@@ -56,6 +94,10 @@ Route::get('/sitemap.xml', function () {
         $cmsPages = CmsPage::where('published', true)->get();
         foreach ($cmsPages as $page) {
             $urls[] = route('cms-page.show', $page->slug);
+        }
+        $blogPosts = BlogPost::where('published', true)->get();
+        foreach ($blogPosts as $post) {
+            $urls[] = route('blog.show', $post->slug);
         }
     } catch (Throwable $e) {
         // table may not exist yet

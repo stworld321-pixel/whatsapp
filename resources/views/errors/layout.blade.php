@@ -6,12 +6,20 @@
         $appName  = SystemSetting::get('app_name') ?: config('saas.app_name', config('app.name'));
         $primary  = SystemSetting::get('primary_color') ?: config('saas.branding.primary_color', '#467235');
         $logoPath = SystemSetting::get('app_logo_path');
+        $logoUpdatedAt = SystemSetting::where('key', 'app_logo_path')->value('updated_at');
         $logoUrl  = $logoPath
-            ? \Illuminate\Support\Facades\Storage::disk(SystemSetting::get('app_logo_disk', 'public'))->url($logoPath)
+            ? route('branding.asset', [
+                'type' => 'logo',
+                'v' => $logoUpdatedAt ? strtotime((string) $logoUpdatedAt) : time(),
+            ])
             : null;
         $faviconPath = SystemSetting::get('app_favicon_path');
+        $faviconUpdatedAt = SystemSetting::where('key', 'app_favicon_path')->value('updated_at');
         $faviconUrl  = $faviconPath
-            ? \Illuminate\Support\Facades\Storage::disk(SystemSetting::get('app_favicon_disk', 'public'))->url($faviconPath)
+            ? route('branding.asset', [
+                'type' => 'favicon',
+                'v' => $faviconUpdatedAt ? strtotime((string) $faviconUpdatedAt) : time(),
+            ])
             : null;
     } catch (\Throwable) {
         $appName  = config('saas.app_name', config('app.name'));

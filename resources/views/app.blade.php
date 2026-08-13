@@ -102,13 +102,12 @@
         @php
             try {
                 $faviconPath = \App\Models\SystemSetting::get('app_favicon_path');
-                // Honor the disk the favicon was actually saved to (may be a cloud
-                // provider). Hardcoding 'public' produced a wrong/404 URL whenever
-                // the active storage disk was not the local public one.
-                $faviconDisk = \App\Models\SystemSetting::get('app_favicon_disk', 'public');
                 if ($faviconPath) {
-                    app(\App\Services\StorageManager::class)->ensureDiskReady($faviconDisk);
-                    $faviconUrl = \Illuminate\Support\Facades\Storage::disk($faviconDisk)->url($faviconPath);
+                    $updatedAt = \App\Models\SystemSetting::where('key', 'app_favicon_path')->value('updated_at');
+                    $faviconUrl = route('branding.asset', [
+                        'type' => 'favicon',
+                        'v' => $updatedAt ? strtotime((string) $updatedAt) : time(),
+                    ]);
                 } else {
                     $faviconUrl = null;
                 }

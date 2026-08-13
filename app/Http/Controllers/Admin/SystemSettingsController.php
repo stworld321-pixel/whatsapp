@@ -31,8 +31,8 @@ class SystemSettingsController extends Controller
         $sm = app(StorageManager::class);
         $sm->ensureDiskReady($logoDisk);
         $sm->ensureDiskReady($faviconDisk);
-        $general['logo_url']    = $logoPath    ? Storage::disk($logoDisk)->url($logoPath)       : null;
-        $general['favicon_url'] = $faviconPath ? Storage::disk($faviconDisk)->url($faviconPath) : null;
+        $general['logo_url']    = $logoPath    ? $this->brandingAssetUrl('logo', 'app_logo_path') : null;
+        $general['favicon_url'] = $faviconPath ? $this->brandingAssetUrl('favicon', 'app_favicon_path') : null;
 
         $advanced = SystemSetting::orderBy('group')
             ->orderBy('key')
@@ -189,5 +189,12 @@ class SystemSettingsController extends Controller
             app(StorageManager::class)->ensureDiskReady($disk);
             Storage::disk($disk)->delete($existing);
         }
+    }
+
+    private function brandingAssetUrl(string $type, string $pathKey): string
+    {
+        $updatedAt = SystemSetting::where('key', $pathKey)->value('updated_at');
+
+        return route('branding.asset', ['type' => $type, 'v' => $updatedAt ? strtotime((string) $updatedAt) : time()]);
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\LandingPageController;
 use App\Http\Controllers\Admin\LicenseController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\Admin\BlogPostController;
 use App\Http\Controllers\Admin\ClientBrandingController;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\CmsPageController;
@@ -150,6 +151,10 @@ Route::get('/cms-pages', [CmsPageController::class, 'index'])->name('cms-pages.i
 Route::post('/cms-pages', [CmsPageController::class, 'store'])->name('cms-pages.store')->middleware('permission:manage_settings');
 Route::put('/cms-pages/{cmsPage}', [CmsPageController::class, 'update'])->name('cms-pages.update')->middleware('permission:manage_settings');
 Route::delete('/cms-pages/{cmsPage}', [CmsPageController::class, 'destroy'])->name('cms-pages.destroy')->middleware('permission:manage_settings');
+Route::get('/blog-posts', [BlogPostController::class, 'index'])->name('blog-posts.index')->middleware('permission:view_settings');
+Route::post('/blog-posts', [BlogPostController::class, 'store'])->name('blog-posts.store')->middleware('permission:manage_settings');
+Route::put('/blog-posts/{blogPost}', [BlogPostController::class, 'update'])->name('blog-posts.update')->middleware('permission:manage_settings');
+Route::delete('/blog-posts/{blogPost}', [BlogPostController::class, 'destroy'])->name('blog-posts.destroy')->middleware('permission:manage_settings');
 
 // Support Tickets (admin inbox)
 Route::get('/support', [SupportTicketController::class, 'index'])->name('support.index')->middleware('permission:view_settings');

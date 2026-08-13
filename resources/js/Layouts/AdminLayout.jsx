@@ -47,6 +47,7 @@ const ADMIN_NAV_ITEMS = [
     { labelKey: 'admin.nav.admins', route: 'admin.admins.index', href: () => route('admin.admins.index'), icon: UserCog, permission: 'view_admins' },
     { labelKey: 'admin.landing_page', route: 'admin.landing-page.index', href: () => route('admin.landing-page.index'), icon: FileText, permission: 'view_settings' },
     { labelKey: 'admin.cms_pages', route: 'admin.cms-pages.index', href: () => route('admin.cms-pages.index'), icon: FileText, permission: 'view_settings' },
+    { label: 'Blog Posts', route: 'admin.blog-posts.index', href: () => route('admin.blog-posts.index'), icon: FileText, permission: 'view_settings' },
     { labelKey: 'admin.nav.queue', route: 'admin.queue.index', href: () => route('admin.queue.index'), icon: Server, permission: 'view_settings' },
     { labelKey: 'admin.cron_setup', route: 'admin.cron-setup.index', href: () => route('admin.cron-setup.index'), icon: Clock, permission: 'view_settings' },
     { labelKey: 'admin.pusher_settings', route: 'admin.pusher-settings.index', href: () => route('admin.pusher-settings.index'), icon: Radio, permission: 'manage_settings' },
@@ -71,7 +72,7 @@ function useAdminNav() {
             if (perm && !hasPermission(perm) && (!alt || !hasPermission(alt))) return false;
             return true;
         }).map((item) => ({
-            label: t(item.labelKey),
+            label: item.label ?? t(item.labelKey),
             route: item.route,
             href: typeof item.href === 'function' ? item.href() : item.href,
             icon: item.icon ? <item.icon className="h-5 w-5" /> : null,

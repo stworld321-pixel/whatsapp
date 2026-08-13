@@ -151,8 +151,8 @@ class HandleInertiaRequests extends Middleware
                 'support_email' => SystemSetting::get('support_email') ?: config('saas.support_email'),
                 'docs_url' => SystemSetting::get('docs_url') ?: config('saas.docs_url'),
                 'primary_color' => SystemSetting::get('primary_color') ?: config('saas.branding.primary_color', '#467235'),
-                'logo_url' => $logoPath ? $this->assetUrl($logoPath, SystemSetting::get('app_logo_disk', 'public')) : null,
-                'favicon_url' => $faviconPath ? $this->assetUrl($faviconPath, SystemSetting::get('app_favicon_disk', 'public')) : null,
+                'logo_url' => $logoPath ? $this->brandingAssetUrl('logo', 'app_logo_path') : null,
+                'favicon_url' => $faviconPath ? $this->brandingAssetUrl('favicon', 'app_favicon_path') : null,
             ];
         } catch (\Throwable) {
             return [
@@ -378,5 +378,12 @@ class HandleInertiaRequests extends Middleware
         app(StorageManager::class)->ensureDiskReady($disk);
 
         return Storage::disk($disk)->url($path);
+    }
+
+    private function brandingAssetUrl(string $type, string $pathKey): string
+    {
+        $updatedAt = SystemSetting::where('key', $pathKey)->value('updated_at');
+
+        return route('branding.asset', ['type' => $type, 'v' => $updatedAt ? strtotime((string) $updatedAt) : time()]);
     }
 }

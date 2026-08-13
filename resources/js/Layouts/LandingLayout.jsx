@@ -302,6 +302,7 @@ export default function LandingLayout({ children }) {
                             <ul className="space-y-2.5">
                                 {[
                                     { label: t('landing_page_admin.footer_about', { defaultValue: 'About' }), href: '/about' },
+                                    { label: t('nav.blog', { defaultValue: 'Blog' }), href: '/blog' },
                                     { label: t('nav.integrations', { defaultValue: 'Integrations' }), href: '/integrations' },
                                     { label: t('nav.use_cases', { defaultValue: 'Use Cases' }), href: '/use-cases' },
                                     { label: t('nav.contact'), href: '/contact' },
