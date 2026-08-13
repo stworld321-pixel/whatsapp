@@ -6,8 +6,8 @@ import { useTranslation } from 'react-i18next';
 function Badge({ text }) {
     if (!text) return null;
     return (
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#5a8b38]/15 text-[#5a8b38] text-xs font-semibold px-3 py-1 border border-[#5a8b38]/30">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#5a8b38] inline-block" />
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#3ba6e8]/15 text-[#3ba6e8] text-xs font-semibold px-3 py-1 border border-[#3ba6e8]/30">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#3ba6e8] inline-block" />
             {text}
         </span>
     );
@@ -45,7 +45,7 @@ export default function Faq({ landing = {}, canRegister }) {
             {/* ── Page hero ── */}
             <section
                 className="relative overflow-hidden py-20 text-center"
-                style={{ background: 'radial-gradient(ellipse 60% 60% at 50% 0%, rgba(118,168,78,0.18) 0%, transparent 70%), #162610' }}
+                style={{ background: 'linear-gradient(180deg, #3ba6e8 0%, #2f9ce0 100%)' }}
             >
                 <div
                     className="pointer-events-none absolute inset-0"
@@ -75,7 +75,7 @@ export default function Faq({ landing = {}, canRegister }) {
                                     ? 'text-white font-bold'
                                     : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 bg-neutral-100 dark:bg-neutral-800'
                             }`}
-                            style={cat === c.key ? { background: '#5a8b38' } : {}}
+                            style={cat === c.key ? { background: '#3ba6e8' } : {}}
                         >
                             {t(c.labelKey)}
                         </button>
@@ -120,14 +120,14 @@ export default function Faq({ landing = {}, canRegister }) {
                     {/* Still have questions? */}
                     <div
                         className="mt-12 rounded-2xl p-8 text-center"
-                        style={{ background: 'rgba(118,168,78,0.08)', border: '1px solid rgba(118,168,78,0.25)' }}
+                        style={{ background: 'rgba(59,166,232,0.08)', border: '1px solid rgba(59,166,232,0.25)' }}
                     >
                         <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2">{t('faq.still_have_questions')}</h3>
                         <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-5">{t('faq.still_have_questions_desc')}</p>
                         <Link
                             href="/contact"
                             className="inline-flex items-center gap-2 rounded-xl px-6 py-2.5 text-sm font-bold text-white transition-all hover:opacity-90"
-                            style={{ background: '#5a8b38' }}
+                            style={{ background: '#3ba6e8' }}
                         >
                             {t('faq.contact_support')}
                         </Link>
@@ -144,7 +144,7 @@ export default function Faq({ landing = {}, canRegister }) {
                         <Link
                             href={route('register')}
                             className="mt-6 inline-flex items-center gap-2 rounded-xl px-7 py-3.5 text-base font-bold text-white shadow-lg transition-all duration-200 hover:opacity-90"
-                            style={{ background: '#5a8b38' }}
+                            style={{ background: '#3ba6e8' }}
                         >
                             {t('welcome.get_started_free')}
                         </Link>

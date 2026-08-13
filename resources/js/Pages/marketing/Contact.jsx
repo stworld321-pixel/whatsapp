@@ -72,7 +72,7 @@ export default function Contact({ landing = {} }) {
             {/* Hero */}
             <section
                 className="relative overflow-hidden bg-neutral-50 dark:bg-neutral-950"
-                style={{ backgroundImage: 'radial-gradient(ellipse 70% 65% at 50% 0%, color-mix(in srgb, #3ba6e8 18%, transparent) 0%, transparent 60%)' }}
+                style={{ background: 'linear-gradient(180deg, #3ba6e8 0%, #2f9ce0 100%)' }}
             >
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20 text-center">
                     <div className="flex justify-center mb-6">

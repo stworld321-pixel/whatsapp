@@ -134,7 +134,7 @@ export default function UseCases({ landing = {}, canRegister }) {
             {/* ── Page hero ── */}
             <section
                 className="relative overflow-hidden py-20 text-center bg-neutral-50 dark:bg-neutral-950"
-                style={{ backgroundImage: 'radial-gradient(ellipse 60% 60% at 50% 0%, color-mix(in srgb, #3ba6e8 18%, transparent) 0%, transparent 70%)' }}
+                style={{ background: 'linear-gradient(180deg, #3ba6e8 0%, #2f9ce0 100%)' }}
             >
                 <div
                     className="pointer-events-none absolute inset-0"
@@ -244,7 +244,7 @@ export default function UseCases({ landing = {}, canRegister }) {
             {/* ── CTA ── */}
             <section
                 className="py-20"
-                style={{ background: 'radial-gradient(ellipse 60% 80% at 50% 50%, color-mix(in srgb, #3ba6e8 14%, transparent) 0%, transparent 70%)' }}
+                style={{ background: 'linear-gradient(180deg, #3ba6e8 0%, #2f9ce0 100%)' }}
             >
                 <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <h2 className="text-3xl font-bold text-white tracking-tight">{t('use_cases.cta_title')}</h2>
