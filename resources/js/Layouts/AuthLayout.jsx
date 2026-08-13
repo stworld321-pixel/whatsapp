@@ -80,9 +80,6 @@ function LeftPane({ variant }) {
             {/* Logo + brand name */}
             <div className="relative flex items-center gap-3">
                 <ApplicationLogo className="h-9 w-9 fill-current text-white/90" />
-                <span className="text-xl font-bold tracking-tight text-white">
-                    {appName}
-                </span>
                 {variant === 'admin' && (
                     <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-2 py-0.5 text-xs font-medium text-white">
                         <ShieldCheck className="h-3 w-3" />
@@ -223,11 +220,8 @@ export default function AuthLayout({
                 {/* Top bar */}
                 <div className="flex items-center justify-between px-6 py-4">
                     {/* Mobile logo */}
-                    <Link href={route('home')} className="flex items-center gap-2 lg:hidden">
+                    <Link href={route('home')} className="flex items-center gap-2 lg:hidden" aria-label={import.meta.env.VITE_APP_NAME || 'SocialSyncBot'}>
                         <ApplicationLogo className="h-7 w-7 fill-current text-brand-600 dark:text-brand-400" />
-                        <span className="text-sm font-semibold text-neutral-900 dark:text-white">
-                            {import.meta.env.VITE_APP_NAME || 'SocialSyncBot'}
-                        </span>
                     </Link>
                     <span className="hidden lg:block" />
                     <div className="flex items-center gap-2">

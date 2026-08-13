@@ -4,34 +4,6 @@
 
 /* Dynamic primary color from admin settings */
 @layer base {
-    /* Runtime theme palette */
-    :root {
-        --primary-color: #467235;
-        --accent-color: #467235;
-        --primary-50: color-mix(in srgb, var(--primary-color) 10%, white);
-        --primary-100: color-mix(in srgb, var(--primary-color) 20%, white);
-        --primary-200: color-mix(in srgb, var(--primary-color) 40%, white);
-        --primary-300: color-mix(in srgb, var(--primary-color) 60%, white);
-        --primary-400: color-mix(in srgb, var(--primary-color) 80%, white);
-        --primary-500: var(--primary-color);
-        --primary-600: color-mix(in srgb, var(--primary-color) 90%, black);
-        --primary-700: color-mix(in srgb, var(--primary-color) 80%, black);
-        --primary-800: color-mix(in srgb, var(--primary-color) 60%, black);
-        --primary-900: color-mix(in srgb, var(--primary-color) 40%, black);
-        --primary-950: color-mix(in srgb, var(--primary-color) 25%, black);
-        --accent-50: color-mix(in srgb, var(--accent-color) 10%, white);
-        --accent-100: color-mix(in srgb, var(--accent-color) 20%, white);
-        --accent-200: color-mix(in srgb, var(--accent-color) 40%, white);
-        --accent-300: color-mix(in srgb, var(--accent-color) 60%, white);
-        --accent-400: color-mix(in srgb, var(--accent-color) 80%, white);
-        --accent-500: var(--accent-color);
-        --accent-600: color-mix(in srgb, var(--accent-color) 90%, black);
-        --accent-700: color-mix(in srgb, var(--accent-color) 80%, black);
-        --accent-800: color-mix(in srgb, var(--accent-color) 60%, black);
-        --accent-900: color-mix(in srgb, var(--accent-color) 40%, black);
-        --accent-950: color-mix(in srgb, var(--accent-color) 25%, black);
-    }
-
     /* Text colors */
     .text-primary-50 { color: var(--primary-50) !important; }
     .text-primary-100 { color: var(--primary-100) !important; }

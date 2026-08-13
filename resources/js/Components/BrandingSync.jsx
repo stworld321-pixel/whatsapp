@@ -1,5 +1,5 @@
 import { usePage } from '@inertiajs/react';
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 
 function normalizeHexColor(value, fallback = '#467235') {
     if (typeof value !== 'string') return fallback;
@@ -59,7 +59,7 @@ function applyBrandColor(color) {
 export default function BrandingSync() {
     const brandingColor = usePage().props?.branding?.primary_color;
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         applyBrandColor(brandingColor);
     }, [brandingColor]);
 
