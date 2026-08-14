@@ -13,12 +13,44 @@ use Inertia\Response;
 
 class PlanController extends Controller
 {
+    private const LIMIT_KEYS = [
+        'users',
+        'storage',
+        'whatsapp_accounts',
+        'whatsapp_templates',
+        'whatsapp_messages_per_month',
+        'campaigns_per_month',
+        'sms_per_month',
+        'emails_per_month',
+        'inbox_agents',
+        'ai_tokens_per_month',
+        'knowledge_bases',
+        'chatbots',
+        'social_accounts',
+        'social_posts_per_month',
+        'lead_credits_per_month',
+        'automations',
+    ];
+
     public static function defaultLimits(): array
     {
-        return [
-            'users' => null,
-            'storage' => null,
-        ];
+        return array_fill_keys(self::LIMIT_KEYS, null);
+    }
+
+    private function normalizeLimits(mixed $limits): array
+    {
+        $normalized = self::defaultLimits();
+
+        if (! is_array($limits)) {
+            return $normalized;
+        }
+
+        foreach (self::LIMIT_KEYS as $key) {
+            $value = $limits[$key] ?? null;
+            $normalized[$key] = $value === '' || $value === null ? null : (int) $value;
+        }
+
+        return $normalized;
     }
 
     /** Enabled currencies for the plan form dropdown. */
@@ -33,11 +65,6 @@ class PlanController extends Controller
 
     private function planToArray(Plan $p): array
     {
-        $limits = $p->limits;
-        if (! is_array($limits)) {
-            $limits = self::defaultLimits();
-        }
-
         return [
             'id' => $p->id,
             'name' => $p->name,
@@ -50,7 +77,7 @@ class PlanController extends Controller
             'stripe_monthly_id' => $p->stripe_monthly_id,
             'stripe_yearly_id' => $p->stripe_yearly_id,
             'features' => is_array($p->features) ? $p->features : [],
-            'limits' => $limits,
+            'limits' => $this->normalizeLimits($p->limits),
             'enabled' => (bool) $p->enabled,
             'featured' => (bool) ($p->featured ?? false),
             'popular' => (bool) ($p->popular ?? false),
@@ -133,7 +160,6 @@ class PlanController extends Controller
     {
         $request->merge(['currency_code' => strtoupper(trim((string) $request->input('currency_code')))]);
 
-        $limitsKeys = array_keys(self::defaultLimits());
         $slugRule = ['nullable', 'string', 'max:64'];
         if ($plan) {
             $slugRule[] = 'unique:plans,slug,'.$plan->id;
@@ -160,7 +186,7 @@ class PlanController extends Controller
             'white_label_enabled' => ['boolean'],
         ];
 
-        foreach ($limitsKeys as $key) {
+        foreach (self::LIMIT_KEYS as $key) {
             $rules['limits.'.$key] = ['nullable', 'integer', 'min:0'];
         }
 
@@ -184,7 +210,7 @@ class PlanController extends Controller
             'stripe_monthly_id' => $validated['stripe_monthly_id'] ?? null,
             'stripe_yearly_id' => $validated['stripe_yearly_id'] ?? null,
             'features' => $validated['features'] ?? [],
-            'limits' => $validated['limits'] ?? null,
+            'limits' => $this->normalizeLimits($validated['limits'] ?? null),
             'enabled' => (bool) ($validated['enabled'] ?? true),
             'featured' => (bool) ($validated['featured'] ?? false),
             'popular' => (bool) ($validated['popular'] ?? false),

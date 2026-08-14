@@ -1,50 +1,85 @@
+import { useForm } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Button, Card, Input } from '@/Components/ui';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Button, Modal } from '@/Components/ui';
+import PlanForm from './PlanForm';
 import { useTranslation } from 'react-i18next';
 
-export default function AdminPlansEdit({ plan, currencies = [] }) {
+const emptyPlan = (currency = 'USD') => ({
+    name: '',
+    slug: '',
+    description: '',
+    currency_code: currency,
+    monthly_price_cents: null,
+    yearly_price_cents: null,
+    trial_days: 0,
+    stripe_monthly_id: '',
+    stripe_yearly_id: '',
+    features: [],
+    limits: {},
+    enabled: true,
+    featured: false,
+    popular: false,
+    sort_order: 0,
+    white_label_enabled: false,
+});
+
+export default function AdminPlansEdit({ plan, currencies = [], defaultCurrency = 'USD' }) {
     const { t } = useTranslation();
-    const { data, setData, put, processing } = useForm(plan ? { ...plan, enabled: plan.enabled ?? true, export_enabled: plan.export_enabled ?? false, custom_domain_enabled: plan.custom_domain_enabled ?? false, white_label_enabled: plan.white_label_enabled ?? false } : {});
+    const isEdit = !!plan?.id;
+
+    const { data, setData, post, put, processing, errors, reset } = useForm(
+        plan ? { ...plan, limits: plan.limits ?? {}, features: plan.features ?? [] } : emptyPlan(defaultCurrency)
+    );
+
+    const goBack = () => window.history.back();
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        const options = {
+            preserveScroll: true,
+            onSuccess: () => {
+                reset();
+            },
+        };
+
+        if (isEdit) {
+            put(route('admin.plans.update', plan.id), options);
+            return;
+        }
+
+        post(route('admin.plans.store'), options);
+    };
 
     return (
-        <AdminLayout title={plan ? t('admin.edit_plan_with_name', { name: plan.name }) : t('admin.new_plan')}>
-            <Head title={t('admin.edit_plan_head')} />
+        <AdminLayout title={isEdit ? t('admin.edit_plan_with_name', { name: plan.name }) : t('admin.new_plan')}>
             <div className="space-y-6">
-                <Link href={route('admin.plans.index')} className="text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200">{t('admin.back_to_plans')}</Link>
-                <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">{t('admin.edit_plan')}</h2>
-                <form onSubmit={(e) => { e.preventDefault(); put(route('admin.plans.update', plan.id)); }}>
-                    <Card>
-                        <Card.Body className="space-y-4">
-                            <Input label={t('common.name')} value={data.name} onChange={(e) => setData('name', e.target.value)} />
-                            <Input label={t('admin.slug')} value={data.slug} onChange={(e) => setData('slug', e.target.value)} />
-                            <Input type="number" label={t('admin.monthly_price_cents')} value={data.monthly_price_cents ?? ''} onChange={(e) => setData('monthly_price_cents', e.target.value ? parseInt(e.target.value, 10) : null)} />
-                            <Input type="number" label={t('admin.yearly_price_cents')} value={data.yearly_price_cents ?? ''} onChange={(e) => setData('yearly_price_cents', e.target.value ? parseInt(e.target.value, 10) : null)} />
-                            <div>
-                                <label className="mb-1.5 block text-sm font-medium text-neutral-700 dark:text-neutral-300">{t('admin.currency_code_label')}</label>
-                                <select value={data.currency_code ?? ''} onChange={(e) => setData('currency_code', e.target.value)} className="w-full rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 px-3 py-2 text-neutral-900 dark:text-neutral-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20">
-                                    {data.currency_code && !currencies.some((c) => c.code === data.currency_code) && (
-                                        <option value={data.currency_code}>{data.currency_code}</option>
-                                    )}
-                                    {currencies.map((c) => (
-                                        <option key={c.code} value={c.code}>{c.symbol ? `${c.code} — ${c.symbol}` : c.code}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <label className="flex items-center gap-2 text-neutral-900 dark:text-neutral-100">
-                                <input type="checkbox" checked={data.enabled ?? false} onChange={(e) => setData('enabled', e.target.checked)} className="rounded border-neutral-300 dark:border-neutral-600 text-brand-500" />
-                                <span className="text-sm">{t('common.enabled')}</span>
-                            </label>
-                            <Input type="number" label={t('admin.sort_order')} value={data.sort_order ?? 0} onChange={(e) => setData('sort_order', parseInt(e.target.value, 10) || 0)} />
-                            <Input type="number" label={t('admin.ai_credits')} value={data.ai_credits ?? ''} onChange={(e) => setData('ai_credits', e.target.value ? parseInt(e.target.value, 10) : null)} />
-                            <Input type="number" label={t('admin.websites_limit')} value={data.websites_limit ?? ''} onChange={(e) => setData('websites_limit', e.target.value ? parseInt(e.target.value, 10) : null)} />
-                            <label className="flex items-center gap-2 text-neutral-900 dark:text-neutral-100"><input type="checkbox" checked={data.export_enabled ?? false} onChange={(e) => setData('export_enabled', e.target.checked)} className="rounded border-neutral-300 dark:border-neutral-600 text-brand-500" /><span className="text-sm">{t('admin.export_enabled')}</span></label>
-                            <label className="flex items-center gap-2 text-neutral-900 dark:text-neutral-100"><input type="checkbox" checked={data.custom_domain_enabled ?? false} onChange={(e) => setData('custom_domain_enabled', e.target.checked)} className="rounded border-neutral-300 dark:border-neutral-600 text-brand-500" /><span className="text-sm">{t('admin.custom_domain_enabled')}</span></label>
-                            <label className="flex items-center gap-2 text-neutral-900 dark:text-neutral-100"><input type="checkbox" checked={data.white_label_enabled ?? false} onChange={(e) => setData('white_label_enabled', e.target.checked)} className="rounded border-neutral-300 dark:border-neutral-600 text-brand-500" /><span className="text-sm">{t('admin.white_label_enabled')}</span></label>
-                            <Button type="submit" variant="primary" disabled={processing}>{t('common.save')}</Button>
-                        </Card.Body>
-                    </Card>
-                </form>
+                <div className="flex items-center justify-between gap-4">
+                    <div>
+                        <h1 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
+                            {isEdit ? t('admin.edit_plan') : t('admin.add_plan')}
+                        </h1>
+                        <p className="mt-0.5 text-sm text-neutral-500 dark:text-neutral-400">
+                            {t('admin.plan_limits')}
+                        </p>
+                    </div>
+                    <Button type="button" variant="outline" onClick={goBack}>
+                        {t('admin.back_to_plans')}
+                    </Button>
+                </div>
+
+                <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 shadow-sm">
+                    <PlanForm
+                        data={data}
+                        setData={setData}
+                        errors={errors}
+                        processing={processing}
+                        onSubmit={handleSubmit}
+                        onCancel={goBack}
+                        isEdit={isEdit}
+                        currencies={currencies}
+                    />
+                </div>
             </div>
         </AdminLayout>
     );

@@ -3,6 +3,7 @@ import { router } from '@inertiajs/react';
 import { Dropdown } from '@/Components/ui';
 import { ChevronUp, ChevronDown, MoreVertical, Pencil, Copy, Power, PowerOff, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { LIMIT_LABELS } from './PlanLimits';
 
 function formatPrice(cents, currency = 'USD') {
     if (cents == null) return '—';
@@ -27,17 +28,13 @@ function FeaturesSummary({ features = [], limits = {} }) {
             if (f && String(f).trim()) displayItems.push(String(f).trim());
         });
     }
-    const limitLabels = {
-        users: 'Team',
-        storage: 'Storage',
-    };
     Object.entries(limits || {}).forEach(([key, val]) => {
-        if (val != null && val !== '' && limitLabels[key]) {
-            displayItems.push(`${limitLabels[key]}: ${val}`);
+        if (val != null && val !== '' && LIMIT_LABELS[key]) {
+            displayItems.push(`${LIMIT_LABELS[key]}: ${val}`);
         }
     });
-    const first3 = displayItems.slice(0, 3);
-    const rest = displayItems.length - 3;
+    const first3 = displayItems.slice(0, 4);
+    const rest = displayItems.length - 4;
     return (
         <div className="text-sm text-neutral-600 dark:text-neutral-400">
             {first3.length === 0 && '—'}

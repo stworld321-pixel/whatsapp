@@ -1,7 +1,7 @@
 import { Button, Input } from '@/Components/ui';
 import { useTranslation } from 'react-i18next';
 
-const LIMIT_KEYS = [
+export const LIMIT_KEYS = [
     'users',
     'storage',
     'whatsapp_accounts',
@@ -20,7 +20,7 @@ const LIMIT_KEYS = [
     'automations',
 ];
 
-const LABELS = {
+export const LIMIT_LABELS = {
     users: 'Users',
     storage: 'Storage (MB)',
     whatsapp_accounts: 'WhatsApp Accounts',
@@ -39,11 +39,11 @@ const LABELS = {
     automations: 'Automations',
 };
 
-const DEFAULT_LIMITS = Object.fromEntries(LIMIT_KEYS.map((k) => [k, null]));
+export const DEFAULT_PLAN_LIMITS = Object.fromEntries(LIMIT_KEYS.map((k) => [k, null]));
 
 export default function PlanLimits({ limits = {}, onChange }) {
     const { t } = useTranslation();
-    const value = { ...DEFAULT_LIMITS, ...limits };
+    const value = { ...DEFAULT_PLAN_LIMITS, ...limits };
 
     const update = (key, v) => {
         const next = { ...value, [key]: v === '' || v === undefined ? null : Number(v) };
@@ -68,7 +68,7 @@ export default function PlanLimits({ limits = {}, onChange }) {
                         key={key}
                         type="number"
                         min={0}
-                        label={LABELS[key]}
+                        label={LIMIT_LABELS[key]}
                         value={value[key] ?? ''}
                         onChange={(e) => update(key, e.target.value ? e.target.value : null)}
                         placeholder={t('admin.unlimited_placeholder')}
