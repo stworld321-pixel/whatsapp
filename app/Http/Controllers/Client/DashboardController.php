@@ -38,13 +38,15 @@ class DashboardController extends Controller
 
         if ($effective) {
             $plan = $effective->plan;
-            $currentPlan = [
-                'id' => $plan->id,
-                'name' => $plan->name,
-                'slug' => $plan->slug,
-                'status' => $effective->isActive() ? 'active' : ($effective->status ?? 'inactive'),
-                'limits' => is_array($plan->limits) ? $plan->limits : [],
-            ];
+            if ($plan) {
+                $currentPlan = [
+                    'id' => $plan->id,
+                    'name' => $plan->name,
+                    'slug' => $plan->slug,
+                    'status' => $effective->isActive() ? 'active' : ($effective->status ?? 'inactive'),
+                    'limits' => is_array($plan->limits) ? $plan->limits : [],
+                ];
+            }
             if ($effective instanceof Subscription) {
                 $renewsAt = $effective->renews_at?->toIso8601String();
             }
@@ -57,7 +59,12 @@ class DashboardController extends Controller
         $teamMembersCount = $user->client ? $user->client->users()->count() : 1;
         $teamMembersLimit = $effective?->plan?->limits['users'] ?? null;
 
-        $workspacesCount = $user->accessibleWorkspaces()->count();
+        $workspacesCount = 0;
+        try {
+            $workspacesCount = $user->accessibleWorkspaces()->count();
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
         $onboardingProgress = $onboarding->getProgress($user);
 
@@ -139,7 +146,7 @@ class DashboardController extends Controller
             'stats' => $stats,
             'charts' => $charts,
             'tables' => $tables,
-            'first_run' => $user->created_at->gt(now()->subMinutes(5)),
+            'first_run' => (bool) $user->created_at?->gt(now()->subMinutes(5)),
         ]);
     }
 
