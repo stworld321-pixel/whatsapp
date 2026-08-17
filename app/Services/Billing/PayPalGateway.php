@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class PayPalGateway implements BillingGatewayInterface
@@ -59,6 +60,35 @@ class PayPalGateway implements BillingGatewayInterface
         return $res->json('access_token');
     }
 
+    private function paypalJson(string $token)
+    {
+        return Http::withToken($token)
+            ->acceptJson()
+            ->asJson()
+            ->withHeaders([
+                'PayPal-Request-Id' => (string) Str::uuid(),
+            ]);
+    }
+
+    private function errorMessage($response, string $fallback): string
+    {
+        $message = $response->json('message')
+            ?? $response->json('error_description')
+            ?? $response->json('details.0.description')
+            ?? $response->body();
+
+        if (! is_string($message) || trim($message) === '') {
+            return $fallback;
+        }
+
+        $debugId = $response->json('debug_id');
+        if (is_string($debugId) && trim($debugId) !== '') {
+            return $message.' (PayPal debug_id: '.$debugId.')';
+        }
+
+        return $message;
+    }
+
     public function createCheckout(User $user, Plan $plan, string $billingCycle): array
     {
         if (! $this->isConfigured()) {
@@ -80,7 +110,7 @@ class PayPalGateway implements BillingGatewayInterface
         $currency = $plan->currency_code ?? 'USD';
 
         // 1) Create product
-        $productRes = Http::withToken($token)
+        $productRes = $this->paypalJson($token)
             ->post($this->baseUrl().'/v1/catalogs/products', [
                 'name' => $plan->name,
                 'description' => $plan->name.' subscription',
@@ -91,7 +121,7 @@ class PayPalGateway implements BillingGatewayInterface
         if (! $productRes->successful()) {
             Log::error('PayPal create product failed', ['body' => $productRes->json(), 'user_id' => $user->id]);
 
-            return ['error' => $productRes->json('message', 'PayPal product creation failed.')];
+            return ['error' => $this->errorMessage($productRes, 'PayPal product creation failed.')];
         }
 
         $productId = $productRes->json('id');
@@ -100,7 +130,7 @@ class PayPalGateway implements BillingGatewayInterface
         }
 
         // 2) Create plan
-        $planRes = Http::withToken($token)
+        $planRes = $this->paypalJson($token)
             ->post($this->baseUrl().'/v1/billing/plans', [
                 'product_id' => $productId,
                 'name' => $plan->name.' ('.$interval.')',
@@ -116,12 +146,16 @@ class PayPalGateway implements BillingGatewayInterface
                         ],
                     ],
                 ],
+                'payment_preferences' => [
+                    'auto_bill_outstanding' => true,
+                    'payment_failure_threshold' => 1,
+                ],
             ]);
 
         if (! $planRes->successful()) {
             Log::error('PayPal create plan failed', ['body' => $planRes->json(), 'user_id' => $user->id]);
 
-            return ['error' => $planRes->json('message', 'PayPal plan creation failed.')];
+            return ['error' => $this->errorMessage($planRes, 'PayPal plan creation failed.')];
         }
 
         $paypalPlanId = $planRes->json('id');
@@ -129,8 +163,21 @@ class PayPalGateway implements BillingGatewayInterface
             return ['error' => 'No plan ID in PayPal response.'];
         }
 
+        // PayPal only allows subscriptions on ACTIVE plans.
+        $planStatus = strtoupper((string) $planRes->json('status', ''));
+        if ($planStatus !== 'ACTIVE') {
+            $activateRes = $this->paypalJson($token)
+                ->post($this->baseUrl().'/v1/billing/plans/'.$paypalPlanId.'/activate', (object) []);
+
+            if (! $activateRes->successful()) {
+                Log::error('PayPal activate plan failed', ['body' => $activateRes->json(), 'plan_id' => $paypalPlanId, 'user_id' => $user->id]);
+
+                return ['error' => $this->errorMessage($activateRes, 'PayPal plan activation failed.')];
+            }
+        }
+
         // 3) Create subscription (returns approval link)
-        $subRes = Http::withToken($token)
+        $subRes = $this->paypalJson($token)
             ->post($this->baseUrl().'/v1/billing/subscriptions', [
                 'plan_id' => $paypalPlanId,
                 'custom_id' => (string) $user->id.'|'.$plan->id.'|'.$billingCycle,
@@ -147,7 +194,7 @@ class PayPalGateway implements BillingGatewayInterface
         if (! $subRes->successful()) {
             Log::error('PayPal create subscription failed', ['body' => $subRes->json(), 'user_id' => $user->id]);
 
-            return ['error' => $subRes->json('message', 'PayPal subscription creation failed.')];
+            return ['error' => $this->errorMessage($subRes, 'PayPal subscription creation failed.')];
         }
 
         $links = $subRes->json('links', []);

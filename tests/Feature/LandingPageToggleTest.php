@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\BlogPost;
+use App\Models\CmsPage;
 use App\Models\SystemSetting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -51,5 +53,40 @@ class LandingPageToggleTest extends TestCase
         $this->get('/sitemap.xml')
             ->assertOk()
             ->assertDontSee('/pricing');
+    }
+
+    public function test_sitemap_and_robots_expose_public_seo_urls(): void
+    {
+        CmsPage::factory()->create([
+            'slug' => 'privacy-policy',
+            'title' => 'Privacy Policy',
+            'published' => true,
+        ]);
+
+        BlogPost::create([
+            'slug' => 'seo-friendly-launch',
+            'title' => 'SEO Friendly Launch',
+            'content' => '<p>Launch content</p>',
+            'meta_title' => 'SEO Friendly Launch',
+            'meta_description' => 'Launch content for search engines.',
+            'category' => 'Marketing',
+            'published' => true,
+        ]);
+
+        $this->get('/robots.txt')
+            ->assertOk()
+            ->assertSee('User-agent: *')
+            ->assertSee('Disallow: /admin/')
+            ->assertSee(route('sitemap'));
+
+        $this->get('/sitemap.xml')
+            ->assertOk()
+            ->assertSee(url('/'))
+            ->assertSee(url('/pricing'))
+            ->assertSee(route('cms-page.show', 'privacy-policy'))
+            ->assertSee(route('blog.show', 'seo-friendly-launch'))
+            ->assertSee('<lastmod>')
+            ->assertSee('<changefreq>')
+            ->assertSee('<priority>');
     }
 }

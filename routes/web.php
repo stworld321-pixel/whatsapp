@@ -87,37 +87,64 @@ Route::get('/sitemap.xml', function () {
     } catch (Throwable $e) {
         // table may not exist yet
     }
-    $urls = $landingEnabled
-        ? [url('/'), url('/pricing'), url('/faq'), url('/use-cases'), url('/about'), url('/integrations'), url('/contact'), route('login'), route('register')]
-        : [route('login'), route('register')];
+
+    $entries = [];
+    $push = static function (string $loc, ?string $lastmod = null, string $changefreq = 'weekly', string $priority = '0.5') use (&$entries): void {
+        $entries[$loc] = [
+            'loc' => $loc,
+            'lastmod' => $lastmod,
+            'changefreq' => $changefreq,
+            'priority' => $priority,
+        ];
+    };
+
+    if ($landingEnabled) {
+        $push(url('/'), null, 'daily', '1.0');
+        foreach ([url('/pricing'), url('/faq'), url('/use-cases'), url('/about'), url('/integrations'), url('/contact')] as $loc) {
+            $push($loc, null, 'weekly', '0.8');
+        }
+    }
+
     try {
         $cmsPages = CmsPage::where('published', true)->get();
         foreach ($cmsPages as $page) {
-            $urls[] = route('cms-page.show', $page->slug);
+            $push(route('cms-page.show', $page->slug), $page->updated_at?->toAtomString(), 'monthly', '0.7');
         }
         $blogPosts = BlogPost::where('published', true)->get();
         foreach ($blogPosts as $post) {
-            $urls[] = route('blog.show', $post->slug);
+            $push(route('blog.show', $post->slug), $post->updated_at?->toAtomString(), 'monthly', '0.7');
         }
     } catch (Throwable $e) {
         // table may not exist yet
     }
+
+    ksort($entries);
+
     $xml = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
-    foreach ($urls as $url) {
-        $xml .= '<url><loc>'.htmlspecialchars($url).'</loc></url>';
+    foreach ($entries as $entry) {
+        $xml .= '<url><loc>'.htmlspecialchars($entry['loc']).'</loc>';
+        if (! empty($entry['lastmod'])) {
+            $xml .= '<lastmod>'.htmlspecialchars($entry['lastmod']).'</lastmod>';
+        }
+        $xml .= '<changefreq>'.htmlspecialchars($entry['changefreq']).'</changefreq>';
+        $xml .= '<priority>'.htmlspecialchars($entry['priority']).'</priority>';
+        $xml .= '</url>';
     }
     $xml .= '</urlset>';
 
-    return response($xml, 200)->header('Content-Type', 'application/xml');
+    return response($xml, 200)
+        ->header('Content-Type', 'application/xml; charset=UTF-8')
+        ->header('Cache-Control', 'public, max-age=3600');
 })->name('sitemap');
 
 Route::get('/robots.txt', function () {
     $sitemap = route('sitemap');
 
     return response(
-        "User-agent: *\nDisallow: /admin/\nDisallow: /app/\nSitemap: {$sitemap}",
+        "User-agent: *\nDisallow: /admin/\nDisallow: /app/\nSitemap: {$sitemap}\n",
         200
-    )->header('Content-Type', 'text/plain');
+    )->header('Content-Type', 'text/plain; charset=UTF-8')
+        ->header('Cache-Control', 'public, max-age=3600');
 })->name('robots');
 
 // Webhooks (no auth, verified by gateway signature)
