@@ -1,6 +1,7 @@
 import ClientLayout from '@/Layouts/ClientLayout';
 import ProductTour from '@/Components/ProductTour';
 import { Head, Link, usePage } from '@inertiajs/react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     Package,
@@ -74,6 +75,147 @@ const CAMPAIGN_TONE = {
     failed: 'text-red-600 dark:text-red-400',
 };
 
+function clampPercent(value) {
+    if (value === null || value === undefined || Number.isNaN(Number(value))) return 0;
+    return Math.max(0, Math.min(100, Math.round(Number(value))));
+}
+
+function TrackerBar({ label, current, limit, percent, icon: Icon, accent = 'bg-brand-500' }) {
+    const isUnlimited = limit === null || limit === undefined;
+    const displayLimit = isUnlimited ? '∞' : limit;
+    const displayCurrent = current ?? 0;
+
+    return (
+        <div className="space-y-2">
+            <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2 min-w-0">
+                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
+                        <Icon className="h-3.5 w-3.5" />
+                    </span>
+                    <span className="truncate text-sm font-medium text-neutral-700 dark:text-neutral-300">{label}</span>
+                </div>
+                <span className="text-sm font-semibold tabular-nums text-neutral-900 dark:text-white">
+                    {displayCurrent}/{displayLimit}
+                </span>
+            </div>
+            <div className="h-2 overflow-hidden rounded-full bg-neutral-200 dark:bg-neutral-700">
+                <div
+                    className={`h-full rounded-full transition-all ${accent}`}
+                    style={{ width: `${isUnlimited ? 100 : clampPercent(percent)}%` }}
+                />
+            </div>
+        </div>
+    );
+}
+
+function PlanTrackerDropdown({ currentPlan, renewsAt, managedByAdmin, trackerRows, t }) {
+    const [open, setOpen] = useState(false);
+    const hasTrackers = trackerRows.length > 0;
+    const primary = trackerRows[0] ?? null;
+
+    return (
+        <div className="relative w-full max-w-none justify-self-end sm:max-w-[360px]">
+            <button
+                type="button"
+                onClick={() => setOpen((value) => !value)}
+                className="flex w-full items-center justify-between gap-3 rounded-full border border-neutral-200 bg-white px-4 py-2.5 text-left shadow-sm transition hover:border-brand-200 hover:shadow-md dark:border-neutral-700 dark:bg-neutral-900/80"
+                aria-expanded={open}
+                aria-haspopup="dialog"
+            >
+                <div className="min-w-0">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-neutral-400 dark:text-neutral-500">
+                        {t('client.current_plan') || 'Your plan'}
+                    </div>
+                    <div className="truncate text-sm font-semibold text-neutral-900 dark:text-white">
+                        {currentPlan?.name || (t('client.no_plan') || 'No active plan')}
+                    </div>
+                </div>
+                <div className="flex items-center gap-3 text-neutral-500 dark:text-neutral-400">
+                    {primary ? (
+                        <div className="text-right">
+                            <div className="text-xs font-medium">
+                                {primary.current}/{primary.limit ?? '∞'}
+                            </div>
+                            <div className="hidden text-[11px] uppercase tracking-wide text-neutral-400 dark:text-neutral-500 sm:block">
+                                {primary.label}
+                            </div>
+                        </div>
+                    ) : null}
+                    <svg
+                        className={`h-4 w-4 transition-transform duration-150 ${open ? 'rotate-180' : ''}`}
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        aria-hidden="true"
+                    >
+                        <path
+                            fillRule="evenodd"
+                            d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
+                            clipRule="evenodd"
+                        />
+                    </svg>
+                </div>
+            </button>
+
+            {open && (
+                <>
+                    <button
+                        type="button"
+                        className="fixed inset-0 z-30 cursor-default"
+                        aria-label={t('common.close') || 'Close'}
+                        onClick={() => setOpen(false)}
+                    />
+                    <div className="absolute left-0 right-0 top-full z-40 mt-3 rounded-2xl border border-neutral-200 bg-white p-4 shadow-xl dark:border-neutral-700 dark:bg-neutral-900 sm:left-auto sm:right-0 sm:w-[min(100vw-2rem,460px)]">
+                        <div className="space-y-4">
+                            <div className="flex items-start justify-between gap-4">
+                                <div>
+                                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-400 dark:text-neutral-500">
+                                        {t('client.current_plan') || 'Your plan'}
+                                    </p>
+                                    <p className="mt-1 text-lg font-bold text-neutral-900 dark:text-white">
+                                        {currentPlan?.name || (t('client.no_plan') || 'No active plan')}
+                                    </p>
+                                    {renewsAt && (
+                                        <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
+                                            {managedByAdmin
+                                                ? (t('client.expires_on') || 'Expires on')
+                                                : (t('client.renews') || 'Renews')}{' '}
+                                            {formatDate(renewsAt)}
+                                        </p>
+                                    )}
+                                    {managedByAdmin && (
+                                        <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
+                                            {t('client.managed_by_admin') || 'Managed by your organization admin'}
+                                        </p>
+                                    )}
+                                </div>
+                                <Link
+                                    href={route('client.pricing')}
+                                    className="inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-600 hover:border-brand-200 hover:text-brand-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
+                                    onClick={() => setOpen(false)}
+                                >
+                                    {t('client.view_plans') || 'View plans'}
+                                </Link>
+                            </div>
+
+                            {hasTrackers ? (
+                                <div className="space-y-3">
+                                    {trackerRows.map((row) => (
+                                        <TrackerBar key={row.key} {...row} />
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                                    {t('client.no_usage_data') || 'Usage data will appear once the workspace starts using the plan.'}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                </>
+            )}
+        </div>
+    );
+}
+
 export default function Dashboard({
     range = 30,
     hasWorkspace = false,
@@ -93,9 +235,58 @@ export default function Dashboard({
     const { first_run = false } = usePage().props;
     const { team_members_count = 0, team_members_limit = 0 } = usage;
     const s = stats ?? {};
+    const planLimits = currentPlan?.limits ?? {};
+    const currentUsage = usePage().props.current_workspace_usage ?? {};
 
     const membersLabel = team_members_limit ? `${team_members_count} / ${team_members_limit}` : `${team_members_count}`;
     const membersPct = team_members_limit ? Math.min(100, Math.round((team_members_count / team_members_limit) * 100)) : null;
+    const trackerRows = [
+        {
+            key: 'users',
+            label: t('client.team_members') || 'Team members',
+            current: team_members_count,
+            limit: planLimits.users ?? team_members_limit ?? null,
+            percent: team_members_limit ? membersPct : 0,
+            icon: Users,
+            accent: 'bg-emerald-500',
+        },
+        {
+            key: 'whatsapp_messages_per_month',
+            label: t('client.whatsapp_messages') || 'WhatsApp messages',
+            current: currentUsage.whatsapp_messages_per_month?.current ?? 0,
+            limit: currentUsage.whatsapp_messages_per_month?.limit ?? planLimits.whatsapp_messages_per_month ?? null,
+            percent: currentUsage.whatsapp_messages_per_month?.percent ?? 0,
+            icon: MessageSquare,
+            accent: 'bg-brand-500',
+        },
+        {
+            key: 'campaigns_per_month',
+            label: t('client.campaigns') || 'Campaigns',
+            current: currentUsage.campaigns_per_month?.current ?? 0,
+            limit: currentUsage.campaigns_per_month?.limit ?? planLimits.campaigns_per_month ?? null,
+            percent: currentUsage.campaigns_per_month?.percent ?? 0,
+            icon: Megaphone,
+            accent: 'bg-amber-500',
+        },
+        {
+            key: 'social_posts_per_month',
+            label: t('client.social_posts') || 'Social posts',
+            current: currentUsage.social_posts_per_month?.current ?? 0,
+            limit: currentUsage.social_posts_per_month?.limit ?? planLimits.social_posts_per_month ?? null,
+            percent: currentUsage.social_posts_per_month?.percent ?? 0,
+            icon: Sparkles,
+            accent: 'bg-violet-500',
+        },
+        {
+            key: 'lead_credits_per_month',
+            label: t('client.lead_credits') || 'Lead credits',
+            current: currentUsage.lead_credits_per_month?.current ?? 0,
+            limit: currentUsage.lead_credits_per_month?.limit ?? planLimits.lead_credits_per_month ?? null,
+            percent: currentUsage.lead_credits_per_month?.percent ?? 0,
+            icon: CreditCard,
+            accent: 'bg-cyan-500',
+        },
+    ].filter((row) => row.limit !== null || row.current > 0);
 
     const messageChannelKeys = [
         ...new Set((charts.messages ?? []).flatMap((d) => Object.keys(d).filter((k) => k !== 'date'))),
@@ -172,15 +363,27 @@ export default function Dashboard({
             <Head title={t('client.dashboard') || 'Dashboard'} />
 
             <div className="space-y-6">
-                {/* Header + range filter */}
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">{t('client.dashboard') || 'Dashboard'}</h1>
-                        <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-                            {t('client.dashboard_subtitle') || 'Overview of your plan and usage'}
-                        </p>
+                {/* Header + tracker + range filter */}
+                <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)] xl:items-start">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <div>
+                            <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">{t('client.dashboard') || 'Dashboard'}</h1>
+                            <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
+                                {t('client.dashboard_subtitle') || 'Overview of your plan and usage'}
+                            </p>
+                        </div>
+                        {hasWorkspace && <RangeFilter value={range} routeName="client.dashboard" />}
                     </div>
-                    {hasWorkspace && <RangeFilter value={range} routeName="client.dashboard" />}
+
+                    {hasWorkspace && (
+                        <PlanTrackerDropdown
+                            currentPlan={currentPlan}
+                            renewsAt={renewsAt}
+                            managedByAdmin={managedByAdmin}
+                            trackerRows={trackerRows}
+                            t={t}
+                        />
+                    )}
                 </div>
 
                 {/* Onboarding next-step nudge */}

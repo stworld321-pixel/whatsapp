@@ -43,6 +43,7 @@ class DashboardController extends Controller
                 'name' => $plan->name,
                 'slug' => $plan->slug,
                 'status' => $effective->isActive() ? 'active' : ($effective->status ?? 'inactive'),
+                'limits' => is_array($plan->limits) ? $plan->limits : [],
             ];
             if ($effective instanceof Subscription) {
                 $renewsAt = $effective->renews_at?->toIso8601String();

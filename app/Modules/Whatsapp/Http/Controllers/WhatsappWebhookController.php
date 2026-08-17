@@ -5,8 +5,8 @@ namespace App\Modules\Whatsapp\Http\Controllers;
 use App\Http\Controllers\Concerns\FlushesWebhookResponse;
 use App\Http\Controllers\Controller;
 use App\Modules\Integrations\Services\CredentialResolver;
-use App\Modules\Whatsapp\Jobs\ProcessInboundMessageJob;
 use App\Modules\Whatsapp\Models\WhatsappBusinessAccount;
+use App\Modules\Whatsapp\Services\WhatsappDriver;
 use App\Services\WebhookIdempotencyService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -92,7 +92,7 @@ class WhatsappWebhookController extends Controller
         ]);
 
         return $this->flushWebhookOkThen(
-            fn () => ProcessInboundMessageJob::dispatch($payload, '')->onQueue('whatsapp')
+            fn () => app(WhatsappDriver::class)->processWebhookPayload($payload, '')
         );
     }
 
@@ -167,7 +167,7 @@ class WhatsappWebhookController extends Controller
         ]);
 
         return $this->flushWebhookOkThen(
-            fn () => ProcessInboundMessageJob::dispatch($payload, $token)->onQueue('whatsapp')
+            fn () => app(WhatsappDriver::class)->processWebhookPayload($payload, $token)
         );
     }
 
