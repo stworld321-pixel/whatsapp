@@ -25,7 +25,8 @@ class PayPalGateway implements BillingGatewayInterface
         private bool $sandbox,
         private string $successUrl,
         private string $cancelUrl,
-        private string $webhookId
+        private string $webhookId,
+        private string $currencyCode = 'USD'
     ) {}
 
     public function name(): string
@@ -89,6 +90,16 @@ class PayPalGateway implements BillingGatewayInterface
         return $message;
     }
 
+    private function currencyForPlan(Plan $plan): string
+    {
+        $currency = strtoupper(trim($this->currencyCode ?: ($plan->currency_code ?? 'USD')));
+        if (! preg_match('/^[A-Z]{3}$/', $currency)) {
+            $currency = 'USD';
+        }
+
+        return $currency;
+    }
+
     private function waitForActivePlan(string $token, string $planId, int $attempts = 3): bool
     {
         for ($i = 0; $i < $attempts; $i++) {
@@ -123,7 +134,16 @@ class PayPalGateway implements BillingGatewayInterface
 
         $amount = number_format($priceCents / 100, 2, '.', '');
         $interval = $billingCycle === 'year' ? 'YEAR' : 'MONTH';
-        $currency = $plan->currency_code ?? 'USD';
+        $currency = $this->currencyForPlan($plan);
+        $planCurrency = strtoupper(trim((string) ($plan->currency_code ?? '')));
+        if ($planCurrency !== '' && $planCurrency !== $currency) {
+            Log::warning('PayPal currency override applied', [
+                'user_id' => $user->id,
+                'plan_id' => $plan->id,
+                'plan_currency' => $planCurrency,
+                'paypal_currency' => $currency,
+            ]);
+        }
 
         // 1) Create product
         $productRes = $this->paypalJson($token)

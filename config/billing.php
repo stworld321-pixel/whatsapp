@@ -14,6 +14,7 @@ return [
             'client_id' => env('PAYPAL_CLIENT_ID'),
             'client_secret' => env('PAYPAL_CLIENT_SECRET'),
             'sandbox' => env('PAYPAL_SANDBOX', true),
+            'currency' => env('PAYPAL_CURRENCY', 'USD'),
             'success_url' => env('PAYPAL_SUCCESS_URL', env('APP_URL') . '/app/billing?checkout=success'),
             'cancel_url' => env('PAYPAL_CANCEL_URL', env('APP_URL') . '/app/pricing?checkout=canceled'),
             'webhook_id' => env('PAYPAL_WEBHOOK_ID'),

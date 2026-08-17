@@ -52,7 +52,8 @@ class BillingGatewayRegistry
                         $row->test_mode,
                         $successUrl,
                         $cancelUrl,
-                        $creds['webhook_secret'] ?? $creds['webhook_id'] ?? ''
+                        $creds['webhook_secret'] ?? $creds['webhook_id'] ?? '',
+                        $creds['currency'] ?? config('billing.gateways.paypal.currency', 'USD')
                     );
                 }
             }
@@ -191,7 +192,8 @@ class BillingGatewayRegistry
                 (bool) ($config['paypal']['sandbox'] ?? true),
                 $config['paypal']['success_url'] ?? '',
                 $config['paypal']['cancel_url'] ?? '',
-                $config['paypal']['webhook_id'] ?? ''
+                $config['paypal']['webhook_id'] ?? '',
+                $config['paypal']['currency'] ?? 'USD'
             );
         }
 

@@ -59,7 +59,8 @@ class PayPalGatewayTest extends TestCase
             true,
             'https://example.com/success',
             'https://example.com/cancel',
-            ''
+            '',
+            'USD'
         );
 
         $user = User::factory()->create(['email' => 'buyer@example.com']);
@@ -67,7 +68,7 @@ class PayPalGatewayTest extends TestCase
             'name' => 'Starter',
             'monthly_price_cents' => 1500,
             'yearly_price_cents' => 15000,
-            'currency_code' => 'USD',
+            'currency_code' => 'INR',
         ]);
 
         $result = $gateway->createCheckout($user, $plan, 'month');
