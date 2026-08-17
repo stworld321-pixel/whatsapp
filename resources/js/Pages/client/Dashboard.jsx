@@ -235,6 +235,9 @@ export default function Dashboard({
     const s = stats ?? {};
     const planLimits = currentPlan?.limits ?? {};
     const currentUsage = usePage().props.current_workspace_usage ?? {};
+    const hasTeamLimit = team_members_limit !== null && team_members_limit !== undefined && Number(team_members_limit) > 0;
+    const membersLabel = hasTeamLimit ? `${team_members_count}/${team_members_limit}` : `${team_members_count}`;
+    const membersPct = hasTeamLimit ? clampPercent((Number(team_members_count) / Number(team_members_limit)) * 100) : null;
     const trackerRow = {
         key: 'whatsapp_messages_per_month',
         label: t('client.whatsapp_messages') || 'WhatsApp messages',

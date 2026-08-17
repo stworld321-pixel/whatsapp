@@ -14,6 +14,7 @@ use App\Services\AnalyticsService;
 use App\Services\OnboardingService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -24,130 +25,158 @@ class DashboardController extends Controller
 
     public function __invoke(Request $request, OnboardingService $onboarding, AnalyticsService $analytics): Response
     {
-        $user = $request->user();
-        $effective = $user->effectiveSubscription();
+        try {
+            $user = $request->user();
+            $effective = $user?->effectiveSubscription();
 
-        $range = (int) $request->integer('range', 30);
-        if (! in_array($range, self::RANGES, true)) {
-            $range = 30;
-        }
+            $range = (int) $request->integer('range', 30);
+            if (! in_array($range, self::RANGES, true)) {
+                $range = 30;
+            }
 
-        $currentPlan = null;
-        $renewsAt = null;
-        $managedByAdmin = false;
+            $currentPlan = null;
+            $renewsAt = null;
+            $managedByAdmin = false;
 
-        if ($effective) {
-            $plan = $effective->plan;
-            if ($plan) {
-                $currentPlan = [
-                    'id' => $plan->id,
-                    'name' => $plan->name,
-                    'slug' => $plan->slug,
-                    'status' => $effective->isActive() ? 'active' : ($effective->status ?? 'inactive'),
-                    'limits' => is_array($plan->limits) ? $plan->limits : [],
+            if ($effective) {
+                $plan = $effective->plan;
+                if ($plan) {
+                    $currentPlan = [
+                        'id' => $plan->id,
+                        'name' => $plan->name,
+                        'slug' => $plan->slug,
+                        'status' => $effective->isActive() ? 'active' : ($effective->status ?? 'inactive'),
+                        'limits' => is_array($plan->limits) ? $plan->limits : [],
+                    ];
+                }
+
+                if ($effective instanceof Subscription) {
+                    $renewsAt = $effective->renews_at?->toIso8601String();
+                }
+
+                if ($effective instanceof ClientSubscription) {
+                    $renewsAt = $effective->ends_at?->toIso8601String();
+                    $managedByAdmin = true;
+                }
+            }
+
+            $teamMembersCount = $user->client ? $user->client->users()->count() : 1;
+            $teamMembersLimit = $effective?->plan?->limits['users'] ?? null;
+
+            $workspacesCount = 0;
+            try {
+                $workspacesCount = $user->accessibleWorkspaces()->count();
+            } catch (\Throwable $e) {
+                report($e);
+            }
+
+            $onboardingProgress = $onboarding->getProgress($user);
+
+            $wsId = $user->workspace_id;
+            $from = Carbon::now()->subDays($range - 1)->startOfDay();
+            $to = Carbon::now()->endOfDay();
+            $prevTo = $from->copy()->subDay()->endOfDay();
+            $prevFrom = $prevTo->copy()->subDays($range - 1)->startOfDay();
+
+            $charts = [];
+            $stats = null;
+            $tables = [];
+            $aiKpis = null;
+
+            if ($wsId) {
+                $messagesOut = $this->messageCount($wsId, $from, $to, 'out');
+                $messagesOutPrev = $this->messageCount($wsId, $prevFrom, $prevTo, 'out');
+                $messagesIn = $this->messageCount($wsId, $from, $to, 'in');
+                $messagesInPrev = $this->messageCount($wsId, $prevFrom, $prevTo, 'in');
+
+                $contactsNew = Contact::where('workspace_id', $wsId)->whereBetween('created_at', [$from, $to])->count();
+                $contactsNewPrev = Contact::where('workspace_id', $wsId)->whereBetween('created_at', [$prevFrom, $prevTo])->count();
+
+                $convNew = Conversation::where('workspace_id', $wsId)->whereBetween('created_at', [$from, $to])->count();
+                $convNewPrev = Conversation::where('workspace_id', $wsId)->whereBetween('created_at', [$prevFrom, $prevTo])->count();
+
+                $aiKpis = $analytics->aiKpis($wsId, $from, $to);
+
+                $stats = [
+                    'messages_out' => $messagesOut,
+                    'messages_out_delta' => $this->pctDelta($messagesOut, $messagesOutPrev),
+                    'messages_in' => $messagesIn,
+                    'messages_in_delta' => $this->pctDelta($messagesIn, $messagesInPrev),
+                    'contacts_total' => Contact::where('workspace_id', $wsId)->count(),
+                    'contacts_new' => $contactsNew,
+                    'contacts_new_delta' => $this->pctDelta($contactsNew, $contactsNewPrev),
+                    'conversations_open' => Conversation::where('workspace_id', $wsId)->whereIn('status', ['open', 'pending'])->count(),
+                    'conversations_new' => $convNew,
+                    'conversations_new_delta' => $this->pctDelta($convNew, $convNewPrev),
+                    'campaigns_total' => Campaign::where('workspace_id', $wsId)->count(),
+                    'automations_active' => Automation::where('workspace_id', $wsId)->where('status', 'active')->count(),
+                    'ai_runs' => $aiKpis['total_runs'] ?? 0,
+                    'ai_cost_cents' => $aiKpis['total_cost_cents'] ?? 0,
+                ];
+
+                $charts = [
+                    'messages' => $analytics->messageVolumeByChannel($wsId, $from, $to),
+                    'ai_tokens' => $analytics->aiUsageByDay($wsId, $from, $to),
+                    'conversations' => $analytics->conversationsResolvedOverTime($wsId, $from, $to),
+                    'contacts_growth' => $analytics->contactsGrowthByDay($wsId, $from, $to),
+                    'channel_mix' => $analytics->conversationChannelMix($wsId, $from, $to),
+                    'automation_runs' => $analytics->automationRunsByStatus($wsId, $from, $to),
+                    'social_posts' => $analytics->socialPostsByStatus($wsId, $from, $to),
+                ];
+
+                $tables = [
+                    'agent_leaderboard' => $analytics->agentLeaderboard($wsId, $from, $to),
+                    'recent_conversations' => $analytics->recentConversations($wsId, 6),
+                    'recent_campaigns' => $analytics->recentCampaigns($wsId, 6),
                 ];
             }
-            if ($effective instanceof Subscription) {
-                $renewsAt = $effective->renews_at?->toIso8601String();
-            }
-            if ($effective instanceof ClientSubscription) {
-                $renewsAt = $effective->ends_at?->toIso8601String();
-                $managedByAdmin = true;
-            }
-        }
 
-        $teamMembersCount = $user->client ? $user->client->users()->count() : 1;
-        $teamMembersLimit = $effective?->plan?->limits['users'] ?? null;
-
-        $workspacesCount = 0;
-        try {
-            $workspacesCount = $user->accessibleWorkspaces()->count();
+            return Inertia::render('client/Dashboard', [
+                'range' => $range,
+                'hasWorkspace' => (bool) $wsId,
+                'currentPlan' => $currentPlan,
+                'renewsAt' => $renewsAt,
+                'managedByAdmin' => $managedByAdmin,
+                'usage' => [
+                    'team_members_count' => $teamMembersCount,
+                    'team_members_limit' => $teamMembersLimit,
+                ],
+                'isClientAdministrator' => $user->isClientAdministrator(),
+                'workspacesCount' => $workspacesCount,
+                'onboardingNextStep' => $onboardingProgress['next_step'],
+                'onboardingPercent' => $onboardingProgress['percent'],
+                'stats' => $stats,
+                'charts' => $charts,
+                'tables' => $tables,
+                'first_run' => (bool) $user->created_at?->gt(now()->subMinutes(5)),
+            ]);
         } catch (\Throwable $e) {
-            report($e);
+            Log::error('client.dashboard.failed', [
+                'user_id' => $request->user()?->id,
+                'workspace_id' => $request->user()?->workspace_id,
+                'message' => $e->getMessage(),
+            ]);
+
+            return Inertia::render('client/Dashboard', [
+                'range' => 30,
+                'hasWorkspace' => false,
+                'currentPlan' => null,
+                'renewsAt' => null,
+                'managedByAdmin' => false,
+                'usage' => [
+                    'team_members_count' => 1,
+                    'team_members_limit' => null,
+                ],
+                'isClientAdministrator' => false,
+                'workspacesCount' => 0,
+                'onboardingNextStep' => null,
+                'onboardingPercent' => 0,
+                'stats' => null,
+                'charts' => [],
+                'tables' => [],
+                'first_run' => false,
+            ]);
         }
-
-        $onboardingProgress = $onboarding->getProgress($user);
-
-        // ── Date window (current + previous for deltas) ──────────────────────────
-        $wsId = $user->workspace_id;
-        $from = Carbon::now()->subDays($range - 1)->startOfDay();
-        $to = Carbon::now()->endOfDay();
-        $prevTo = $from->copy()->subDay()->endOfDay();
-        $prevFrom = $prevTo->copy()->subDays($range - 1)->startOfDay();
-
-        $charts = [];
-        $stats = null;
-        $tables = [];
-        $aiKpis = null;
-
-        if ($wsId) {
-            // ── Headline KPIs (with previous-period deltas) ──────────────────────
-            $messagesOut = $this->messageCount($wsId, $from, $to, 'out');
-            $messagesOutPrev = $this->messageCount($wsId, $prevFrom, $prevTo, 'out');
-            $messagesIn = $this->messageCount($wsId, $from, $to, 'in');
-            $messagesInPrev = $this->messageCount($wsId, $prevFrom, $prevTo, 'in');
-
-            $contactsNew = Contact::where('workspace_id', $wsId)->whereBetween('created_at', [$from, $to])->count();
-            $contactsNewPrev = Contact::where('workspace_id', $wsId)->whereBetween('created_at', [$prevFrom, $prevTo])->count();
-
-            $convNew = Conversation::where('workspace_id', $wsId)->whereBetween('created_at', [$from, $to])->count();
-            $convNewPrev = Conversation::where('workspace_id', $wsId)->whereBetween('created_at', [$prevFrom, $prevTo])->count();
-
-            $aiKpis = $analytics->aiKpis($wsId, $from, $to);
-
-            $stats = [
-                'messages_out' => $messagesOut,
-                'messages_out_delta' => $this->pctDelta($messagesOut, $messagesOutPrev),
-                'messages_in' => $messagesIn,
-                'messages_in_delta' => $this->pctDelta($messagesIn, $messagesInPrev),
-                'contacts_total' => Contact::where('workspace_id', $wsId)->count(),
-                'contacts_new' => $contactsNew,
-                'contacts_new_delta' => $this->pctDelta($contactsNew, $contactsNewPrev),
-                'conversations_open' => Conversation::where('workspace_id', $wsId)->whereIn('status', ['open', 'pending'])->count(),
-                'conversations_new' => $convNew,
-                'conversations_new_delta' => $this->pctDelta($convNew, $convNewPrev),
-                'campaigns_total' => Campaign::where('workspace_id', $wsId)->count(),
-                'automations_active' => Automation::where('workspace_id', $wsId)->where('status', 'active')->count(),
-                'ai_runs' => $aiKpis['total_runs'] ?? 0,
-                'ai_cost_cents' => $aiKpis['total_cost_cents'] ?? 0,
-            ];
-
-            $charts = [
-                'messages' => $analytics->messageVolumeByChannel($wsId, $from, $to),
-                'ai_tokens' => $analytics->aiUsageByDay($wsId, $from, $to),
-                'conversations' => $analytics->conversationsResolvedOverTime($wsId, $from, $to),
-                'contacts_growth' => $analytics->contactsGrowthByDay($wsId, $from, $to),
-                'channel_mix' => $analytics->conversationChannelMix($wsId, $from, $to),
-                'automation_runs' => $analytics->automationRunsByStatus($wsId, $from, $to),
-                'social_posts' => $analytics->socialPostsByStatus($wsId, $from, $to),
-            ];
-
-            $tables = [
-                'agent_leaderboard' => $analytics->agentLeaderboard($wsId, $from, $to),
-                'recent_conversations' => $analytics->recentConversations($wsId, 6),
-                'recent_campaigns' => $analytics->recentCampaigns($wsId, 6),
-            ];
-        }
-
-        return Inertia::render('client/Dashboard', [
-            'range' => $range,
-            'hasWorkspace' => (bool) $wsId,
-            'currentPlan' => $currentPlan,
-            'renewsAt' => $renewsAt,
-            'managedByAdmin' => $managedByAdmin,
-            'usage' => [
-                'team_members_count' => $teamMembersCount,
-                'team_members_limit' => $teamMembersLimit,
-            ],
-            'isClientAdministrator' => $user->isClientAdministrator(),
-            'workspacesCount' => $workspacesCount,
-            'onboardingNextStep' => $onboardingProgress['next_step'],
-            'onboardingPercent' => $onboardingProgress['percent'],
-            'stats' => $stats,
-            'charts' => $charts,
-            'tables' => $tables,
-            'first_run' => (bool) $user->created_at?->gt(now()->subMinutes(5)),
-        ]);
     }
 
     /**
