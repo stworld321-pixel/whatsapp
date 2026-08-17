@@ -108,10 +108,10 @@ function TrackerBar({ label, current, limit, percent, icon: Icon, accent = 'bg-b
     );
 }
 
-function PlanTrackerDropdown({ currentPlan, renewsAt, managedByAdmin, trackerRows, t }) {
+function PlanTrackerDropdown({ currentPlan, renewsAt, managedByAdmin, trackerRow, t }) {
     const [open, setOpen] = useState(false);
-    const hasTrackers = trackerRows.length > 0;
-    const primary = trackerRows[0] ?? null;
+    const hasTracker = trackerRow && (trackerRow.limit !== null || trackerRow.current > 0);
+    const primary = hasTracker ? trackerRow : null;
 
     return (
         <div className="relative w-full max-w-none justify-self-end sm:max-w-[360px]">
@@ -197,11 +197,9 @@ function PlanTrackerDropdown({ currentPlan, renewsAt, managedByAdmin, trackerRow
                                 </Link>
                             </div>
 
-                            {hasTrackers ? (
+                            {hasTracker ? (
                                 <div className="space-y-3">
-                                    {trackerRows.map((row) => (
-                                        <TrackerBar key={row.key} {...row} />
-                                    ))}
+                                    <TrackerBar {...trackerRow} />
                                 </div>
                             ) : (
                                 <p className="text-sm text-neutral-500 dark:text-neutral-400">
@@ -237,56 +235,15 @@ export default function Dashboard({
     const s = stats ?? {};
     const planLimits = currentPlan?.limits ?? {};
     const currentUsage = usePage().props.current_workspace_usage ?? {};
-
-    const membersLabel = team_members_limit ? `${team_members_count} / ${team_members_limit}` : `${team_members_count}`;
-    const membersPct = team_members_limit ? Math.min(100, Math.round((team_members_count / team_members_limit) * 100)) : null;
-    const trackerRows = [
-        {
-            key: 'users',
-            label: t('client.team_members') || 'Team members',
-            current: team_members_count,
-            limit: planLimits.users ?? team_members_limit ?? null,
-            percent: team_members_limit ? membersPct : 0,
-            icon: Users,
-            accent: 'bg-emerald-500',
-        },
-        {
-            key: 'whatsapp_messages_per_month',
-            label: t('client.whatsapp_messages') || 'WhatsApp messages',
-            current: currentUsage.whatsapp_messages_per_month?.current ?? 0,
-            limit: currentUsage.whatsapp_messages_per_month?.limit ?? planLimits.whatsapp_messages_per_month ?? null,
-            percent: currentUsage.whatsapp_messages_per_month?.percent ?? 0,
-            icon: MessageSquare,
-            accent: 'bg-brand-500',
-        },
-        {
-            key: 'campaigns_per_month',
-            label: t('client.campaigns') || 'Campaigns',
-            current: currentUsage.campaigns_per_month?.current ?? 0,
-            limit: currentUsage.campaigns_per_month?.limit ?? planLimits.campaigns_per_month ?? null,
-            percent: currentUsage.campaigns_per_month?.percent ?? 0,
-            icon: Megaphone,
-            accent: 'bg-amber-500',
-        },
-        {
-            key: 'social_posts_per_month',
-            label: t('client.social_posts') || 'Social posts',
-            current: currentUsage.social_posts_per_month?.current ?? 0,
-            limit: currentUsage.social_posts_per_month?.limit ?? planLimits.social_posts_per_month ?? null,
-            percent: currentUsage.social_posts_per_month?.percent ?? 0,
-            icon: Sparkles,
-            accent: 'bg-violet-500',
-        },
-        {
-            key: 'lead_credits_per_month',
-            label: t('client.lead_credits') || 'Lead credits',
-            current: currentUsage.lead_credits_per_month?.current ?? 0,
-            limit: currentUsage.lead_credits_per_month?.limit ?? planLimits.lead_credits_per_month ?? null,
-            percent: currentUsage.lead_credits_per_month?.percent ?? 0,
-            icon: CreditCard,
-            accent: 'bg-cyan-500',
-        },
-    ].filter((row) => row.limit !== null || row.current > 0);
+    const trackerRow = {
+        key: 'whatsapp_messages_per_month',
+        label: t('client.whatsapp_messages') || 'WhatsApp messages',
+        current: currentUsage.whatsapp_messages_per_month?.current ?? 0,
+        limit: currentUsage.whatsapp_messages_per_month?.limit ?? planLimits.whatsapp_messages_per_month ?? null,
+        percent: currentUsage.whatsapp_messages_per_month?.percent ?? 0,
+        icon: MessageSquare,
+        accent: 'bg-brand-500',
+    };
 
     const messageChannelKeys = [
         ...new Set((charts.messages ?? []).flatMap((d) => Object.keys(d).filter((k) => k !== 'date'))),
@@ -380,7 +337,7 @@ export default function Dashboard({
                             currentPlan={currentPlan}
                             renewsAt={renewsAt}
                             managedByAdmin={managedByAdmin}
-                            trackerRows={trackerRows}
+                            trackerRow={trackerRow}
                             t={t}
                         />
                     )}
