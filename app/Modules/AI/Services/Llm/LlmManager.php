@@ -11,12 +11,14 @@ class LlmManager
     /** Providers that support embeddings natively. */
     private const EMBED_CAPABLE = ['openai', 'gemini'];
 
+    private const PROVIDER_ORDER_SQL = "CASE provider WHEN 'openai' THEN 0 WHEN 'anthropic' THEN 1 WHEN 'gemini' THEN 2 ELSE 3 END";
+
     /** Resolve a provider for chat completions (all providers supported). */
     public static function forWorkspace(int $workspaceId): LlmProviderInterface
     {
         $config = AiProviderConfig::where('workspace_id', $workspaceId)
             ->where('enabled', true)
-            ->orderByRaw("FIELD(provider, 'openai', 'anthropic', 'gemini')")
+            ->orderByRaw(self::PROVIDER_ORDER_SQL)
             ->first();
 
         if ($config && ! empty($config->credentials['api_key'] ?? '')) {
@@ -47,7 +49,7 @@ class LlmManager
         // Workspace-level: prefer embed-capable providers, then fall back to any enabled one
         $configs = AiProviderConfig::where('workspace_id', $workspaceId)
             ->where('enabled', true)
-            ->orderByRaw("FIELD(provider, 'openai', 'gemini', 'anthropic')")
+            ->orderByRaw(self::PROVIDER_ORDER_SQL)
             ->get();
 
         foreach ($configs as $config) {

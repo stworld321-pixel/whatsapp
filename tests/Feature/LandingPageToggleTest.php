@@ -85,8 +85,8 @@ class LandingPageToggleTest extends TestCase
             ->assertSee(url('/pricing'))
             ->assertSee(route('cms-page.show', 'privacy-policy'))
             ->assertSee(route('blog.show', 'seo-friendly-launch'))
-            ->assertSee('<lastmod>')
-            ->assertSee('<changefreq>')
-            ->assertSee('<priority>');
+            ->assertSeeHtml('<lastmod>')
+            ->assertSeeHtml('<changefreq>')
+            ->assertSeeHtml('<priority>');
     }
 }

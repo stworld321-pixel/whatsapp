@@ -14,7 +14,13 @@ class LandingController extends Controller
 {
     private function landingDisabledRedirect(): ?RedirectResponse
     {
-        if (SystemSetting::get('landing.page_enabled', '1') === '1' || ! Route::has('login')) {
+        try {
+            $enabled = SystemSetting::get('landing.page_enabled', '1');
+        } catch (\Throwable) {
+            $enabled = '1';
+        }
+
+        if ($enabled === '1' || ! Route::has('login')) {
             return null;
         }
 

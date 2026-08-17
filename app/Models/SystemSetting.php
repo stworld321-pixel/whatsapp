@@ -39,7 +39,11 @@ class SystemSetting extends Model
 
     public static function get(string $key, $default = null)
     {
-        $s = static::where('key', $key)->first();
+        try {
+            $s = static::where('key', $key)->first();
+        } catch (\Throwable) {
+            return $default;
+        }
 
         return $s ? $s->value : $default;
     }

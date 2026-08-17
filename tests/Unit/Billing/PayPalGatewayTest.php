@@ -30,15 +30,22 @@ class PayPalGatewayTest extends TestCase
                 ], 201);
             }
 
+            if (str_contains($url, '/v1/billing/plans/P-1234567890/activate')) {
+                return Http::response(null, 204);
+            }
+
+            if (str_contains($url, '/v1/billing/plans/P-1234567890') && ! str_contains($url, '/activate')) {
+                return Http::response([
+                    'id' => 'P-1234567890',
+                    'status' => 'ACTIVE',
+                ], 200);
+            }
+
             if (str_contains($url, '/v1/billing/plans') && ! str_contains($url, '/activate')) {
                 return Http::response([
                     'id' => 'P-1234567890',
                     'status' => 'CREATED',
                 ], 201);
-            }
-
-            if (str_contains($url, '/v1/billing/plans/P-1234567890/activate')) {
-                return Http::response(null, 204);
             }
 
             if (str_contains($url, '/v1/billing/subscriptions')) {
