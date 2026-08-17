@@ -89,6 +89,22 @@ class PayPalGateway implements BillingGatewayInterface
         return $message;
     }
 
+    private function waitForActivePlan(string $token, string $planId, int $attempts = 3): bool
+    {
+        for ($i = 0; $i < $attempts; $i++) {
+            $res = $this->paypalJson($token)
+                ->get($this->baseUrl().'/v1/billing/plans/'.$planId);
+
+            if ($res->successful() && strtoupper((string) $res->json('status', '')) === 'ACTIVE') {
+                return true;
+            }
+
+            usleep(250000);
+        }
+
+        return false;
+    }
+
     public function createCheckout(User $user, Plan $plan, string $billingCycle): array
     {
         if (! $this->isConfigured()) {
@@ -174,18 +190,30 @@ class PayPalGateway implements BillingGatewayInterface
 
                 return ['error' => $this->errorMessage($activateRes, 'PayPal plan activation failed.')];
             }
+
+            if (! $this->waitForActivePlan($token, $paypalPlanId)) {
+                return ['error' => 'PayPal plan did not become ACTIVE in time.'];
+            }
         }
 
         // 3) Create subscription (returns approval link)
         $subRes = $this->paypalJson($token)
             ->post($this->baseUrl().'/v1/billing/subscriptions', [
                 'plan_id' => $paypalPlanId,
+                'quantity' => '1',
                 'custom_id' => (string) $user->id.'|'.$plan->id.'|'.$billingCycle,
                 'subscriber' => [
                     'email_address' => $user->email,
                 ],
                 'application_context' => [
                     'brand_name' => config('app.name'),
+                    'locale' => 'en-US',
+                    'shipping_preference' => 'NO_SHIPPING',
+                    'user_action' => 'SUBSCRIBE_NOW',
+                    'payment_method' => [
+                        'payer_selected' => 'PAYPAL',
+                        'payee_preferred' => 'IMMEDIATE_PAYMENT_REQUIRED',
+                    ],
                     'return_url' => $this->successUrl,
                     'cancel_url' => $this->cancelUrl,
                 ],
