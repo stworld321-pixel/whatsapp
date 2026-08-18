@@ -22,10 +22,7 @@ class InboxSetupController extends Controller
     {
         $workspaceId = $request->user()->current_workspace_id ?? $request->user()->workspace_id;
         $planLimits = app(PlanLimitService::class);
-
-        if (! $planLimits->hasPlan($workspaceId)) {
-            return response()->json(['message' => 'A plan is required before connecting social accounts.'], 422);
-        }
+        $planRequired = ! $planLimits->hasPlan($workspaceId);
 
         // WhatsApp WABAs
         $wabas = WhatsappBusinessAccount::where('workspace_id', $workspaceId)
@@ -74,6 +71,10 @@ class InboxSetupController extends Controller
         $metaCreds = CredentialResolver::system()->meta();
 
         return Inertia::render('Inbox/Setup', [
+            'planRequired'                => $planRequired,
+            'planRequiredMessage'         => $planRequired
+                ? 'A plan is required before connecting channels. Please activate a plan to continue.'
+                : null,
             'wabas'                        => $wabas,
             'whatsappWebhookUrl'           => url('/webhooks/whatsapp'),
             'whatsappWebhookGlobalUrl'     => route('webhooks.whatsapp.global.receive'),

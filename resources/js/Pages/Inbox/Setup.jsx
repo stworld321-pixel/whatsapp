@@ -1110,6 +1110,8 @@ export default function ChannelSetup({
     channelAccountsByWaba, instagramAccounts, messengerAccounts, metaWebhookUrl,
     metaAppId = null, metaConfigIdWhatsapp = null, metaConfigIdSocial = null,
     chatbots = [],
+    planRequired = false,
+    planRequiredMessage = null,
 }) {
     const { t } = useTranslation();
     const { props } = usePage();
@@ -1131,7 +1133,14 @@ export default function ChannelSetup({
         <ClientLayout title={t('inbox.channel_setup')}>
             <Head title={t('inbox.channel_setup')} />
 
-            {/* Page header */}
+            {planRequired && planRequiredMessage && (
+                <div className="mb-4 flex items-start gap-3 rounded-xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 px-4 py-3 text-sm text-red-700 dark:text-red-300">
+                    <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                    <span>{planRequiredMessage}</span>
+                </div>
+            )}
+
+            {/* Page header */} 
             <div className="mb-6">
                 <div className="flex items-center justify-between gap-4 flex-wrap">
                     <div>
@@ -1141,16 +1150,16 @@ export default function ChannelSetup({
                         </p>
                     </div>
                     <div className="flex items-center gap-2 flex-wrap">
-                        <button type="button" onClick={() => openDrawer('whatsapp')}
-                            className="flex items-center gap-1.5 rounded-lg border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/30 px-3 py-1.5 text-xs font-medium text-green-700 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-950/50 transition shadow-sm whitespace-nowrap">
+                        <button type="button" onClick={() => openDrawer('whatsapp')} disabled={planRequired}
+                            className="flex items-center gap-1.5 rounded-lg border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/30 px-3 py-1.5 text-xs font-medium text-green-700 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-950/50 transition shadow-sm whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-50">
                             <WhatsAppLogo className="h-3.5 w-3.5" /> {t('inbox.connect_whatsapp')}
                         </button>
-                        <button type="button" onClick={() => openDrawer('messenger')}
-                            className="flex items-center gap-1.5 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/30 px-3 py-1.5 text-xs font-medium text-blue-700 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-950/50 transition shadow-sm whitespace-nowrap">
+                        <button type="button" onClick={() => openDrawer('messenger')} disabled={planRequired}
+                            className="flex items-center gap-1.5 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/30 px-3 py-1.5 text-xs font-medium text-blue-700 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-950/50 transition shadow-sm whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-50">
                             <MessengerLogo className="h-3.5 w-3.5" /> {t('inbox.connect_messenger')}
                         </button>
-                        <button type="button" onClick={() => openDrawer('instagram')}
-                            className="flex items-center gap-1.5 rounded-lg border border-pink-200 dark:border-pink-800 bg-pink-50 dark:bg-pink-950/30 px-3 py-1.5 text-xs font-medium text-pink-700 dark:text-pink-400 hover:bg-pink-100 dark:hover:bg-pink-950/50 transition shadow-sm whitespace-nowrap">
+                        <button type="button" onClick={() => openDrawer('instagram')} disabled={planRequired}
+                            className="flex items-center gap-1.5 rounded-lg border border-pink-200 dark:border-pink-800 bg-pink-50 dark:bg-pink-950/30 px-3 py-1.5 text-xs font-medium text-pink-700 dark:text-pink-400 hover:bg-pink-100 dark:hover:bg-pink-950/50 transition shadow-sm whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-50">
                             <InstagramLogo className="h-3.5 w-3.5" /> {t('inbox.connect_instagram')}
                         </button>
                     </div>
@@ -1205,7 +1214,7 @@ export default function ChannelSetup({
                                 <InstagramLogo className="h-6 w-6" />
                             </div>
                             <p className="text-sm text-neutral-400 dark:text-neutral-500 mb-3">{t('inbox.no_instagram_accounts')}</p>
-                            <button onClick={() => openDrawer('instagram')}
+                            <button onClick={() => openDrawer('instagram')} disabled={planRequired}
                                 className="text-xs font-medium text-pink-600 dark:text-pink-400 hover:underline">
                                 {t('inbox.plus_connect_instagram')}
                             </button>
@@ -1230,7 +1239,7 @@ export default function ChannelSetup({
                                 <MessengerLogo className="h-6 w-6" />
                             </div>
                             <p className="text-sm text-neutral-400 dark:text-neutral-500 mb-3">{t('inbox.no_messenger_accounts')}</p>
-                            <button onClick={() => openDrawer('messenger')}
+                            <button onClick={() => openDrawer('messenger')} disabled={planRequired}
                                 className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline">
                                 {t('inbox.plus_connect_messenger')}
                             </button>
@@ -1332,6 +1341,5 @@ export default function ChannelSetup({
         </ClientLayout>
     );
 }
-
 
 

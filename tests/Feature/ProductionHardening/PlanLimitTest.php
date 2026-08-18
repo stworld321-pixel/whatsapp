@@ -92,6 +92,21 @@ class PlanLimitTest extends TestCase
         ]);
     }
 
+    public function test_channel_setup_page_renders_without_a_plan(): void
+    {
+        $data = $this->createWorkspaceContext();
+        $user = $data['user'];
+
+        $response = $this->actingAs($user)->get(route('client.inbox.setup'));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->component('Inbox/Setup')
+            ->where('planRequired', true)
+            ->where('planRequiredMessage', 'A plan is required before connecting channels. Please activate a plan to continue.')
+        );
+    }
+
     public function test_admin_assigned_monthly_plan_gets_an_expiry_date(): void
     {
         Carbon::setTestNow('2026-08-18 10:00:00');
