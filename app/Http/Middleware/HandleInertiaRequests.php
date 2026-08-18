@@ -8,8 +8,11 @@ use App\Models\Locale;
 use App\Models\SystemSetting;
 use App\Models\User;
 use App\Models\Workspace;
+use App\Modules\Shared\Models\ChannelAccount;
+use App\Modules\Shared\Models\Contact;
 use App\Modules\Broadcasting\Models\UsageMeter;
 use App\Modules\Integrations\Services\CredentialResolver;
+use App\Modules\Social\Models\SocialAccount;
 use App\Services\I18n\I18nFileService;
 use App\Services\OnboardingService;
 use App\Services\StorageManager;
@@ -268,6 +271,56 @@ class HandleInertiaRequests extends Middleware
             }
         }
 
+        $currentWorkspaceTracker = [];
+        if ($workspaceId) {
+            $whatsappConnected = ChannelAccount::where('workspace_id', $workspaceId)
+                ->where('channel', 'whatsapp')
+                ->where('status', 'active')
+                ->count();
+
+            $socialConnected = SocialAccount::where('workspace_id', $workspaceId)
+                ->where(function ($query) {
+                    $query->where('active', true)
+                        ->orWhere('active', 1)
+                        ->orWhere('status', 'connected');
+                })
+                ->count();
+
+            $messagesThisMonth = UsageMeter::current($workspaceId, 'whatsapp_messages');
+            $contactsCount = Contact::where('workspace_id', $workspaceId)->count();
+
+            $currentWorkspaceTracker = [
+                [
+                    'key' => 'whatsapp_accounts_connected',
+                    'label' => 'WhatsApp accounts connected',
+                    'current' => $whatsappConnected,
+                    'limit' => null,
+                    'percent' => 100,
+                ],
+                [
+                    'key' => 'social_accounts_connected',
+                    'label' => 'Social media accounts connected',
+                    'current' => $socialConnected,
+                    'limit' => null,
+                    'percent' => 100,
+                ],
+                [
+                    'key' => 'whatsapp_messages',
+                    'label' => 'Messages this month',
+                    'current' => $messagesThisMonth,
+                    'limit' => null,
+                    'percent' => 100,
+                ],
+                [
+                    'key' => 'contacts',
+                    'label' => 'Contacts',
+                    'current' => $contactsCount,
+                    'limit' => null,
+                    'percent' => 100,
+                ],
+            ];
+        }
+
         $auth = [
             'user' => $user,
             'adminUser' => null,
@@ -353,6 +406,7 @@ class HandleInertiaRequests extends Middleware
             'displayCurrency' => $displayCurrency,
             'demo_mode' => config('app.demo_mode', false),
             'current_workspace_usage' => $this->workspaceUsage($workspaceId ?? null, $plan ?? null),
+            'current_workspace_tracker' => $currentWorkspaceTracker,
             'app_version' => env('APP_VERSION', '1.0.0'),
             'onboardingSummary' => $onboardingSummary,
             'landingPageEnabled' => SystemSetting::get('landing.page_enabled', '1') === '1',

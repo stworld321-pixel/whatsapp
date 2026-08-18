@@ -82,7 +82,6 @@ function clampPercent(value) {
 
 function TrackerBar({ label, current, limit, percent, icon: Icon, accent = 'bg-brand-500' }) {
     const isUnlimited = limit === null || limit === undefined;
-    const displayLimit = isUnlimited ? '∞' : limit;
     const displayCurrent = current ?? 0;
 
     return (
@@ -95,23 +94,23 @@ function TrackerBar({ label, current, limit, percent, icon: Icon, accent = 'bg-b
                     <span className="truncate text-sm font-medium text-neutral-700 dark:text-neutral-300">{label}</span>
                 </div>
                 <span className="text-sm font-semibold tabular-nums text-neutral-900 dark:text-white">
-                    {displayCurrent}/{displayLimit}
+                    {isUnlimited ? displayCurrent : displayCurrent + '/' + limit}
                 </span>
             </div>
             <div className="h-2 overflow-hidden rounded-full bg-neutral-200 dark:bg-neutral-700">
                 <div
-                    className={`h-full rounded-full transition-all ${accent}`}
-                    style={{ width: `${isUnlimited ? 100 : clampPercent(percent)}%` }}
+                    className={'h-full rounded-full transition-all ' + accent}
+                    style={{ width: (isUnlimited ? 100 : clampPercent(percent)) + '%' }}
                 />
             </div>
         </div>
     );
 }
 
-function PlanTrackerDropdown({ currentPlan, renewsAt, managedByAdmin, trackerRow, t }) {
+function PlanTrackerDropdown({ currentPlan, renewsAt, managedByAdmin, trackerRows, t }) {
     const [open, setOpen] = useState(false);
-    const hasTracker = trackerRow && (trackerRow.limit !== null || trackerRow.current > 0);
-    const primary = hasTracker ? trackerRow : null;
+    const hasTracker = Array.isArray(trackerRows) && trackerRows.length > 0;
+    const primary = hasTracker ? trackerRows[0] : null;
 
     return (
         <div className="relative w-full max-w-none justify-self-end sm:max-w-[360px]">
@@ -199,7 +198,20 @@ function PlanTrackerDropdown({ currentPlan, renewsAt, managedByAdmin, trackerRow
 
                             {hasTracker ? (
                                 <div className="space-y-3">
-                                    <TrackerBar {...trackerRow} />
+                                    {trackerRows.map((row) => {
+                                        const Icon = row.icon ?? MessageSquare;
+                                        return (
+                                            <TrackerBar
+                                                key={row.key}
+                                                label={row.label}
+                                                current={row.current}
+                                                limit={row.limit}
+                                                percent={row.percent}
+                                                icon={Icon}
+                                                accent={row.accent ?? 'bg-brand-500'}
+                                            />
+                                        );
+                                    })}
                                 </div>
                             ) : (
                                 <p className="text-sm text-neutral-500 dark:text-neutral-400">
@@ -235,18 +247,21 @@ export default function Dashboard({
     const s = stats ?? {};
     const planLimits = currentPlan?.limits ?? {};
     const currentUsage = usePage().props.current_workspace_usage ?? {};
+    const workspaceTracker = usePage().props.current_workspace_tracker ?? [];
     const hasTeamLimit = team_members_limit !== null && team_members_limit !== undefined && Number(team_members_limit) > 0;
-    const membersLabel = hasTeamLimit ? `${team_members_count}/${team_members_limit}` : `${team_members_count}`;
+    const membersLabel = hasTeamLimit ? team_members_count + '/' + team_members_limit : String(team_members_count);
     const membersPct = hasTeamLimit ? clampPercent((Number(team_members_count) / Number(team_members_limit)) * 100) : null;
-    const trackerRow = {
-        key: 'whatsapp_messages_per_month',
-        label: t('client.whatsapp_messages') || 'WhatsApp messages',
-        current: currentUsage.whatsapp_messages_per_month?.current ?? 0,
-        limit: currentUsage.whatsapp_messages_per_month?.limit ?? planLimits.whatsapp_messages_per_month ?? null,
-        percent: currentUsage.whatsapp_messages_per_month?.percent ?? 0,
-        icon: MessageSquare,
-        accent: 'bg-brand-500',
-    };
+    const trackerRows = workspaceTracker.length > 0 ? workspaceTracker : [
+        {
+            key: 'whatsapp_messages_per_month',
+            label: t('client.whatsapp_messages') || 'WhatsApp messages',
+            current: currentUsage.whatsapp_messages_per_month?.current ?? 0,
+            limit: currentUsage.whatsapp_messages_per_month?.limit ?? planLimits.whatsapp_messages_per_month ?? null,
+            percent: currentUsage.whatsapp_messages_per_month?.percent ?? 0,
+            icon: MessageSquare,
+            accent: 'bg-brand-500',
+        },
+    ];
 
     const messageChannelKeys = [
         ...new Set((charts.messages ?? []).flatMap((d) => Object.keys(d).filter((k) => k !== 'date'))),
@@ -340,7 +355,7 @@ export default function Dashboard({
                             currentPlan={currentPlan}
                             renewsAt={renewsAt}
                             managedByAdmin={managedByAdmin}
-                            trackerRow={trackerRow}
+                            trackerRows={trackerRows}
                             t={t}
                         />
                     )}
