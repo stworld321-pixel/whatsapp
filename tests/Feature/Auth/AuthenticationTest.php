@@ -110,4 +110,16 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
         $response->assertRedirect('/');
     }
+
+    public function test_inactive_client_users_cannot_authenticate_using_the_login_screen(): void
+    {
+        $user = User::factory()->create(['status' => User::STATUS_INACTIVE]);
+
+        $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ])->assertSessionHasErrors('email');
+
+        $this->assertGuest();
+    }
 }

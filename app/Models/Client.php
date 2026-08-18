@@ -58,12 +58,35 @@ class Client extends Model
 
     public function activeSubscription(): HasOne
     {
-        return $this->hasOne(ClientSubscription::class)->where('status', 'active')->latestOfMany();
+        return $this->hasOne(ClientSubscription::class)
+            ->where('status', ClientSubscription::STATUS_ACTIVE)
+            ->where(function ($q) {
+                $q->whereNull('ends_at')->orWhere('ends_at', '>', now());
+            })
+            ->latestOfMany();
     }
 
     public function activePlan(): ?Plan
     {
-        return $this->activeSubscription?->plan;
+        return $this->effectiveSubscription()?->plan;
+    }
+
+    public function effectiveSubscription(): ClientSubscription|Subscription|null
+    {
+        if ($this->activeSubscription?->plan) {
+            return $this->activeSubscription;
+        }
+
+        $sub = Subscription::whereIn('user_id', $this->users()->select('id'))
+            ->whereIn('status', ['active', 'trialing'])
+            ->where(function ($q) {
+                $q->whereNull('ends_at')->orWhere('ends_at', '>', now());
+            })
+            ->with('plan')
+            ->orderByDesc('id')
+            ->first();
+
+        return $sub;
     }
 
     /**
@@ -76,17 +99,7 @@ class Client extends Model
      */
     public function effectivePlan(): ?Plan
     {
-        if ($this->activeSubscription?->plan) {
-            return $this->activeSubscription->plan;
-        }
-
-        $sub = Subscription::whereIn('user_id', $this->users()->select('id'))
-            ->whereIn('status', ['active', 'trialing'])
-            ->with('plan')
-            ->orderByDesc('id')
-            ->first();
-
-        return $sub?->plan;
+        return $this->effectiveSubscription()?->plan;
     }
 
     public function isActive(): bool

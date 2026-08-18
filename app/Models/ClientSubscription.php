@@ -49,6 +49,7 @@ class ClientSubscription extends Model
 
     public function isActive(): bool
     {
-        return $this->status === self::STATUS_ACTIVE;
+        return $this->status === self::STATUS_ACTIVE
+            && ($this->ends_at === null || $this->ends_at->isFuture());
     }
 }

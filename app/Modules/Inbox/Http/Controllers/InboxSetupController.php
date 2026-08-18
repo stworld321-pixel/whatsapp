@@ -7,6 +7,7 @@ use App\Modules\AI\Models\AiChatbot;
 use App\Modules\Integrations\Services\CredentialResolver;
 use App\Modules\Shared\Models\ChannelAccount;
 use App\Modules\Whatsapp\Models\WhatsappBusinessAccount;
+use App\Services\PlanLimitService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,6 +21,11 @@ class InboxSetupController extends Controller
     public function index(Request $request): Response
     {
         $workspaceId = $request->user()->current_workspace_id ?? $request->user()->workspace_id;
+        $planLimits = app(PlanLimitService::class);
+
+        if (! $planLimits->hasPlan($workspaceId)) {
+            return response()->json(['message' => 'A plan is required before connecting social accounts.'], 422);
+        }
 
         // WhatsApp WABAs
         $wabas = WhatsappBusinessAccount::where('workspace_id', $workspaceId)
@@ -91,6 +97,11 @@ class InboxSetupController extends Controller
         ]);
 
         $workspaceId = $request->user()->current_workspace_id ?? $request->user()->workspace_id;
+        $planLimits = app(PlanLimitService::class);
+
+        if (! $planLimits->hasPlan($workspaceId)) {
+            return response()->json(['message' => 'A plan is required before connecting social accounts.'], 422);
+        }
 
         if (! CredentialResolver::system()->meta()?->appId()) {
             return response()->json(['message' => 'Meta App credentials are not configured. Please ask your administrator to configure them in Admin → Integrations → Meta App.'], 422);
@@ -126,6 +137,8 @@ class InboxSetupController extends Controller
 
         $pages = $pagesRes->json('data', []);
         $connected = 0;
+        $newConnections = 0;
+        $limit = $planLimits->limitForWorkspace($workspaceId, 'social_accounts');
 
         Log::info('Instagram embedded signup: pages fetched', [
             'workspace_id' => $workspaceId,
@@ -141,6 +154,18 @@ class InboxSetupController extends Controller
             $igAccount = $page['instagram_business_account'] ?? null;
             if (! $igAccount || empty($igAccount['id'])) {
                 continue;
+            }
+
+            $alreadyExists = ChannelAccount::where('workspace_id', $workspaceId)
+                ->where('channel', 'instagram')
+                ->whereJsonContains('meta_json->instagram_page_id', (string) $igAccount['id'])
+                ->exists();
+            if (! $alreadyExists) {
+                $newConnections++;
+            }
+
+            if ($limit !== null && ($planLimits->socialConnectionCount($workspaceId) + $newConnections) > $limit) {
+                return response()->json(['message' => "Your plan allows only {$limit} social account(s). Disconnect one before connecting another."], 422);
             }
 
             $pageToken = $page['access_token'] ?? $longToken;
@@ -162,11 +187,6 @@ class InboxSetupController extends Controller
                 'instagram_account_id' => $igId,
                 'facebook_page_id'     => $pageId,
             ];
-
-            $alreadyExists = ChannelAccount::where('workspace_id', $workspaceId)
-                ->where('channel', 'instagram')
-                ->whereJsonContains('meta_json->instagram_page_id', $igId)
-                ->exists();
 
             if ($alreadyExists) {
                 // Update the token on re-connect (preserve any extra meta_json keys
@@ -222,6 +242,11 @@ class InboxSetupController extends Controller
         ]);
 
         $workspaceId = $request->user()->current_workspace_id ?? $request->user()->workspace_id;
+        $planLimits = app(PlanLimitService::class);
+
+        if (! $planLimits->hasPlan($workspaceId)) {
+            return response()->json(['message' => 'A plan is required before connecting social accounts.'], 422);
+        }
 
         if (! CredentialResolver::system()->meta()?->appId()) {
             return response()->json(['message' => 'Meta App credentials are not configured. Please ask your administrator to configure them in Admin → Integrations → Meta App.'], 422);
@@ -256,6 +281,8 @@ class InboxSetupController extends Controller
 
         $pages     = $pagesRes->json('data', []);
         $connected = 0;
+        $newConnections = 0;
+        $limit = $planLimits->limitForWorkspace($workspaceId, 'social_accounts');
 
         Log::info('Messenger embedded signup: pages fetched', [
             'workspace_id' => $workspaceId,
@@ -303,6 +330,14 @@ class InboxSetupController extends Controller
                 ->whereJsonContains('meta_json->page_id', $pageId)
                 ->first();
             $alreadyExists = $existing !== null;
+
+            if (! $alreadyExists) {
+                $newConnections++;
+            }
+
+            if ($limit !== null && ($planLimits->socialConnectionCount($workspaceId) + $newConnections) > $limit) {
+                return response()->json(['message' => "Your plan allows only {$limit} social account(s). Disconnect one before connecting another."], 422);
+            }
 
             if ($existing) {
                 // Update through the model instance (NOT the query builder) so the

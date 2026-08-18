@@ -2,8 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Workspace;
 use App\Modules\Broadcasting\Models\UsageMeter;
+use App\Services\PlanLimitService;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,14 +32,10 @@ class EnforceLimit
             return $next($request);
         }
 
-        // Retrieve the current workspace's active plan limits
-        $workspace = Workspace::with('client')->find($workspaceId);
-        $plan = $workspace?->client?->activePlan();
-        $limits = $plan?->limits ?? [];
+        $planLimits = app(PlanLimitService::class);
+        $limit = $planLimits->limitForWorkspace((int) $workspaceId, $limitKey);
 
-        $limit = $limits[$limitKey] ?? null;
-
-        // null = unlimited
+        // No plan or null limit means the route is not quota-constrained.
         if ($limit === null) {
             return $next($request);
         }

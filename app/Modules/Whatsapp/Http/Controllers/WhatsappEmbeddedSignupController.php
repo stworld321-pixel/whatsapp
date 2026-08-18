@@ -7,6 +7,7 @@ use App\Modules\Integrations\Services\CredentialResolver;
 use App\Modules\Whatsapp\Jobs\TemplateSyncJob;
 use App\Modules\Whatsapp\Models\WhatsappBusinessAccount;
 use App\Modules\Whatsapp\Services\CloudApiClient;
+use App\Services\PlanLimitService;
 use App\Modules\Shared\Models\ChannelAccount;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,6 +26,11 @@ class WhatsappEmbeddedSignupController extends Controller
         ]);
 
         $workspaceId = $request->user()->current_workspace_id ?? $request->user()->workspace_id;
+        $planLimits = app(PlanLimitService::class);
+
+        if (! $planLimits->hasPlan($workspaceId)) {
+            return response()->json(['message' => 'A plan is required before connecting WhatsApp accounts.'], 422);
+        }
 
         $meta = CredentialResolver::system()->meta();
         if (! $meta || ! $meta->appId() || ! $meta->appSecret()) {
@@ -105,6 +111,11 @@ class WhatsappEmbeddedSignupController extends Controller
         $existing = WhatsappBusinessAccount::where('waba_id', $validated['waba_id'])
             ->where('workspace_id', $workspaceId)
             ->first();
+
+        $limit = $planLimits->limitForWorkspace($workspaceId, 'whatsapp_accounts');
+        if ($limit !== null && $existing === null && $planLimits->whatsappConnectionCount($workspaceId) >= $limit) {
+            return response()->json(['message' => "Your plan allows only {$limit} WhatsApp account(s). Disconnect one before connecting another."], 422);
+        }
 
         $verifyToken = $existing?->webhook_verify_token ?? Str::random(48);
 

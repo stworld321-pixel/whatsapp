@@ -8,10 +8,12 @@ use App\Models\ClientSubscription;
 use App\Models\Plan;
 use App\Models\User;
 use App\Services\AuditLogService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -38,7 +40,8 @@ class ClientController extends Controller
         $clients = $query->orderBy('name')->paginate(20)->withQueryString()->through(function (Client $c) {
             // Effective plan: admin-assigned ClientSubscription, else the plan from a
             // user's own active Subscription — matches what the client's dashboard shows.
-            $plan = $c->effectivePlan();
+            $effective = $c->effectiveSubscription();
+            $plan = $effective?->plan;
 
             return [
                 'id' => $c->id,
@@ -50,7 +53,12 @@ class ClientController extends Controller
                 'base_currency' => $c->base_currency,
                 'currency_symbol' => $c->currency_symbol,
                 'currency_position' => $c->currency_position,
-                'subscription' => $plan ? ['name' => $plan->name] : null,
+                'subscription' => $plan ? [
+                    'name' => $plan->name,
+                    'status' => $effective?->status,
+                    'billing_cycle' => $effective instanceof ClientSubscription ? $effective->billing_cycle : null,
+                    'ends_at' => $effective?->ends_at?->toIso8601String(),
+                ] : null,
             ];
         });
 
@@ -245,6 +253,17 @@ class ClientController extends Controller
             return redirect()->back()->with('error', __('Cannot delete the last client administrator.'));
         }
 
+        $user->forceFill([
+            'status' => User::STATUS_INACTIVE,
+            'remember_token' => null,
+        ])->saveQuietly();
+
+        $user->tokens()->delete();
+
+        if (Schema::hasTable('sessions')) {
+            DB::table('sessions')->where('user_id', $user->id)->delete();
+        }
+
         $user->delete();
         $this->auditLog->logAdmin('client.user_deleted', User::class, null, ['client_id' => $client->id, 'email' => $user->email]);
 
@@ -267,10 +286,16 @@ class ClientController extends Controller
         $plan = Plan::findOrFail($validated['plan_id']);
         $client->clientSubscriptions()->where('status', ClientSubscription::STATUS_ACTIVE)->update(['status' => ClientSubscription::STATUS_CANCELLED, 'ends_at' => now()]);
 
+        $startsAt = now();
+        $endsAt = $validated['billing_cycle'] === ClientSubscription::BILLING_YEARLY
+            ? $startsAt->copy()->addYear()
+            : $startsAt->copy()->addMonth();
+
         $sub = $client->clientSubscriptions()->create([
             'plan_id' => $plan->id,
             'billing_cycle' => $validated['billing_cycle'],
-            'starts_at' => now(),
+            'starts_at' => $startsAt,
+            'ends_at' => $endsAt,
             'status' => ClientSubscription::STATUS_ACTIVE,
             'assigned_by_admin_id' => $request->user('admin')->id,
         ]);

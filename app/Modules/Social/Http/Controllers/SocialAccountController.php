@@ -11,6 +11,7 @@ use App\Modules\Social\Services\Drivers\TikTokDriver;
 use App\Modules\Social\Services\Drivers\TwitterDriver;
 use App\Modules\Social\Services\Drivers\YoutubeDriver;
 use App\Modules\Social\Services\OAuth\OAuthManager;
+use App\Services\PlanLimitService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -52,12 +53,19 @@ class SocialAccountController extends Controller
         $validNetworks = ['facebook', 'instagram', 'linkedin', 'twitter', 'youtube', 'tiktok'];
         abort_unless(in_array($network, $validNetworks, true), 404);
 
-        Session::put('social_oauth_workspace', $this->workspaceId($request));
+        $workspaceId = $this->workspaceId($request);
+        $planLimits = app(PlanLimitService::class);
+        if (! $planLimits->hasPlan($workspaceId)) {
+            return redirect()->route('client.social.accounts.index')
+                ->with('error', 'A plan is required before connecting social accounts.');
+        }
+
+        Session::put('social_oauth_workspace', $workspaceId);
 
         $callbackUrl = route('client.social.oauth.callback', $network);
 
         try {
-            $authUrl = $this->oauth->getAuthUrl($network, $this->workspaceId($request), $callbackUrl);
+            $authUrl = $this->oauth->getAuthUrl($network, $workspaceId, $callbackUrl);
         } catch (\RuntimeException $e) {
             return redirect()->route('client.social.accounts.index')
                 ->with('error', "OAuth for {$network} is not configured. Please contact your administrator.");
@@ -73,6 +81,7 @@ class SocialAccountController extends Controller
         $error    = $request->query('error');
         $wid      = Session::get('social_oauth_workspace', $this->workspaceId($request));
         $stored   = Session::pull('social_oauth_state', []);
+        $planLimits = app(PlanLimitService::class);
 
         if ($error || ! $code) {
             return redirect()->route('client.social.accounts.index')->with('error', 'OAuth failed: '.($error ?? 'No code received'));
@@ -88,6 +97,12 @@ class SocialAccountController extends Controller
 
         if (empty($tokens['access_token'])) {
             return redirect()->route('client.social.accounts.index')->with('error', 'Failed to obtain access token.');
+        }
+
+        $limit = $planLimits->limitForWorkspace((int) $wid, 'social_accounts');
+        if ($limit === null && ! $planLimits->hasPlan((int) $wid)) {
+            return redirect()->route('client.social.accounts.index')
+                ->with('error', 'A plan is required before connecting social accounts.');
         }
 
         $driver = $this->drivers[$network] ?? null;
@@ -120,6 +135,45 @@ class SocialAccountController extends Controller
             }
 
             $connected = 0;
+            $newConnections = 0;
+            $existingConnections = 0;
+
+            foreach ($pages as $page) {
+                if ($network === 'instagram') {
+                    $igAccount = $page['instagram_business_account'] ?? null;
+                    if (! $igAccount) {
+                        continue;
+                    }
+
+                    $exists = SocialAccount::where('workspace_id', $wid)
+                        ->where('network', 'instagram')
+                        ->where('account_id', $igAccount['id'])
+                        ->exists();
+                    if ($exists) {
+                        $existingConnections++;
+                        continue;
+                    }
+
+                    $newConnections++;
+                    continue;
+                }
+
+                $exists = SocialAccount::where('workspace_id', $wid)
+                    ->where('network', 'facebook')
+                    ->where('account_id', $page['id'])
+                    ->exists();
+                if ($exists) {
+                    $existingConnections++;
+                    continue;
+                }
+
+                $newConnections++;
+            }
+
+            if ($limit !== null && ($planLimits->socialConnectionCount((int) $wid) + $newConnections) > $limit) {
+                return redirect()->route('client.social.accounts.index')
+                    ->with('error', "Your plan allows only {$limit} social account(s). Disconnect one before connecting another.");
+            }
 
             foreach ($pages as $page) {
                 if ($network === 'instagram') {
@@ -168,6 +222,20 @@ class SocialAccountController extends Controller
 
             return redirect()->route('client.social.accounts.index')
                 ->with('success', $connected.' '.ucfirst($network).' account(s) connected.');
+        }
+
+        if ($limit !== null) {
+            $currentCount = $planLimits->socialConnectionCount((int) $wid);
+            $accountKey = $accountInfo['account_id'] ?? '';
+            $alreadyExists = $accountKey !== '' && SocialAccount::where('workspace_id', $wid)
+                ->where('network', $network)
+                ->where('account_id', $accountKey)
+                ->exists();
+
+            if (! $alreadyExists && ($currentCount + 1) > $limit) {
+                return redirect()->route('client.social.accounts.index')
+                    ->with('error', "Your plan allows only {$limit} social account(s). Disconnect one before connecting another.");
+            }
         }
 
         SocialAccount::updateOrCreate(

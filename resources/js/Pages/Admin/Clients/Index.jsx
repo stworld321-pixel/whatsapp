@@ -12,6 +12,7 @@ import {
     Trash2,
 } from 'lucide-react';
 import axios from 'axios';
+import { formatDateTz } from '@/Utils/datetime';
 
 const STATUS_ACTIVE = 'active';
 const CLIENT_ROLE_ADMIN = 'administrator';
@@ -300,7 +301,14 @@ export default function AdminClientsIndex({ clients, plans = [], filters = {} })
                                             </Badge>
                                         </td>
                                         <td className="py-3 pr-4 text-neutral-900 dark:text-neutral-100">
-                                            {c.subscription?.name ?? t('admin.no_plan')}
+                                            <div>{c.subscription?.name ?? t('admin.no_plan')}</div>
+                                            {c.subscription?.ends_at && (
+                                                <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                                                    {c.subscription.status === 'active'
+                                                        ? `Expires ${formatDateTz(c.subscription.ends_at)}`
+                                                        : formatDateTz(c.subscription.ends_at)}
+                                                </div>
+                                            )}
                                         </td>
                                         <td className="py-3 pr-4">
                                             <div className="flex items-center justify-end gap-0.5">
