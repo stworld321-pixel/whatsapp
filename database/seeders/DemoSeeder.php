@@ -157,8 +157,8 @@ class DemoSeeder extends Seeder
                 'tagline' => 'Relax. Restore. Reconnect.',
                 'support_email' => 'hello@spagreen.net',
                 'primary_color' => '#0E7C5A',
-                'base_currency' => 'USD',
-                'currency_symbol' => '$',
+                'base_currency' => 'INR',
+                'currency_symbol' => '₹',
                 'currency_position' => 'before',
             ]
         );
@@ -189,7 +189,7 @@ class DemoSeeder extends Seeder
         // Give the workspace a proper brand name.
         Workspace::whereKey($this->workspaceId)->update([
             'name' => 'SpaGreen Wellness',
-            'currency_code' => 'USD',
+            'currency_code' => 'INR',
             'default_locale' => 'en',
         ]);
     }
@@ -264,7 +264,7 @@ class DemoSeeder extends Seeder
                     'gateway' => 'stripe',
                     'gateway_transaction_id' => 'ch_'.Str::lower(Str::random(22)),
                     'amount_cents' => $business->monthly_price_cents ?: 9900,
-                    'currency_code' => 'USD',
+                    'currency_code' => 'INR',
                     'status' => 'succeeded',
                     'tax_amount_cents' => 817,
                     'invoice_path' => 'invoices/spagreen-'.$when->format('Y-m').'.pdf',
@@ -1721,7 +1721,7 @@ class DemoSeeder extends Seeder
         foreach ($clients as $ci => $c) {
             $client = Client::firstOrCreate(
                 ['email' => $c['email']],
-                ['name' => $c['name'], 'status' => Client::STATUS_ACTIVE, 'base_currency' => 'USD', 'currency_symbol' => '$', 'currency_position' => 'before', 'primary_color' => $c['color']]
+                ['name' => $c['name'], 'status' => Client::STATUS_ACTIVE, 'base_currency' => 'INR', 'currency_symbol' => '₹', 'currency_position' => 'before', 'primary_color' => $c['color']]
             );
 
             $admin = User::updateOrCreate(

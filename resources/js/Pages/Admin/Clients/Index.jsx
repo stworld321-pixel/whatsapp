@@ -66,8 +66,8 @@ export default function AdminClientsIndex({ clients, plans = [], filters = {} })
         phone: '',
         address: '',
         status: STATUS_ACTIVE,
-        base_currency: 'USD',
-        currency_symbol: '$',
+        base_currency: 'INR',
+        currency_symbol: '₹',
         currency_position: 'before',
     });
 
@@ -77,8 +77,8 @@ export default function AdminClientsIndex({ clients, plans = [], filters = {} })
         phone: '',
         address: '',
         status: STATUS_ACTIVE,
-        base_currency: 'USD',
-        currency_symbol: '$',
+        base_currency: 'INR',
+        currency_symbol: '₹',
         currency_position: 'before',
     });
 
@@ -116,8 +116,8 @@ export default function AdminClientsIndex({ clients, plans = [], filters = {} })
             phone: c.phone ?? '',
             address: c.address ?? '',
             status: c.status,
-            base_currency: c.base_currency ?? 'USD',
-            currency_symbol: c.currency_symbol ?? '$',
+            base_currency: c.base_currency ?? 'INR',
+            currency_symbol: c.currency_symbol ?? '₹',
             currency_position: c.currency_position ?? 'before',
         });
         setEditClientOpen(true);
@@ -718,7 +718,7 @@ export default function AdminClientsIndex({ clients, plans = [], filters = {} })
                                             />
                                             <span className="font-medium">{p.name}</span>
                                             <span className="text-sm text-neutral-500">
-                                                Monthly: {p.currency_code ?? 'USD'} {((p.monthly_price_cents ?? 0) / 100).toFixed(2)} · Yearly: {p.currency_code ?? 'USD'} {((p.yearly_price_cents ?? 0) / 100).toFixed(2)}
+                                                Monthly: {p.currency_code ?? 'INR'} {((p.monthly_price_cents ?? 0) / 100).toFixed(2)} · Yearly: {p.currency_code ?? 'INR'} {((p.yearly_price_cents ?? 0) / 100).toFixed(2)}
                                             </span>
                                         </label>
                                     ))}

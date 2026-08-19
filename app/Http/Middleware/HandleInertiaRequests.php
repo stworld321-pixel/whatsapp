@@ -76,7 +76,7 @@ class HandleInertiaRequests extends Middleware
                 'supportedLocales' => ['en' => 'English'],
                 'rtlLocales' => ['ar'],
                 'currencies' => [],
-                'displayCurrency' => 'USD',
+                'displayCurrency' => 'INR',
                 'theme' => 'light',
                 'demo_mode' => false,
                 'app_version' => env('APP_VERSION', '1.0.0'),
@@ -237,7 +237,7 @@ class HandleInertiaRequests extends Middleware
             ?? ($user?->workspace?->currency_code ?? null)
             ?? $request->session()->get('display_currency')
             ?? Currency::defaultCode()
-            ?? 'USD';
+            ?? 'INR';
 
         $currencies = Currency::where('enabled', true)
             ->orderByRaw('is_default DESC')

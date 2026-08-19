@@ -312,7 +312,7 @@ class StripeGateway implements BillingGatewayInterface
                 $subscription,
                 $subscription->plan,
                 (int) ($invoice->amount_paid ?? 0),
-                strtoupper($invoice->currency ?? 'USD'),
+                strtoupper($invoice->currency ?? 'INR'),
             );
         }
     }
@@ -333,7 +333,7 @@ class StripeGateway implements BillingGatewayInterface
 
         $invoiceId = $invoice->id ?? 'unknown';
         $amount = number_format(($invoice->amount_due ?? 0) / 100, 2);
-        $currency = strtoupper($invoice->currency ?? 'USD');
+        $currency = strtoupper($invoice->currency ?? 'INR');
 
         // Mark the subscription as past_due if the gateway hasn't already, so the
         // app gates access correctly while Stripe retries the payment.

@@ -17,7 +17,7 @@ export default function ClientSettingsIndex({
     const { flash = {} } = usePage().props;
     const form = useForm({
         locale: preferences.locale ?? 'en',
-        display_currency: preferences.display_currency ?? 'USD',
+        display_currency: preferences.display_currency ?? 'INR',
         theme: preferences.theme ?? 'light',
         timezone: preferences.timezone ?? browserTz() ?? 'Asia/Dhaka',
         client_name: client?.name ?? '',

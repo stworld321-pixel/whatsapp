@@ -4,6 +4,7 @@ namespace App\Services\Billing;
 
 use App\Contracts\BillingGatewayInterface;
 use App\Models\PaymentGatewayConfig;
+use App\Services\CurrencyService;
 
 class BillingGatewayRegistry
 {
@@ -53,6 +54,7 @@ class BillingGatewayRegistry
                         $successUrl,
                         $cancelUrl,
                         $creds['webhook_secret'] ?? $creds['webhook_id'] ?? '',
+                        app(CurrencyService::class),
                         $creds['currency'] ?? config('billing.gateways.paypal.currency', 'USD')
                     );
                 }
@@ -193,6 +195,7 @@ class BillingGatewayRegistry
                 $config['paypal']['success_url'] ?? '',
                 $config['paypal']['cancel_url'] ?? '',
                 $config['paypal']['webhook_id'] ?? '',
+                app(CurrencyService::class),
                 $config['paypal']['currency'] ?? 'USD'
             );
         }

@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { Package, ArrowRightCircle, CreditCard, ChevronDown, FileText, RefreshCw } from 'lucide-react';
 import { formatDateTz } from '@/Utils/datetime';
 
-function formatCurrency(cents, currency = 'USD') {
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency: (currency ?? 'USD').toUpperCase() }).format(cents / 100);
+function formatCurrency(cents, currency = 'INR') {
+    return new Intl.NumberFormat(undefined, { style: 'currency', currency: (currency ?? 'INR').toUpperCase() }).format(cents / 100);
 }
 
 function ChangePlanModal({ subscription, plans, onClose }) {
@@ -84,7 +84,7 @@ function ChangePlanModal({ subscription, plans, onClose }) {
                         </div>
                         {couponStatus && (
                             <p className={`text-xs mt-1 ${couponStatus.valid ? 'text-green-600 dark:text-green-400' : 'text-coral-600'}`}>
-                                {couponStatus.valid ? t('subscription.coupon_applied', { amount: couponStatus.kind === 'percent' ? couponStatus.amount + '%' : '$' + (couponStatus.amount / 100).toFixed(2) }) : couponStatus.message}
+                                {couponStatus.valid ? t('subscription.coupon_applied', { amount: couponStatus.kind === 'percent' ? couponStatus.amount + '%' : '₹' + (couponStatus.amount / 100).toFixed(2) }) : couponStatus.message}
                             </p>
                         )}
                     </div>

@@ -56,8 +56,8 @@ class RegisteredUserController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'status' => Client::STATUS_ACTIVE,
-                'base_currency' => 'USD',
-                'currency_symbol' => '$',
+                'base_currency' => 'INR',
+                'currency_symbol' => '₹',
                 'currency_position' => 'before',
             ]);
 

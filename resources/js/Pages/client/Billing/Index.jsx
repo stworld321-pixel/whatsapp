@@ -4,10 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { CreditCard, Package, Download } from 'lucide-react';
 import { formatDateTz } from '@/Utils/datetime';
 
-function formatAmount(cents, currency = 'USD') {
+function formatAmount(cents, currency = 'INR') {
     return new Intl.NumberFormat(undefined, {
         style: 'currency',
-        currency: currency || 'USD',
+        currency: currency || 'INR',
     }).format((cents || 0) / 100);
 }
 

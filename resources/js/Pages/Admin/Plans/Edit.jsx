@@ -4,7 +4,7 @@ import { Button, Modal } from '@/Components/ui';
 import PlanForm from './PlanForm';
 import { useTranslation } from 'react-i18next';
 
-const emptyPlan = (currency = 'USD') => ({
+const emptyPlan = (currency = 'INR') => ({
     name: '',
     slug: '',
     description: '',
@@ -23,7 +23,7 @@ const emptyPlan = (currency = 'USD') => ({
     white_label_enabled: false,
 });
 
-export default function AdminPlansEdit({ plan, currencies = [], defaultCurrency = 'USD' }) {
+export default function AdminPlansEdit({ plan, currencies = [], defaultCurrency = 'INR' }) {
     const { t } = useTranslation();
     const isEdit = !!plan?.id;
 

@@ -3,7 +3,7 @@ import { Modal } from '@/Components/ui';
 import PlanForm from './PlanForm';
 import { useTranslation } from 'react-i18next';
 
-const emptyPlan = (currency = 'USD') => ({
+const emptyPlan = (currency = 'INR') => ({
     name: '',
     slug: '',
     description: '',
@@ -21,7 +21,7 @@ const emptyPlan = (currency = 'USD') => ({
     sort_order: 0,
 });
 
-export default function PlanModal({ show, onClose, plan = null, currencies = [], defaultCurrency = 'USD' }) {
+export default function PlanModal({ show, onClose, plan = null, currencies = [], defaultCurrency = 'INR' }) {
     const { t } = useTranslation();
     const isEdit = !!plan?.id;
 

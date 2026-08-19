@@ -52,7 +52,7 @@ function DeleteConfirmModal({ show, plan, onClose, onConfirm }) {
     );
 }
 
-export default function AdminPlansIndex({ plans = [], currencies = [], defaultCurrency = 'USD' }) {
+export default function AdminPlansIndex({ plans = [], currencies = [], defaultCurrency = 'INR' }) {
     const { t } = useTranslation();
     const { flash } = usePage().props;
     const openEditPlanId = flash?.openEditPlanId ?? null;

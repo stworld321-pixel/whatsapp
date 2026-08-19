@@ -9,6 +9,7 @@ use App\Models\PaymentTransaction;
 use App\Models\Plan;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Services\CurrencyService;
 use App\Services\WebhookIdempotencyService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -26,6 +27,7 @@ class PayPalGateway implements BillingGatewayInterface
         private string $successUrl,
         private string $cancelUrl,
         private string $webhookId,
+        private CurrencyService $currency,
         private string $currencyCode = 'USD'
     ) {}
 
@@ -132,16 +134,22 @@ class PayPalGateway implements BillingGatewayInterface
             return ['error' => 'Could not obtain PayPal access token.'];
         }
 
-        $amount = number_format($priceCents / 100, 2, '.', '');
         $interval = $billingCycle === 'year' ? 'YEAR' : 'MONTH';
         $currency = $this->currencyForPlan($plan);
-        $planCurrency = strtoupper(trim((string) ($plan->currency_code ?? '')));
+        $planCurrency = strtoupper(trim((string) ($plan->currency_code ?? 'INR')));
+        $convertedCents = $this->currency->convert($priceCents, $planCurrency, $currency);
+        if ($convertedCents <= 0) {
+            return ['error' => 'Unable to convert amount for PayPal checkout.'];
+        }
+        $amount = number_format($convertedCents / 100, 2, '.', '');
         if ($planCurrency !== '' && $planCurrency !== $currency) {
             Log::warning('PayPal currency override applied', [
                 'user_id' => $user->id,
                 'plan_id' => $plan->id,
                 'plan_currency' => $planCurrency,
                 'paypal_currency' => $currency,
+                'original_cents' => $priceCents,
+                'converted_cents' => $convertedCents,
             ]);
         }
 
@@ -387,7 +395,7 @@ class PayPalGateway implements BillingGatewayInterface
                 ->exists();
 
         $amountCents = (int) round((float) ($resource['amount']['total'] ?? 0) * 100);
-        $currency = $resource['amount']['currency'] ?? 'USD';
+        $currency = $resource['amount']['currency'] ?? 'INR';
 
         $transaction = PaymentTransaction::create([
             'user_id' => $subscription?->user_id,
@@ -518,7 +526,7 @@ class PayPalGateway implements BillingGatewayInterface
         if ($amountCents) {
             $body['amount'] = [
                 'value' => number_format($amountCents / 100, 2, '.', ''),
-                'currency_code' => strtoupper($transaction->currency_code ?? 'USD'),
+                'currency_code' => strtoupper($transaction->currency_code ?? 'INR'),
             ];
         }
 

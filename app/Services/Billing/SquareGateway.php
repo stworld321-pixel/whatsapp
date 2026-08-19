@@ -98,7 +98,7 @@ class SquareGateway implements BillingGatewayInterface
             return ['error' => 'Plan has no price for this billing cycle.'];
         }
 
-        $currency = strtoupper($plan->currency_code ?? 'USD');
+        $currency = strtoupper($plan->currency_code ?? 'INR');
 
         // 1) Upsert a catalog subscription plan variation.
         $variationId = $this->upsertPlanVariation($plan, $billingCycle, $priceCents, $currency);
@@ -320,7 +320,7 @@ class SquareGateway implements BillingGatewayInterface
 
         // Invoice payloads don't carry the paid amount reliably; use the plan price.
         $amountCents = $subscription->plan?->priceCentsForCycle($subscription->billing_cycle ?? 'month') ?? 0;
-        $currency = strtoupper($subscription->gateway_metadata['currency'] ?? 'USD');
+        $currency = strtoupper($subscription->gateway_metadata['currency'] ?? 'INR');
 
         $transaction = PaymentTransaction::create([
             'user_id' => $subscription->user_id,
@@ -431,7 +431,7 @@ class SquareGateway implements BillingGatewayInterface
             return ['ok' => false, 'error' => 'New plan has no price for this billing cycle.'];
         }
 
-        $currency = strtoupper($newPlan->currency_code ?? ($subscription->gateway_metadata['currency'] ?? 'USD'));
+        $currency = strtoupper($newPlan->currency_code ?? ($subscription->gateway_metadata['currency'] ?? 'INR'));
 
         $variationId = $this->upsertPlanVariation($newPlan, $billingCycle, $priceCents, $currency);
         if (! $variationId) {

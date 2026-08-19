@@ -5,13 +5,13 @@ import { ChevronUp, ChevronDown, MoreVertical, Pencil, Copy, Power, PowerOff, Tr
 import { useTranslation } from 'react-i18next';
 import { LIMIT_LABELS } from './PlanLimits';
 
-function formatPrice(cents, currency = 'USD') {
+function formatPrice(cents, currency = 'INR') {
     if (cents == null) return '—';
     const amount = (cents || 0) / 100;
     try {
         return new Intl.NumberFormat(undefined, {
             style: 'currency',
-            currency: currency || 'USD',
+            currency: currency || 'INR',
             minimumFractionDigits: 0,
             maximumFractionDigits: 0,
         }).format(amount);

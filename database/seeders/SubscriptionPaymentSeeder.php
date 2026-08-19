@@ -60,7 +60,7 @@ class SubscriptionPaymentSeeder extends Seeder
                         'user_id' => $user->id,
                         'gateway' => $gateway,
                         'amount_cents' => $amountCents,
-                        'currency_code' => $plan->currency_code ?? 'USD',
+                        'currency_code' => $plan->currency_code ?? 'INR',
                         'status' => 'succeeded',
                         'payload' => [],
                     ]
@@ -74,7 +74,7 @@ class SubscriptionPaymentSeeder extends Seeder
                         'user_id' => $user->id,
                         'gateway' => $gateway,
                         'amount_cents' => $amountCents,
-                        'currency_code' => $plan->currency_code ?? 'USD',
+                        'currency_code' => $plan->currency_code ?? 'INR',
                         'status' => 'succeeded',
                         'payload' => [],
                         'created_at' => Carbon::now()->subMonth(),

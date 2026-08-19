@@ -1007,7 +1007,7 @@ export default function Welcome({ auth, canLogin, canRegister, landing = {}, pla
             applicationCategory: 'BusinessApplication',
             operatingSystem: 'Web',
             description: metaDesc,
-            offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+            offers: { '@type': 'Offer', price: '0', priceCurrency: 'INR' },
             aggregateRating: { '@type': 'AggregateRating', ratingValue: '4.9', ratingCount: '1280' },
         },
     ];

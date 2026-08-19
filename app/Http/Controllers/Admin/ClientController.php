@@ -94,8 +94,8 @@ class ClientController extends Controller
         ]);
 
         $validated['status'] = $validated['status'] ?? 'active';
-        $validated['base_currency'] = $validated['base_currency'] ?? 'USD';
-        $validated['currency_symbol'] = $validated['currency_symbol'] ?? '$';
+        $validated['base_currency'] = $validated['base_currency'] ?? 'INR';
+        $validated['currency_symbol'] = $validated['currency_symbol'] ?? '₹';
         $validated['currency_position'] = $validated['currency_position'] ?? 'before';
 
         $client = Client::create($validated);

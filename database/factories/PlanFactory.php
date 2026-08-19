@@ -16,7 +16,7 @@ class PlanFactory extends Factory
             'name' => $name,
             'slug' => str_replace(' ', '-', strtolower($name)) . '-' . fake()->unique()->numberBetween(1, 9999),
             'price_cents' => 999,
-            'currency_code' => 'USD',
+            'currency_code' => 'INR',
             'interval' => 'month',
             'sort_order' => 0,
             'enabled' => true,

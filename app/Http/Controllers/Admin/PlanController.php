@@ -93,7 +93,7 @@ class PlanController extends Controller
         return Inertia::render('Admin/Plans/Index', [
             'plans' => $plans,
             'currencies' => $this->currencyOptions(),
-            'defaultCurrency' => Currency::defaultCode() ?? 'USD',
+            'defaultCurrency' => Currency::defaultCode() ?? 'INR',
         ]);
     }
 
@@ -113,7 +113,7 @@ class PlanController extends Controller
         return Inertia::render('Admin/Plans/Edit', [
             'plan' => $this->planToArray($plan),
             'currencies' => $this->currencyOptions(),
-            'defaultCurrency' => Currency::defaultCode() ?? 'USD',
+            'defaultCurrency' => Currency::defaultCode() ?? 'INR',
         ]);
     }
 

@@ -768,7 +768,7 @@ class AnalyticsService
             ->map(fn ($p) => [
                 'id' => $p->id,
                 'amount_cents' => (int) $p->amount_cents,
-                'currency' => $p->currency_code ?? $p->currency ?? 'USD',
+                'currency' => $p->currency_code ?? $p->currency ?? 'INR',
                 'status' => $p->status,
                 'gateway' => $p->gateway,
                 'user' => $p->user?->name ?? $p->user?->email,

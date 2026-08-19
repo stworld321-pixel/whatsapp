@@ -71,7 +71,7 @@
                     @endif
                 </td>
                 <td style="text-align:right;">
-                    {{ strtoupper($transaction->currency ?? $transaction->currency_code ?? 'USD') }}
+                    {{ strtoupper($transaction->currency ?? $transaction->currency_code ?? 'INR') }}
                     {{ number_format($transaction->amount_cents / 100, 2) }}
                 </td>
                 <td style="text-align:center;">
@@ -106,7 +106,7 @@
     <div class="total-row grand-total">
         <div class="total-label" style="font-weight:bold;">Total</div>
         <div class="total-value" style="font-size:16px;">
-            {{ strtoupper($transaction->currency ?? $transaction->currency_code ?? 'USD') }}
+            {{ strtoupper($transaction->currency ?? $transaction->currency_code ?? 'INR') }}
             {{ number_format($transaction->amount_cents / 100, 2) }}
         </div>
     </div>

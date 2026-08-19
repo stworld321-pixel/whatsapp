@@ -261,7 +261,7 @@ class PaddleGateway implements BillingGatewayInterface
             : null;
 
         $amount = $resource['details']['totals']['grand_total'] ?? ($resource['details']['totals']['total'] ?? 0);
-        $currency = $resource['details']['totals']['currency_code'] ?? 'USD';
+        $currency = $resource['details']['totals']['currency_code'] ?? 'INR';
         $amountCents = (int) round((float) $amount * 100);
 
         // Paddle marks recurring renewal charges with origin 'subscription_recurring';
