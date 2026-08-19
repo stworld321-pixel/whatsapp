@@ -15,12 +15,12 @@
     <head>
         @php
             try {
-                $primaryColor = \App\Models\SystemSetting::get('primary_color') ?: '#467235';
+                $primaryColor = \App\Models\SystemSetting::get('primary_color') ?: '#3ba6e8';
                 if (! preg_match('/^#[0-9A-Fa-f]{6}$/', $primaryColor)) {
-                    $primaryColor = '#467235';
+                    $primaryColor = '#3ba6e8';
                 }
             } catch (\Throwable) {
-                $primaryColor = '#467235';
+                $primaryColor = '#3ba6e8';
             }
         @endphp
         <style>

@@ -2,6 +2,7 @@ import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, Plus, X } from 'lucide-react';
+import ApplicationLogo from '@/Components/ApplicationLogo';
 
 function NavGroup({ label, items, onClose }) {
     const [open, setOpen] = useState(true);
@@ -94,7 +95,7 @@ export default function Sidebar({
                 ) : logo ? (
                     logo
                 ) : (
-                    <img src="/whatsmine-logo.png" alt={appName} className="h-10 w-auto max-w-[200px] object-contain" />
+                    <ApplicationLogo className="h-10 w-auto fill-current text-white/90" alt={appName} />
                 )}
             </div>
 

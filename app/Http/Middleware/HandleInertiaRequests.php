@@ -153,7 +153,7 @@ class HandleInertiaRequests extends Middleware
                 'app_tagline' => SystemSetting::get('app_tagline') ?: config('saas.tagline'),
                 'support_email' => SystemSetting::get('support_email') ?: config('saas.support_email'),
                 'docs_url' => SystemSetting::get('docs_url') ?: config('saas.docs_url'),
-                'primary_color' => SystemSetting::get('primary_color') ?: config('saas.branding.primary_color', '#467235'),
+                'primary_color' => SystemSetting::get('primary_color') ?: config('saas.branding.primary_color', '#3ba6e8'),
                 'logo_url' => $logoPath ? $this->brandingAssetUrl('logo', 'app_logo_path') : null,
                 'favicon_url' => $faviconPath ? $this->brandingAssetUrl('favicon', 'app_favicon_path') : null,
             ];
@@ -163,7 +163,7 @@ class HandleInertiaRequests extends Middleware
                 'app_tagline' => config('saas.tagline'),
                 'support_email' => config('saas.support_email'),
                 'docs_url' => config('saas.docs_url'),
-                'primary_color' => config('saas.branding.primary_color', '#467235'),
+                'primary_color' => config('saas.branding.primary_color', '#3ba6e8'),
                 'logo_url' => null,
                 'favicon_url' => null,
             ];

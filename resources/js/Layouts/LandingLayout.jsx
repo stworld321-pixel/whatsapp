@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import { Dropdown } from '@/Components/ui';
+import ApplicationLogo from '@/Components/ApplicationLogo';
 import { useTheme } from '@/context/ThemeContext';
 import { useLocale } from '@/hooks/useLocale';
 import { Globe } from 'lucide-react';
@@ -58,7 +59,7 @@ export default function LandingLayout({ children }) {
     const supportedLocales = page.props.supportedLocales ?? { en: 'English' };
     const localeEntries = Object.entries(supportedLocales);
     const appName = page.props.branding?.app_name || import.meta.env.VITE_APP_NAME || 'SocialSyncBot';
-    const logoUrl = page.props.branding?.logo_url || '/whatsmine-logo.png';
+    const logoUrl = page.props.branding?.logo_url;
     const [mobileOpen, setMobileOpen] = useState(false);
     const landing = page.props.landing ?? {};
 
@@ -89,7 +90,11 @@ export default function LandingLayout({ children }) {
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-6">
                     {/* Logo */}
                     <Link href={route('home')} className="flex items-center group flex-shrink-0">
-                        <img src={logoUrl} alt={appName} className="h-9 w-auto max-w-[180px] object-contain transition-opacity group-hover:opacity-80" />
+                        {logoUrl ? (
+                            <img src={logoUrl} alt={appName} className="h-9 w-auto max-w-[180px] object-contain transition-opacity group-hover:opacity-80" />
+                        ) : (
+                            <ApplicationLogo className="h-9 w-auto fill-current text-white/90 transition-opacity group-hover:opacity-80" alt={appName} />
+                        )}
                     </Link>
 
                     {/* Desktop nav links */}
@@ -275,7 +280,11 @@ export default function LandingLayout({ children }) {
                         {/* Brand */}
                         <div className="col-span-2 sm:col-span-1">
                             <Link href={route('home')} className="flex items-center mb-4">
-                                <img src={logoUrl} alt={appName} className="h-9 w-auto max-w-[180px] object-contain" />
+                                {logoUrl ? (
+                                    <img src={logoUrl} alt={appName} className="h-9 w-auto max-w-[180px] object-contain" />
+                                ) : (
+                                    <ApplicationLogo className="h-9 w-auto fill-current text-white/90" alt={appName} />
+                                )}
                             </Link>
                             <p className="text-sm text-neutral-400 leading-relaxed max-w-xs">
                                 {t('landing.footer_tagline')}
