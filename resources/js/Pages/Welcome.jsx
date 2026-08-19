@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import LandingLayout from '@/Layouts/LandingLayout';
 import SeoHead from '@/Components/SeoHead';
 import { BrandMark } from '@/Components/BrandIcons';
@@ -466,7 +466,14 @@ function HowItWorksSection({ landing, canRegister }) {
 function PricingSection({ plans }) {
     const { t } = useTranslation();
     const [yearly, setYearly] = useState(false);
+    const { displayCurrency = 'INR' } = usePage().props;
     if (!plans || !plans.length) return null;
+
+    const formatPrice = (value) => new Intl.NumberFormat(undefined, {
+        style: 'currency',
+        currency: (displayCurrency || 'INR').toUpperCase(),
+        maximumFractionDigits: 0,
+    }).format(Number(value || 0));
 
     return (
         <section id="pricing" className="py-16 sm:py-24 bg-neutral-50 dark:bg-neutral-900/30">
@@ -524,7 +531,7 @@ function PricingSection({ plans }) {
 
                                 <div className="mt-5 mb-6">
                                     <span className={`text-4xl font-bold ${plan.is_featured ? 'text-white' : 'text-neutral-900 dark:text-white'}`}>
-                                        {price === 0 ? t('welcome.free') : `$${parseFloat(price).toFixed(0)}`}
+                                        {price === 0 ? t('welcome.free') : formatPrice(price)}
                                     </span>
                                     {price > 0 && (
                                         <span className={`text-sm ml-1 ${plan.is_featured ? 'text-neutral-400' : 'text-neutral-400'}`}>{yearly ? t('welcome.per_year') : t('welcome.per_month')}</span>

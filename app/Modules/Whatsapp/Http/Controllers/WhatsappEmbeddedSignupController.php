@@ -2,6 +2,7 @@
 
 namespace App\Modules\Whatsapp\Http\Controllers;
 
+use App\Events\ChannelConnected;
 use App\Http\Controllers\Controller;
 use App\Modules\Integrations\Services\CredentialResolver;
 use App\Modules\Whatsapp\Jobs\TemplateSyncJob;
@@ -172,6 +173,8 @@ class WhatsappEmbeddedSignupController extends Controller
         if ($phoneCount > 0) {
             TemplateSyncJob::dispatch($waba->id)->onQueue('whatsapp');
         }
+
+        event(new ChannelConnected((int) $workspaceId, 'whatsapp', $wabaData['name'] ?? 'WhatsApp', max(1, $phoneCount)));
 
         $warnings = array_filter([$webhookError, $syncError, $phoneCount === 0 ? 'No phone numbers were synced. Use Sync from Meta on Channel Setup or reconnect.' : null]);
 

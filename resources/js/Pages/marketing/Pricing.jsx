@@ -28,7 +28,13 @@ function StarRating() {
 export default function Pricing({ landing = {}, plans = [], canRegister }) {
     const { t } = useTranslation();
     const [yearly, setYearly] = useState(false);
+    const { displayCurrency = 'INR' } = usePage().props;
     const s = (key, def = '') => landing[`landing.${key}`] ?? def;
+    const formatPrice = (value) => new Intl.NumberFormat(undefined, {
+        style: 'currency',
+        currency: (displayCurrency || 'INR').toUpperCase(),
+        maximumFractionDigits: 0,
+    }).format(Number(value || 0));
 
     const faqs = [1, 2, 3, 4, 5].map((i) => ({
         q: s(`faq_${i}_q`),
@@ -122,7 +128,7 @@ export default function Pricing({ landing = {}, plans = [], canRegister }) {
                                         </div>
                                         <div className="mt-5 mb-6">
                                             <span className={`text-4xl font-bold ${plan.is_featured ? 'text-white' : 'text-neutral-900 dark:text-white'}`}>
-                                                {price === 0 ? t('welcome.free') : `$${parseFloat(price).toFixed(0)}`}
+                                                {price === 0 ? t('welcome.free') : formatPrice(price)}
                                             </span>
                                             {price > 0 && (
                                                 <span className={`text-sm ml-1 ${plan.is_featured ? 'text-neutral-400' : 'text-neutral-400'}`}>{yearly ? t('welcome.per_year') : t('welcome.per_month')}</span>

@@ -2,6 +2,7 @@
 
 namespace App\Modules\Inbox\Http\Controllers;
 
+use App\Events\ChannelConnected;
 use App\Http\Controllers\Controller;
 use App\Modules\AI\Models\AiChatbot;
 use App\Modules\Integrations\Services\CredentialResolver;
@@ -233,6 +234,8 @@ class InboxSetupController extends Controller
             return response()->json(['message' => $message], 422);
         }
 
+        event(new ChannelConnected((int) $workspaceId, 'instagram', 'Instagram', $connected));
+
         return response()->json(['success' => true, 'connected' => $connected]);
     }
 
@@ -377,6 +380,8 @@ class InboxSetupController extends Controller
                 'message' => 'No Facebook Pages found on your account. Make sure you manage at least one Facebook Page.',
             ], 422);
         }
+
+        event(new ChannelConnected((int) $workspaceId, 'messenger', 'Messenger', $connected));
 
         return response()->json(['success' => true, 'connected' => $connected]);
     }

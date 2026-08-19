@@ -2,6 +2,7 @@
 
 namespace App\Modules\Social\Http\Controllers;
 
+use App\Events\ChannelConnected;
 use App\Http\Controllers\Controller;
 use App\Modules\Social\Models\SocialAccount;
 use App\Modules\Social\Services\Drivers\FacebookDriver;
@@ -43,9 +44,18 @@ class SocialAccountController extends Controller
     public function index(Request $request): Response
     {
         $wid = $this->workspaceId($request);
+        $planLimits = app(PlanLimitService::class);
         $accounts = SocialAccount::where('workspace_id', $wid)->get();
 
-        return Inertia::render('Social/Accounts/Index', ['accounts' => $accounts]);
+        $planRequired = ! $planLimits->hasPlan($wid);
+
+        return Inertia::render('Social/Accounts/Index', [
+            'accounts' => $accounts,
+            'planRequired' => $planRequired,
+            'planRequiredMessage' => $planRequired
+                ? 'A plan is required before connecting social accounts. Please activate a plan to continue.'
+                : null,
+        ]);
     }
 
     public function connect(Request $request, string $network): RedirectResponse
@@ -220,6 +230,10 @@ class SocialAccountController extends Controller
                     ->with('error', 'No Instagram Business accounts were found linked to your Facebook Pages. Make sure your Instagram account is set to Business type and connected to a Facebook Page.');
             }
 
+            if ($connected > 0) {
+                event(new ChannelConnected((int) $wid, $network, ucfirst($network), $connected));
+            }
+
             return redirect()->route('client.social.accounts.index')
                 ->with('success', $connected.' '.ucfirst($network).' account(s) connected.');
         }
@@ -249,6 +263,8 @@ class SocialAccountController extends Controller
                 'active' => true,
             ]
         );
+
+        event(new ChannelConnected((int) $wid, $network, ucfirst($network), 1));
 
         return redirect()->route('client.social.accounts.index')->with('success', ucfirst($network).' account connected.');
     }

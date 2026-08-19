@@ -22,6 +22,8 @@ export default function SocialAccountsIndex({ accounts }) {
     const { t } = useTranslation();
     const { props } = usePage();
     const flash = props.flash ?? {};
+    const planRequired = props.planRequired ?? false;
+    const planRequiredMessage = props.planRequiredMessage ?? null;
 
     // Group accounts by network — supports multiple per network
     const byNetwork = accounts.reduce((acc, a) => {
@@ -67,6 +69,11 @@ export default function SocialAccountsIndex({ accounts }) {
                 {flash.error && (
                     <div className="rounded-lg bg-red-50 dark:bg-red-900/30 text-red-800 dark:text-red-200 px-4 py-2.5 text-sm">
                         {flash.error}
+                    </div>
+                )}
+                {planRequired && planRequiredMessage && (
+                    <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
+                        {planRequiredMessage}
                     </div>
                 )}
 
@@ -142,7 +149,10 @@ export default function SocialAccountsIndex({ accounts }) {
                                     <div className="p-3 mt-auto">
                                         <a
                                             href={route('client.social.accounts.connect', net.id)}
+                                            onClick={planRequired ? (e) => e.preventDefault() : undefined}
                                             className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 px-3 py-2 text-xs font-medium text-neutral-600 dark:text-neutral-300 hover:border-brand-500 hover:text-brand-600 dark:hover:text-brand-400 transition"
+                                            aria-disabled={planRequired}
+                                            tabIndex={planRequired ? -1 : 0}
                                         >
                                             {connected.length > 0 ? (
                                                 <>

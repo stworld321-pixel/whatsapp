@@ -1173,6 +1173,12 @@ export default function ChannelSetup({
                     {flash.success}
                 </div>
             )}
+            {flash.error && (
+                <div className="mb-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-4 py-3 text-sm flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4 shrink-0" />
+                    {flash.error}
+                </div>
+            )}
 
             {/* No chatbots warning */}
             {chatbots.length === 0 && (
@@ -1341,5 +1347,4 @@ export default function ChannelSetup({
         </ClientLayout>
     );
 }
-
 

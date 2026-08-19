@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Events\AutomationFailed;
 use App\Events\AutomationWebhookReceived;
 use App\Events\CampaignCompleted;
+use App\Events\ChannelConnected;
 use App\Events\CommerceEventReceived;
 use App\Events\ContactCreated;
 use App\Events\ConversationAssigned;
@@ -21,6 +22,7 @@ use App\Listeners\DispatchOutboundWebhookListener;
 use App\Listeners\LogSuccessfulLogin;
 use App\Listeners\SendAutomationFailedNotification;
 use App\Listeners\SendCampaignCompletedNotification;
+use App\Listeners\SendChannelConnectedNotification;
 use App\Listeners\SendConversationAssignedNotification;
 use App\Listeners\SendNewMessageNotification;
 use App\Listeners\SendPlanChangedNotification;
@@ -96,6 +98,7 @@ class AppServiceProvider extends ServiceProvider
         // ── Notification bridging listeners ──────────────────────────────────
         Event::listen(MessageReceived::class, SendNewMessageNotification::class);
         Event::listen(CampaignCompleted::class, SendCampaignCompletedNotification::class);
+        Event::listen(ChannelConnected::class, SendChannelConnectedNotification::class);
         Event::listen(AutomationFailed::class, SendAutomationFailedNotification::class);
         Event::listen(ConversationAssigned::class, SendConversationAssignedNotification::class);
 
