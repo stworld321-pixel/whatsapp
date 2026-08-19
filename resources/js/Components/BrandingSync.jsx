@@ -1,7 +1,7 @@
 import { usePage } from '@inertiajs/react';
 import { useLayoutEffect } from 'react';
 
-function normalizeHexColor(value, fallback = '#467235') {
+function normalizeHexColor(value, fallback = '#3ba6e8') {
     if (typeof value !== 'string') return fallback;
     const trimmed = value.trim();
     return /^#[0-9A-Fa-f]{6}$/.test(trimmed) ? trimmed : fallback;

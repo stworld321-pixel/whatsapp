@@ -4,7 +4,7 @@
     // Resolve branding with graceful fallback (mirrors HandleInertiaRequests::brandingShare()).
     try {
         $appName  = SystemSetting::get('app_name') ?: config('saas.app_name', config('app.name'));
-        $primary  = SystemSetting::get('primary_color') ?: config('saas.branding.primary_color', '#467235');
+        $primary  = SystemSetting::get('primary_color') ?: config('saas.branding.primary_color', '#3ba6e8');
         $logoPath = SystemSetting::get('app_logo_path');
         $logoUpdatedAt = SystemSetting::where('key', 'app_logo_path')->value('updated_at');
         $logoUrl  = $logoPath
@@ -23,7 +23,7 @@
             : null;
     } catch (\Throwable) {
         $appName  = config('saas.app_name', config('app.name'));
-        $primary  = config('saas.branding.primary_color', '#467235');
+        $primary  = config('saas.branding.primary_color', '#3ba6e8');
         $logoUrl  = null;
         $faviconUrl = null;
     }
