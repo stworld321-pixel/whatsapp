@@ -62,7 +62,7 @@ class WorkspaceController extends Controller
             'owner_id' => $request->user()->id,
             'client_id' => $request->user()->client_id,
             'default_locale' => $request->user()->locale ?? 'en',
-            'currency_code' => $request->user()->display_currency,
+            'currency_code' => $request->user()->client?->base_currency ?? 'INR',
         ]);
 
         $workspace->members()->attach($request->user()->id, ['role' => 'owner']);

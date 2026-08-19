@@ -233,9 +233,11 @@ class HandleInertiaRequests extends Middleware
         $adminUser = $request->user('admin');
         $isAdminRoute = $request->routeIs('admin.*') && ! $request->routeIs('admin.login');
 
-        $displayCurrency = $user?->display_currency
-            ?? ($user?->workspace?->currency_code ?? null)
-            ?? $request->session()->get('display_currency')
+        // Keep display currency consistent across users in the same workspace.
+        // Per-user display_currency caused different accounts to see different
+        // currencies on the same app pages.
+        $displayCurrency = $user?->workspace?->currency_code
+            ?? $user?->client?->base_currency
             ?? Currency::defaultCode()
             ?? 'INR';
 

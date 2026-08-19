@@ -20,9 +20,8 @@ class PricingController extends Controller
     public function index(Request $request): Response
     {
         $user = $request->user();
-        $displayCurrency = $user?->display_currency
-            ?? $user?->workspace?->currency_code
-            ?? $request->session()->get('display_currency')
+        $displayCurrency = $user?->workspace?->currency_code
+            ?? $user?->client?->base_currency
             ?? Currency::defaultCode();
 
         $plans = Plan::where('enabled', true)
