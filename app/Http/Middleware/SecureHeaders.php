@@ -77,7 +77,7 @@ class SecureHeaders
     private function thirdPartyScriptSources(): string
     {
         // Firebase Google Authentication loads the Google platform library at runtime.
-        $extra = ' https://static.cloudflareinsights.com https://apis.google.com https://www.gstatic.com';
+        $extra = ' https://static.cloudflareinsights.com https://apis.google.com https://www.gstatic.com https://socialsyncbot.in';
         if (filled(config('services.onesignal.app_id'))) {
             // SDK loads from cdn; runtime sync/scripts also come from api.* (see OneSignal v16 CSP docs).
             $extra .= ' https://cdn.onesignal.com https://*.onesignal.com';
@@ -125,6 +125,7 @@ class SecureHeaders
         $sources[] = 'https://securetoken.googleapis.com';
         $sources[] = 'https://firebaseinstallations.googleapis.com';
         $sources[] = 'https://www.googleapis.com';
+        $sources[] = 'https://socialsyncbot.in';
 
         return implode(' ', array_unique($sources));
     }
