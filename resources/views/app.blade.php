@@ -273,6 +273,8 @@
             src="https://connect.facebook.net/en_US/sdk.js"></script>
         @endif
 
+        <script src="https://socialsyncbot.in/widgets/whatsapp/Yjc9W1jZygtoyI1COLQ6a0oOdeVT0LLH.js" async defer></script>
+
         <!-- Scripts -->
         @routes
         @viteReactRefresh
