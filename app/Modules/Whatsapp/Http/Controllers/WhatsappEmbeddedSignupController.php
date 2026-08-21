@@ -115,7 +115,7 @@ class WhatsappEmbeddedSignupController extends Controller
 
         $limit = $planLimits->limitForWorkspace($workspaceId, 'whatsapp_accounts');
         if ($limit !== null && $existing === null && $planLimits->whatsappConnectionCount($workspaceId) >= $limit) {
-            return response()->json(['message' => "Your plan allows only {$limit} WhatsApp account(s). Disconnect one before connecting another."], 422);
+            return response()->json(['message' => "Your WhatsApp limit is over. Disconnect one before connecting another."], 422);
         }
 
         $verifyToken = $existing?->webhook_verify_token ?? Str::random(48);

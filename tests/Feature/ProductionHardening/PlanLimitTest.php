@@ -6,11 +6,14 @@ use App\Models\Client;
 use App\Models\ClientSubscription;
 use App\Models\Plan;
 use App\Modules\AI\Models\AiChatbot;
+use App\Modules\AI\Models\AiKnowledgeBase;
 use App\Modules\Automation\Models\Automation;
 use App\Modules\Broadcasting\Models\Campaign;
+use App\Modules\Integrations\Models\IntegrationConfig;
 use App\Modules\Whatsapp\Models\WhatsappBusinessAccount;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
@@ -42,7 +45,7 @@ class PlanLimitTest extends TestCase
         $response = $this->actingAs($user)
             ->post(route('client.campaigns.launch', $campaign));
 
-        $response->assertRedirect('/billing');
+        $response->assertRedirect(route('client.billing.index'));
         $response->assertSessionHas('upgrade_required');
     }
 
@@ -63,7 +66,7 @@ class PlanLimitTest extends TestCase
             'location' => 'Dhaka',
         ]);
 
-        $response->assertRedirect('/billing');
+        $response->assertRedirect(route('client.billing.index'));
         $response->assertSessionHas('upgrade_required');
     }
 
@@ -93,6 +96,84 @@ class PlanLimitTest extends TestCase
         $response->assertJson([
             'message' => 'A plan is required before connecting WhatsApp accounts.',
         ]);
+    }
+
+    public function test_knowledge_base_creation_is_blocked_when_plan_limit_is_exhausted(): void
+    {
+        $data = $this->createWorkspaceContext();
+        $user = $data['user'];
+        $workspace = $data['workspace'];
+        $client = $data['client'];
+
+        $plan = Plan::factory()->create(['limits' => ['knowledge_bases' => 0]]);
+        $this->attachPlanToClient($client, $plan);
+
+        AiKnowledgeBase::create([
+            'workspace_id' => $workspace->id,
+            'name' => 'Existing KB',
+            'status' => 'active',
+        ]);
+
+        $response = $this->actingAs($user)->post(route('client.ai.knowledge-bases.store'), [
+            'name' => 'Blocked KB',
+        ]);
+
+        $response->assertRedirect(route('client.billing.index'));
+        $response->assertSessionHas('upgrade_required');
+        $this->assertDatabaseMissing('ai_knowledge_bases', ['name' => 'Blocked KB']);
+    }
+
+    public function test_whatsapp_second_connection_is_blocked_when_plan_limit_is_exhausted(): void
+    {
+        $data = $this->createWorkspaceContext();
+        $user = $data['user'];
+        $workspace = $data['workspace'];
+        $client = $data['client'];
+
+        $plan = Plan::factory()->create(['limits' => ['whatsapp_accounts' => 1]]);
+        $this->attachPlanToClient($client, $plan);
+
+        IntegrationConfig::create([
+            'provider' => 'meta_app',
+            'label' => 'Meta App',
+            'mode' => 'live',
+            'enabled' => true,
+            'credentials' => [
+                'app_id' => 'test_meta_app_id',
+                'app_secret' => 'test_meta_app_secret',
+            ],
+        ]);
+
+        WhatsappBusinessAccount::create([
+            'workspace_id' => $workspace->id,
+            'waba_id' => '111111111111111',
+            'status' => 'active',
+            'credentials' => ['access_token' => 'existing-token'],
+            'meta_json' => [],
+        ]);
+
+        Http::fake([
+            'graph.facebook.com/v20.0/oauth/access_token*' => Http::sequence()
+                ->push(['access_token' => 'short-token'], 200)
+                ->push(['access_token' => 'long-token'], 200),
+            'graph.facebook.com/v20.0/222222222222222*' => Http::response([
+                'id' => '222222222222222',
+                'name' => 'Second WABA',
+                'currency' => 'INR',
+                'timezone_id' => '5',
+            ], 200),
+        ]);
+
+        $response = $this->actingAs($user)->postJson(route('client.whatsapp.setup.embedded-signup'), [
+            'code' => 'test-code',
+            'waba_id' => '222222222222222',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJson([
+            'message' => 'Your WhatsApp limit is over. Disconnect one before connecting another.',
+        ]);
+        $this->assertDatabaseCount('whatsapp_business_accounts', 1);
     }
 
     public function test_channel_setup_page_renders_without_a_plan(): void
@@ -178,7 +259,7 @@ class PlanLimitTest extends TestCase
             'name' => 'Blocked Bot',
         ]);
 
-        $response->assertRedirect('/billing');
+        $response->assertRedirect(route('client.billing.index'));
         $response->assertSessionHas('upgrade_required');
         $this->assertDatabaseMissing('ai_chatbots', ['name' => 'Blocked Bot']);
     }
@@ -205,7 +286,7 @@ class PlanLimitTest extends TestCase
             'name' => 'Blocked Automation',
         ]);
 
-        $response->assertRedirect('/billing');
+        $response->assertRedirect(route('client.billing.index'));
         $response->assertSessionHas('upgrade_required');
         $this->assertDatabaseMissing('automations', ['name' => 'Blocked Automation']);
     }
@@ -237,7 +318,7 @@ class PlanLimitTest extends TestCase
             ],
         ]);
 
-        $response->assertRedirect('/billing');
+        $response->assertRedirect(route('client.billing.index'));
         $response->assertSessionHas('upgrade_required');
         $this->assertDatabaseMissing('whatsapp_templates', ['name' => 'blocked_template']);
     }
@@ -260,7 +341,7 @@ class PlanLimitTest extends TestCase
             'status' => 'active',
         ]);
 
-        $response->assertRedirect('/billing');
+        $response->assertRedirect(route('client.billing.index'));
         $response->assertSessionHas('upgrade_required');
         $this->assertDatabaseMissing('users', ['email' => 'second@example.com']);
     }

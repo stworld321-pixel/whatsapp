@@ -82,7 +82,7 @@ class TeamController extends Controller
         $limit = $workspaceId ? $this->planLimits->limitForWorkspace($workspaceId, 'users') : null;
         $currentUsers = $client->users()->count();
         if ($limit !== null && $currentUsers >= $limit) {
-            return redirect('/billing')
+            return redirect()->route('client.billing.index')
                 ->with('upgrade_required', true)
                 ->with('upgrade_reason', "You've reached your users limit ({$currentUsers}/{$limit}).");
         }

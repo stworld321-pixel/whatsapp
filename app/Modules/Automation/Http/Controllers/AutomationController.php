@@ -225,7 +225,7 @@ class AutomationController extends Controller
         $current = Automation::where('workspace_id', $workspaceId)->count();
         if ($current >= $limit) {
             throw new HttpResponseException(
-                redirect('/billing')
+                redirect()->route('client.billing.index')
                     ->with('upgrade_required', true)
                     ->with('upgrade_reason', "You've reached your automations limit ({$current}/{$limit}).")
             );

@@ -60,7 +60,7 @@ class EnforceLimit
                 ], 402);
             }
 
-            return redirect('/billing')->with('upgrade_required', true)
+            return redirect()->route('client.billing.index')->with('upgrade_required', true)
                 ->with('upgrade_reason', "You've reached your {$limitKey} limit ({$usage}/{$limit}).");
         }
 
