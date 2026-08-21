@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Plan;
+use App\Models\Subscription;
 use App\Models\Workspace;
 use App\Modules\Shared\Models\ChannelAccount;
 use App\Modules\Social\Models\SocialAccount;
@@ -14,7 +15,26 @@ class PlanLimitService
     {
         $workspace = Workspace::with('client')->find($workspaceId);
 
-        return $workspace?->client?->effectivePlan();
+        $clientPlan = $workspace?->client?->effectivePlan();
+        if ($clientPlan) {
+            return $clientPlan;
+        }
+
+        if (! $workspace) {
+            return null;
+        }
+
+        $userPlan = Subscription::query()
+            ->whereIn('user_id', $workspace->users()->select('id'))
+            ->whereIn('status', ['active', 'trialing'])
+            ->where(function ($q) {
+                $q->whereNull('ends_at')->orWhere('ends_at', '>', now());
+            })
+            ->with('plan')
+            ->orderByDesc('id')
+            ->first()?->plan;
+
+        return $userPlan;
     }
 
     public function limitForWorkspace(int $workspaceId, string $limitKey): ?int
