@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\BillingGatewayInterface;
 use App\Models\Currency;
 use App\Models\Plan;
 use App\Services\Billing\BillingGatewayRegistry;
 use App\Services\CurrencyService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -17,9 +19,44 @@ class PricingController extends Controller
         private BillingGatewayRegistry $gateways
     ) {}
 
+    /**
+     * Try to finalize Stripe checkout on the return URL.
+     * This covers the case where the Stripe webhook is delayed or the
+     * configured success URL points to /app/pricing instead of /app/billing.
+     */
+    private function tryFulfil(Request $request, int $userId): void
+    {
+        $sessionId = $request->query('session_id');
+        if ($sessionId) {
+            $this->callFulfil('stripe', $sessionId, $userId);
+        }
+    }
+
+    private function callFulfil(string $gatewayKey, string $sessionId, int $userId): void
+    {
+        $gateway = $this->gateways->get($gatewayKey);
+        if (! $gateway instanceof BillingGatewayInterface) {
+            return;
+        }
+
+        try {
+            $gateway->fulfillCheckoutSession($sessionId);
+        } catch (\Throwable $e) {
+            Log::warning('Pricing: checkout fulfilment skipped', [
+                'gateway' => $gatewayKey,
+                'user_id' => $userId,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
     public function index(Request $request): Response
     {
         $user = $request->user();
+
+        if ($user) {
+            $this->tryFulfil($request, $user->id);
+        }
         $displayCurrency = $user?->workspace?->currency_code
             ?? $user?->client?->base_currency
             ?? Currency::defaultCode();
