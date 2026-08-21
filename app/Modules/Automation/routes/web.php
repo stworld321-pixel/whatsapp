@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web', 'client-app'])->prefix('app/automations')->name('client.automations.')->group(function () {
     Route::get('/', [AutomationController::class, 'index'])->name('index');
-    Route::post('/', [AutomationController::class, 'store'])->name('store');
+    Route::post('/', [AutomationController::class, 'store'])->name('store')->middleware('limit:automations,automations');
     Route::post('/generate', [AutomationController::class, 'generate'])->name('generate');
     Route::get('/{automation}/edit', [AutomationController::class, 'edit'])->name('edit');
     Route::put('/{automation}', [AutomationController::class, 'update'])->name('update');

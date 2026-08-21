@@ -56,13 +56,18 @@ class MediaService
     }
 
     /**
-     * Get storage quota in bytes from plan limits (storage_gb).
+     * Get storage quota in bytes from plan limits (storage in MB).
      */
     public function quotaBytes(\App\Models\User $user): int
     {
         $plan = $user->effectiveSubscription()?->plan;
-        $gb = $plan?->limitValue('storage_gb') ?? 1;
+        $mb = $plan?->limitValue('storage');
 
-        return (int) ($gb * 1024 * 1024 * 1024);
+        if ($mb === null) {
+            $gb = $plan?->limitValue('storage_gb');
+            $mb = $gb !== null ? ((int) $gb * 1024) : 1024;
+        }
+
+        return (int) ($mb * 1024 * 1024);
     }
 }

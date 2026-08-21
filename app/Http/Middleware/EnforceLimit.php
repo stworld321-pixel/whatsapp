@@ -2,7 +2,14 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
+use App\Modules\AI\Models\AiChatbot;
+use App\Modules\AI\Models\AiKnowledgeBase;
 use App\Modules\Broadcasting\Models\UsageMeter;
+use App\Modules\Automation\Models\Automation;
+use App\Modules\Social\Models\SocialAccount;
+use App\Modules\Whatsapp\Models\WhatsappBusinessAccount;
+use App\Modules\Whatsapp\Models\WhatsappTemplate;
 use App\Services\PlanLimitService;
 use Closure;
 use Illuminate\Http\Request;
@@ -40,9 +47,7 @@ class EnforceLimit
             return $next($request);
         }
 
-        // Check usage meter for this month
-        $meterKey = $countKey ?: $limitKey;
-        $usage = UsageMeter::current($workspaceId, $meterKey);
+        $usage = $this->currentUsage((int) $workspaceId, $countKey ?: $limitKey);
 
         if ($usage >= $limit) {
             if ($request->expectsJson()) {
@@ -60,5 +65,23 @@ class EnforceLimit
         }
 
         return $next($request);
+    }
+
+    private function currentUsage(int $workspaceId, string $key): int
+    {
+        return match ($key) {
+            'campaigns', 'whatsapp_messages', 'social_posts', 'lead_credits', 'ai_tokens', 'messages_whatsapp', 'messages_sms', 'messages_email' => UsageMeter::current($workspaceId, $key),
+            'knowledge_bases' => AiKnowledgeBase::where('workspace_id', $workspaceId)->count(),
+            'chatbots' => AiChatbot::where('workspace_id', $workspaceId)->count(),
+            'automations' => Automation::where('workspace_id', $workspaceId)->count(),
+            'whatsapp_templates' => WhatsappTemplate::where('workspace_id', $workspaceId)->count(),
+            'whatsapp_accounts' => WhatsappBusinessAccount::where('workspace_id', $workspaceId)->count(),
+            'social_accounts' => app(PlanLimitService::class)->socialConnectionCount($workspaceId),
+            'users' => User::where('workspace_id', $workspaceId)->count(),
+            'inbox_agents' => User::where('workspace_id', $workspaceId)
+                ->where('status', 'active')
+                ->count(),
+            default => UsageMeter::current($workspaceId, $key),
+        };
     }
 }

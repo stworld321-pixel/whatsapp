@@ -48,6 +48,7 @@ class SubscriptionApiController extends Controller
                 'plan_name' => $plan?->name,
                 'limits' => $plan ? [
                     'users' => $plan->limitValue('users'),
+                    'storage' => $plan->limitValue('storage'),
                     'storage_gb' => $plan->limitValue('storage_gb'),
                 ] : null,
             ],

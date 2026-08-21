@@ -5,6 +5,7 @@ import { Toaster, toast } from 'sonner';
 import Sidebar from '@/Components/Sidebar';
 import UpgradeModal from '@/Components/UpgradeModal';
 import useClientNav from '@/Layouts/useClientNav';
+import { UsageBanner } from '@/Components/Dashboard';
 
 export default function InboxLayout({ children }) {
     const { t } = useTranslation();
@@ -73,6 +74,7 @@ export default function InboxLayout({ children }) {
                 />
 
                 <div className="lg:pl-64 rtl:lg:pl-0 rtl:lg:pr-64 flex-1 overflow-hidden flex flex-col">
+                    <UsageBanner usage={current_workspace_usage} />
                     {children}
                 </div>
             </div>

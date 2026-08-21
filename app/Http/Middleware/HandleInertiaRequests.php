@@ -4,17 +4,24 @@ namespace App\Http\Middleware;
 
 use App\Models\Client;
 use App\Models\Currency;
+use App\Models\Media;
 use App\Models\Locale;
 use App\Models\SystemSetting;
 use App\Models\User;
 use App\Models\Workspace;
+use App\Modules\AI\Models\AiChatbot;
+use App\Modules\AI\Models\AiKnowledgeBase;
+use App\Modules\Automation\Models\Automation;
+use App\Modules\Broadcasting\Models\UsageMeter;
 use App\Modules\Shared\Models\ChannelAccount;
 use App\Modules\Shared\Models\Contact;
-use App\Modules\Broadcasting\Models\UsageMeter;
 use App\Modules\Integrations\Services\CredentialResolver;
 use App\Modules\Social\Models\SocialAccount;
+use App\Modules\Whatsapp\Models\WhatsappBusinessAccount;
+use App\Modules\Whatsapp\Models\WhatsappTemplate;
 use App\Services\I18n\I18nFileService;
 use App\Services\OnboardingService;
+use App\Services\PlanLimitService;
 use App\Services\StorageManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -193,8 +200,41 @@ class HandleInertiaRequests extends Middleware
             if ($limit === null) {
                 continue;
             }
-            $meterKey = $metricsMap[$limitKey] ?? $limitKey;
-            $current = UsageMeter::current($workspaceId, $meterKey);
+
+            if ($limitKey === 'storage') {
+                $current = $this->workspaceStorageUsed($workspaceId);
+                $limitBytes = (int) $limit * 1024 * 1024;
+                $usage[$limitKey] = [
+                    'current' => $current,
+                    'limit' => $limitBytes,
+                    'percent' => $limitBytes > 0 ? min(100, round(($current / $limitBytes) * 100)) : 0,
+                ];
+                continue;
+            }
+
+            if ($limitKey === 'users') {
+                $current = User::where('workspace_id', $workspaceId)->count();
+            } elseif ($limitKey === 'inbox_agents') {
+                $current = User::where('workspace_id', $workspaceId)
+                    ->where('status', 'active')
+                    ->count();
+            } elseif ($limitKey === 'knowledge_bases') {
+                $current = AiKnowledgeBase::where('workspace_id', $workspaceId)->count();
+            } elseif ($limitKey === 'chatbots') {
+                $current = AiChatbot::where('workspace_id', $workspaceId)->count();
+            } elseif ($limitKey === 'automations') {
+                $current = Automation::where('workspace_id', $workspaceId)->count();
+            } elseif ($limitKey === 'whatsapp_templates') {
+                $current = WhatsappTemplate::where('workspace_id', $workspaceId)->count();
+            } elseif ($limitKey === 'whatsapp_accounts') {
+                $current = WhatsappBusinessAccount::where('workspace_id', $workspaceId)->count();
+            } elseif ($limitKey === 'social_accounts') {
+                $current = app(PlanLimitService::class)->socialConnectionCount($workspaceId);
+            } else {
+                $meterKey = $metricsMap[$limitKey] ?? $limitKey;
+                $current = UsageMeter::current($workspaceId, $meterKey);
+            }
+
             $usage[$limitKey] = [
                 'current' => $current,
                 'limit' => $limit,
@@ -203,6 +243,15 @@ class HandleInertiaRequests extends Middleware
         }
 
         return $usage;
+    }
+
+    private function workspaceStorageUsed(int $workspaceId): int
+    {
+        $userIds = User::where('workspace_id', $workspaceId)->select('id');
+
+        return (int) Media::where('mediable_type', User::class)
+            ->whereIn('mediable_id', $userIds)
+            ->sum('size_bytes');
     }
 
     private function appShare(Request $request): array

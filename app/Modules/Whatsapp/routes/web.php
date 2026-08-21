@@ -25,7 +25,7 @@ Route::middleware(['web', 'client-app'])->prefix('app/whatsapp')->name('client.w
     // Templates
     Route::get('/templates', [WhatsappTemplateController::class, 'index'])->name('templates.index');
     Route::get('/templates/create', [WhatsappTemplateController::class, 'create'])->name('templates.create');
-    Route::post('/templates', [WhatsappTemplateController::class, 'store'])->name('templates.store');
+    Route::post('/templates', [WhatsappTemplateController::class, 'store'])->name('templates.store')->middleware('limit:whatsapp_templates,whatsapp_templates');
     Route::post('/templates/sync', [WhatsappTemplateController::class, 'sync'])->name('templates.sync');
     Route::post('/templates/upload-media', [WhatsappTemplateController::class, 'uploadMedia'])->name('templates.upload-media');
     Route::get('/templates/{template}/edit', [WhatsappTemplateController::class, 'edit'])->name('templates.edit');

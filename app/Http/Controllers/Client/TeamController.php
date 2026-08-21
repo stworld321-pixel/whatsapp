@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Invitation;
 use App\Models\User;
+use App\Services\PlanLimitService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -13,6 +14,8 @@ use Inertia\Response;
 
 class TeamController extends Controller
 {
+    public function __construct(private PlanLimitService $planLimits) {}
+
     public function index(Request $request): Response|RedirectResponse
     {
         $user = $request->user();
@@ -74,6 +77,15 @@ class TeamController extends Controller
             'client_role' => ['required', 'string', 'in:administrator,staff'],
             'status' => ['required', 'string', 'in:active,inactive'],
         ]);
+
+        $workspaceId = (int) ($user->current_workspace_id ?? $user->workspace_id);
+        $limit = $workspaceId ? $this->planLimits->limitForWorkspace($workspaceId, 'users') : null;
+        $currentUsers = $client->users()->count();
+        if ($limit !== null && $currentUsers >= $limit) {
+            return redirect('/billing')
+                ->with('upgrade_required', true)
+                ->with('upgrade_reason', "You've reached your users limit ({$currentUsers}/{$limit}).");
+        }
 
         $client->users()->create([
             'name' => $validated['name'],

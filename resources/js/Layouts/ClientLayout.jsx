@@ -7,6 +7,7 @@ import Topbar from '@/Components/Topbar';
 import Sidebar from '@/Components/Sidebar';
 import UpgradeModal from '@/Components/UpgradeModal';
 import useClientNav from '@/Layouts/useClientNav';
+import { UsageBanner } from '@/Components/Dashboard';
 import { ChannelBrandIcon } from '@/Components/BrandIcons';
 import {
     LayoutDashboard,
@@ -39,45 +40,6 @@ const whatsappNavIcon = <ChannelBrandIcon channel="whatsapp" className={iconClas
 
 function safeRoute(name, ...args) {
     try { return route(name, ...args); } catch { return '#'; }
-}
-
-function UsageBanner({ usage }) {
-    const { t } = useTranslation();
-    const [dismissed, setDismissed] = useState(false);
-
-    const overThreshold = Object.entries(usage ?? {}).filter(([, v]) => v.percent >= 80);
-
-    if (dismissed || overThreshold.length === 0) return null;
-
-    const worst = overThreshold.sort((a, b) => b[1].percent - a[1].percent)[0];
-    const [key, data] = worst;
-    const label = key.replace(/_per_month$/, '').replace(/_/g, ' ');
-
-    return (
-        <div className="flex items-center justify-between gap-4 bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800 px-4 py-2 text-sm">
-            <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300">
-                <svg className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-                </svg>
-                <span>
-                    {t('ui.usage_banner', { percent: data.percent, label, current: data.current, limit: data.limit })}{' '}
-                    <Link href={safeRoute('client.pricing')} className="font-semibold underline hover:no-underline">
-                        {t('ui.usage_banner_upgrade')}
-                    </Link>{' '}
-                    {t('ui.usage_banner_suffix')}
-                </span>
-            </div>
-            <button
-                onClick={() => setDismissed(true)}
-                className="flex-shrink-0 text-amber-600 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-200"
-                aria-label={t('common.dismiss')}
-            >
-                <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-            </button>
-        </div>
-    );
 }
 
 function ClientLayoutFooter() {

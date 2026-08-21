@@ -5,7 +5,10 @@ namespace Tests\Feature\ProductionHardening;
 use App\Models\Client;
 use App\Models\ClientSubscription;
 use App\Models\Plan;
+use App\Modules\AI\Models\AiChatbot;
+use App\Modules\Automation\Models\Automation;
 use App\Modules\Broadcasting\Models\Campaign;
+use App\Modules\Whatsapp\Models\WhatsappBusinessAccount;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
@@ -157,5 +160,108 @@ class PlanLimitTest extends TestCase
         $this->assertNull($client->fresh()->activePlan());
 
         Carbon::setTestNow();
+    }
+
+    public function test_chatbot_creation_is_blocked_when_plan_limit_is_exhausted(): void
+    {
+        $data = $this->createWorkspaceContext();
+        $user = $data['user'];
+        $workspace = $data['workspace'];
+        $client = $data['client'];
+
+        $plan = Plan::factory()->create(['limits' => ['chatbots' => 0]]);
+        $this->attachPlanToClient($client, $plan);
+
+        AiChatbot::factory()->create(['workspace_id' => $workspace->id]);
+
+        $response = $this->actingAs($user)->post(route('client.ai.chatbots.store'), [
+            'name' => 'Blocked Bot',
+        ]);
+
+        $response->assertRedirect('/billing');
+        $response->assertSessionHas('upgrade_required');
+        $this->assertDatabaseMissing('ai_chatbots', ['name' => 'Blocked Bot']);
+    }
+
+    public function test_automation_creation_is_blocked_when_plan_limit_is_exhausted(): void
+    {
+        $data = $this->createWorkspaceContext();
+        $user = $data['user'];
+        $workspace = $data['workspace'];
+        $client = $data['client'];
+
+        $plan = Plan::factory()->create(['limits' => ['automations' => 0]]);
+        $this->attachPlanToClient($client, $plan);
+
+        Automation::create([
+            'workspace_id' => $workspace->id,
+            'name' => 'Existing automation',
+            'status' => 'draft',
+            'nodes' => [],
+            'edges' => [],
+        ]);
+
+        $response = $this->actingAs($user)->post(route('client.automations.store'), [
+            'name' => 'Blocked Automation',
+        ]);
+
+        $response->assertRedirect('/billing');
+        $response->assertSessionHas('upgrade_required');
+        $this->assertDatabaseMissing('automations', ['name' => 'Blocked Automation']);
+    }
+
+    public function test_whatsapp_template_creation_is_blocked_when_plan_limit_is_exhausted(): void
+    {
+        $data = $this->createWorkspaceContext();
+        $user = $data['user'];
+        $workspace = $data['workspace'];
+        $client = $data['client'];
+
+        $plan = Plan::factory()->create(['limits' => ['whatsapp_templates' => 0]]);
+        $this->attachPlanToClient($client, $plan);
+
+        WhatsappBusinessAccount::create([
+            'workspace_id' => $workspace->id,
+            'waba_id' => '123456789012345',
+            'status' => 'active',
+            'credentials' => ['access_token' => 'test-token'],
+            'meta_json' => [],
+        ]);
+
+        $response = $this->actingAs($user)->post(route('client.whatsapp.templates.store'), [
+            'name' => 'blocked_template',
+            'language' => 'en',
+            'category' => 'MARKETING',
+            'components' => [
+                ['type' => 'BODY', 'text' => 'Hello'],
+            ],
+        ]);
+
+        $response->assertRedirect('/billing');
+        $response->assertSessionHas('upgrade_required');
+        $this->assertDatabaseMissing('whatsapp_templates', ['name' => 'blocked_template']);
+    }
+
+    public function test_team_member_creation_is_blocked_when_plan_limit_is_exhausted(): void
+    {
+        $data = $this->createWorkspaceContext();
+        $user = $data['user'];
+        $client = $data['client'];
+
+        $plan = Plan::factory()->create(['limits' => ['users' => 1]]);
+        $this->attachPlanToClient($client, $plan);
+
+        $response = $this->actingAs($user)->post(route('client.team.store'), [
+            'name' => 'Second User',
+            'email' => 'second@example.com',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
+            'client_role' => 'staff',
+            'status' => 'active',
+        ]);
+
+        $response->assertRedirect('/billing');
+        $response->assertSessionHas('upgrade_required');
+        $this->assertDatabaseMissing('users', ['email' => 'second@example.com']);
     }
 }

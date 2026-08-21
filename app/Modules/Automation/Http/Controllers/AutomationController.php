@@ -13,15 +13,19 @@ use App\Modules\Broadcasting\Models\Campaign;
 use App\Modules\Ecommerce\Models\EcommerceStore;
 use App\Modules\Integrations\Models\IntegrationConfig;
 use App\Modules\Whatsapp\Models\WhatsappTemplate;
+use App\Services\PlanLimitService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class AutomationController extends Controller
 {
+    public function __construct(private PlanLimitService $planLimits) {}
+
     private function workspaceId(Request $request): int
     {
         return (int) ($request->user()->current_workspace_id ?? $request->user()->workspace_id);
@@ -40,6 +44,7 @@ class AutomationController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $wid = $this->workspaceId($request);
+        $this->ensureAutomationCapacity($wid);
         $validated = $request->validate(['name' => ['required', 'string', 'max:128']]);
 
         $auto = Automation::create(array_merge($validated, [
@@ -193,6 +198,7 @@ class AutomationController extends Controller
         }
 
         if ($request->boolean('persist')) {
+            $this->ensureAutomationCapacity($wid);
             $auto = Automation::create([
                 'workspace_id' => $wid,
                 'name' => $graph['name'],
@@ -207,6 +213,23 @@ class AutomationController extends Controller
         }
 
         return response()->json(['ok' => true, 'graph' => $graph]);
+    }
+
+    private function ensureAutomationCapacity(int $workspaceId): void
+    {
+        $limit = $this->planLimits->limitForWorkspace($workspaceId, 'automations');
+        if ($limit === null) {
+            return;
+        }
+
+        $current = Automation::where('workspace_id', $workspaceId)->count();
+        if ($current >= $limit) {
+            throw new HttpResponseException(
+                redirect('/billing')
+                    ->with('upgrade_required', true)
+                    ->with('upgrade_reason', "You've reached your automations limit ({$current}/{$limit}).")
+            );
+        }
     }
 
     private function authorise(Request $request, Automation $automation): void
