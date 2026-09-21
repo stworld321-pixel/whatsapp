@@ -117,12 +117,17 @@ class IntegrationConfig extends Model
         'llm_openai_default' => [
             ['key' => 'api_key',        'label' => 'API Key',        'type' => 'password', 'required' => true],
             ['key' => 'organization_id', 'label' => 'Organization ID', 'type' => 'text',     'required' => false],
+            ['key' => 'default_model_chat', 'label' => 'Default Chat Model', 'type' => 'text', 'required' => false, 'hint' => 'Enter any OpenAI chat model ID available to your API key.'],
+            ['key' => 'default_model_embed', 'label' => 'Default Embedding Model', 'type' => 'text', 'required' => false, 'hint' => 'Enter any OpenAI embedding model ID available to your API key.'],
         ],
         'llm_anthropic_default' => [
             ['key' => 'api_key', 'label' => 'API Key', 'type' => 'password', 'required' => true],
+            ['key' => 'default_model_chat', 'label' => 'Default Chat Model', 'type' => 'text', 'required' => false, 'hint' => 'Enter any Anthropic model ID available to your API key.'],
         ],
         'llm_gemini_default' => [
             ['key' => 'api_key', 'label' => 'API Key', 'type' => 'password', 'required' => true],
+            ['key' => 'default_model_chat', 'label' => 'Default Chat Model', 'type' => 'text', 'required' => false, 'hint' => 'Enter any Gemini chat model ID available to your API key.'],
+            ['key' => 'default_model_embed', 'label' => 'Default Embedding Model', 'type' => 'text', 'required' => false, 'hint' => 'Enter any Gemini embedding model ID available to your API key.'],
         ],
         'google_places' => [
             ['key' => 'api_key', 'label' => 'API Key', 'type' => 'password', 'required' => true],

@@ -73,10 +73,11 @@ class ConnectionTester
         }
 
         if (str_contains($config->provider, 'openai')) {
+            $model = $creds['default_model_chat'] ?? 'gpt-4o-mini';
             $resp = HttpFacade::timeout(15)
                 ->withToken($apiKey)
                 ->post('https://api.openai.com/v1/chat/completions', [
-                    'model' => 'gpt-4o-mini',
+                    'model' => $model,
                     'messages' => [['role' => 'user', 'content' => 'hi']],
                     'max_tokens' => 1,
                 ]);
@@ -87,10 +88,11 @@ class ConnectionTester
         }
 
         if (str_contains($config->provider, 'anthropic')) {
+            $model = $creds['default_model_chat'] ?? 'claude-3-haiku-20240307';
             $resp = HttpFacade::timeout(15)
                 ->withHeaders(['x-api-key' => $apiKey, 'anthropic-version' => '2023-06-01', 'content-type' => 'application/json'])
                 ->post('https://api.anthropic.com/v1/messages', [
-                    'model' => 'claude-3-haiku-20240307',
+                    'model' => $model,
                     'max_tokens' => 1,
                     'messages' => [['role' => 'user', 'content' => 'hi']],
                 ]);

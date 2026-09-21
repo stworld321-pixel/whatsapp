@@ -101,9 +101,9 @@ const GeminiLogo = () => (
 );
 
 const PROVIDER_INFO = {
-    openai:    { label: 'OpenAI',    Icon: OpenAILogo,    models: ['gpt-4o', 'gpt-4o-mini', 'gpt-3.5-turbo'] },
-    anthropic: { label: 'Anthropic', Icon: AnthropicLogo, models: ['claude-3-opus-20240229', 'claude-3-sonnet-20240229', 'claude-3-haiku-20240307'] },
-    gemini:    { label: 'Gemini',    Icon: GeminiLogo,    models: ['gemini-1.5-pro', 'gemini-1.5-flash', 'gemini-1.0-pro'] },
+    openai:    { label: 'OpenAI',    Icon: OpenAILogo },
+    anthropic: { label: 'Anthropic', Icon: AnthropicLogo },
+    gemini:    { label: 'Gemini',    Icon: GeminiLogo },
 };
 
 function ProviderCard({ provider }) {
@@ -113,7 +113,8 @@ function ProviderCard({ provider }) {
 
     const { data, setData, put, processing, errors } = useForm({
         api_key:             '',
-        default_model_chat:  provider.default_model_chat || info.models?.[1] || '',
+        default_model_chat:  provider.default_model_chat || '',
+        default_model_embed: provider.default_model_embed || '',
         enabled:             provider.enabled,
     });
 
@@ -150,10 +151,30 @@ function ProviderCard({ provider }) {
                 </div>
                 <div>
                     <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400">{t('ai.default_chat_model')}</label>
-                    <select value={data.default_model_chat} onChange={e => setData('default_model_chat', e.target.value)} className="mt-1 w-full rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 px-3 py-2 text-sm">
-                        {info.models?.map(m => <option key={m} value={m}>{m}</option>)}
-                    </select>
+                    <input
+                        type="text"
+                        value={data.default_model_chat}
+                        onChange={e => setData('default_model_chat', e.target.value)}
+                        placeholder={t('ai.model_id_placeholder', 'Enter a model ID')}
+                        spellCheck="false"
+                        autoComplete="off"
+                        className="mt-1 w-full rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 px-3 py-2 text-sm"
+                    />
                 </div>
+                {provider.provider !== 'anthropic' && (
+                    <div>
+                        <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400">{t('ai.default_embedding_model', 'Default Embedding Model')}</label>
+                        <input
+                            type="text"
+                            value={data.default_model_embed}
+                            onChange={e => setData('default_model_embed', e.target.value)}
+                            placeholder={t('ai.model_id_placeholder', 'Enter a model ID')}
+                            spellCheck="false"
+                            autoComplete="off"
+                            className="mt-1 w-full rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 px-3 py-2 text-sm"
+                        />
+                    </div>
+                )}
                 <label className="flex items-center gap-2 text-sm cursor-pointer">
                     <input type="checkbox" checked={data.enabled} onChange={e => setData('enabled', e.target.checked)} className="rounded" />
                     {t('common.enabled')}

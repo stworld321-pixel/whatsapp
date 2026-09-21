@@ -22,6 +22,7 @@ class AiProviderController extends Controller
             'enabled' => $configs->get($p)?->enabled ?? false,
             'configured' => ! empty($configs->get($p)?->credentials),
             'default_model_chat' => $configs->get($p)?->default_model_chat ?? '',
+            'default_model_embed' => $configs->get($p)?->default_model_embed ?? '',
         ]);
 
         return Inertia::render('AI/Providers/Index', ['providers' => $list]);
