@@ -35,8 +35,8 @@ class AiProviderController extends Controller
 
         $validated = $request->validate([
             'api_key' => ['nullable', 'string', 'max:512'],
-            'default_model_chat' => ['nullable', 'string', 'max:64'],
-            'default_model_embed' => ['nullable', 'string', 'max:64'],
+            'default_model_chat' => ['nullable', 'string', 'max:128'],
+            'default_model_embed' => ['nullable', 'string', 'max:128'],
             'enabled' => ['boolean'],
         ]);
 

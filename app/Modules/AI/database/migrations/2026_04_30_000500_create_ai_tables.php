@@ -20,8 +20,8 @@ return new class extends Migration
             $table->unsignedBigInteger('workspace_id');
             $table->enum('provider', ['openai', 'anthropic', 'gemini']);
             $table->text('credentials')->nullable();
-            $table->string('default_model_chat', 64)->nullable();
-            $table->string('default_model_embed', 64)->nullable();
+            $table->string('default_model_chat', 128)->nullable();
+            $table->string('default_model_embed', 128)->nullable();
             $table->boolean('enabled')->default(true);
             $table->timestamps();
 

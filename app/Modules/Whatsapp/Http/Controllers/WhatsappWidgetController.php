@@ -14,7 +14,10 @@ class WhatsappWidgetController extends Controller
     public function index(Request $request): Response
     {
         $workspaceId = $request->user()->current_workspace_id ?? $request->user()->workspace_id;
-        $widgets = WhatsappWidget::where('workspace_id', $workspaceId)->latest()->get();
+        $widgets = WhatsappWidget::where('workspace_id', $workspaceId)
+            ->latest()
+            ->get()
+            ->map(fn (WhatsappWidget $widget) => $this->withEmbedUrl($widget));
 
         return Inertia::render('Whatsapp/Widget/Index', ['widgets' => $widgets]);
     }
@@ -28,7 +31,7 @@ class WhatsappWidgetController extends Controller
     {
         abort_unless($widget->workspace_id === ($request->user()->current_workspace_id ?? $request->user()->workspace_id), 403);
 
-        return Inertia::render('Whatsapp/Widget/Edit', ['widget' => $widget]);
+        return Inertia::render('Whatsapp/Widget/Edit', ['widget' => $this->withEmbedUrl($widget)]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -40,12 +43,14 @@ class WhatsappWidgetController extends Controller
             'prefilled_message' => ['nullable', 'string', 'max:512'],
             'greeting_message'  => ['nullable', 'string', 'max:256'],
             'agent_name'        => ['nullable', 'string', 'max:64'],
-            'agent_avatar_color'=> ['nullable', 'string', 'max:16'],
-            'button_color'      => ['nullable', 'string', 'max:16'],
+            'agent_avatar_color'=> ['nullable', 'string', 'regex:/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/'],
+            'button_color'      => ['nullable', 'string', 'regex:/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/'],
             'position'          => ['required', 'in:bottom_right,bottom_left'],
             'allowed_domains'   => ['nullable', 'array'],
+            'allowed_domains.*' => ['nullable', 'string', 'max:253'],
             'working_hours_json'=> ['nullable', 'array'],
         ]);
+        $validated['allowed_domains'] = $this->normalizeDomains($validated['allowed_domains'] ?? []);
 
         WhatsappWidget::create(array_merge($validated, ['workspace_id' => $workspaceId]));
 
@@ -62,12 +67,14 @@ class WhatsappWidgetController extends Controller
             'prefilled_message' => ['nullable', 'string', 'max:512'],
             'greeting_message'  => ['nullable', 'string', 'max:256'],
             'agent_name'        => ['nullable', 'string', 'max:64'],
-            'agent_avatar_color'=> ['nullable', 'string', 'max:16'],
-            'button_color'      => ['nullable', 'string', 'max:16'],
+            'agent_avatar_color'=> ['nullable', 'string', 'regex:/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/'],
+            'button_color'      => ['nullable', 'string', 'regex:/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/'],
             'position'          => ['required', 'in:bottom_right,bottom_left'],
             'allowed_domains'   => ['nullable', 'array'],
+            'allowed_domains.*' => ['nullable', 'string', 'max:253'],
             'working_hours_json'=> ['nullable', 'array'],
         ]);
+        $validated['allowed_domains'] = $this->normalizeDomains($validated['allowed_domains'] ?? []);
 
         $widget->update($validated);
 
@@ -98,7 +105,7 @@ class WhatsappWidgetController extends Controller
   var _host = (window.location.hostname || '').toLowerCase().replace(/^www\\./, '');
   var _ok = false;
   for (var _i = 0; _i < _allowed.length; _i++) {
-    var _d = (_allowed[_i] || '').toLowerCase().replace(/^www\\./, '').replace(/^https?:\\/\\//, '').split('/')[0];
+    var _d = (_allowed[_i] || '').toLowerCase().replace(/^www\\./, '').replace(/^https?:\\/\\//, '').split('/')[0].replace(/:\\d+$/, '');
     if (_host === _d || _host.slice(-(_d.length + 1)) === '.' + _d) { _ok = true; break; }
   }
   if (!_ok) return;
@@ -138,14 +145,17 @@ JS;
         }
 
         $phone    = $widget->display_phone ?? '';
+        $phoneForUrl = preg_replace('/\D+/', '', $phone);
         $msg      = rawurlencode($widget->prefilled_message ?? '');
         $color    = $widget->button_color ?? '#25D366';
         $posRight = $widget->position !== 'bottom_left';
         $posStyle = $posRight ? 'right:20px' : 'left:20px';
-        $greeting = addslashes($widget->greeting_message ?? '');
-        $agentName = addslashes($widget->agent_name ?? 'Support');
+        $greeting = $this->jsString($widget->greeting_message ?? '');
+        $agentName = $this->jsString($widget->agent_name ?: 'Support');
+        $agentInitial = $this->jsString(strtoupper(substr($widget->agent_name ?: 'Support', 0, 1)));
         $agentColor = $widget->agent_avatar_color ?? $color;
-        $waUrl    = "https://wa.me/{$phone}?text={$msg}";
+        $waUrl    = "https://wa.me/{$phoneForUrl}?text={$msg}";
+        $waUrlJson = $this->jsString($waUrl);
 
         // SVG WhatsApp icon (inline, no external requests)
         $svgIcon = '<svg xmlns=\\"http://www.w3.org/2000/svg\\" width=\\"28\\" height=\\"28\\" fill=\\"white\\" viewBox=\\"0 0 24 24\\"><path d=\\"M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z\\"/></svg>';
@@ -208,23 +218,31 @@ JS;
   btn.innerHTML = '{$svgIcon}';
 
   // Tooltip / greeting card
-  var hasGreeting = '{$greeting}' !== '';
+  var _greeting = {$greeting};
+  var _agentName = {$agentName};
+  var _agentInitial = {$agentInitial};
+  var _waUrl = {$waUrlJson};
+  var hasGreeting = _greeting !== '';
   var tooltip = document.createElement('div');
   tooltip.id = '_wacw_tooltip';
   tooltip.setAttribute('role', 'dialog');
   tooltip.setAttribute('aria-label', 'WhatsApp greeting');
   tooltip.innerHTML = '<div id="_wacw_tip_head">'
-    + '<div id="_wacw_tip_avatar">{$agentName[0]}</div>'
+    + '<div id="_wacw_tip_avatar">' + _agentInitial + '</div>'
     + '<div id="_wacw_tip_info">'
-      + '<div id="_wacw_tip_name">{$agentName}</div>'
+      + '<div id="_wacw_tip_name"></div>'
       + '<div id="_wacw_tip_status"><span id="_wacw_tip_dot"></span>Typically replies instantly</div>'
     + '</div>'
     + '<button id="_wacw_tip_close" aria-label="Close">&#x2715;</button>'
     + '</div>'
     + (hasGreeting
-      ? '<div id="_wacw_tip_body"><div id="_wacw_tip_bubble">{$greeting}</div>'
-        + '<a id="_wacw_tip_cta" href="{$waUrl}" target="_blank" rel="noopener noreferrer">Start Chat</a></div>'
-      : '<div id="_wacw_tip_body"><a id="_wacw_tip_cta" href="{$waUrl}" target="_blank" rel="noopener noreferrer">Start Chat on WhatsApp</a></div>');
+      ? '<div id="_wacw_tip_body"><div id="_wacw_tip_bubble"></div>'
+        + '<a id="_wacw_tip_cta" target="_blank" rel="noopener noreferrer">Start Chat</a></div>'
+      : '<div id="_wacw_tip_body"><a id="_wacw_tip_cta" target="_blank" rel="noopener noreferrer">Start Chat on WhatsApp</a></div>');
+
+  tooltip.querySelector('#_wacw_tip_name').textContent = _agentName;
+  if (hasGreeting) tooltip.querySelector('#_wacw_tip_bubble').textContent = _greeting;
+  tooltip.querySelector('#_wacw_tip_cta').href = _waUrl;
 
   root.appendChild(pulse);
   root.appendChild(badge);
@@ -291,5 +309,31 @@ JS;
             'Cache-Control' => 'public, max-age=300',
             'X-Content-Type-Options' => 'nosniff',
         ]);
+    }
+
+    private function withEmbedUrl(WhatsappWidget $widget): array
+    {
+        return array_merge($widget->toArray(), [
+            'embed_url' => route('whatsapp.widget.embed', ['key' => $widget->widget_key]),
+        ]);
+    }
+
+    private function normalizeDomains(array $domains): array
+    {
+        return collect($domains)
+            ->map(fn ($domain) => strtolower(trim((string) $domain)))
+            ->map(fn ($domain) => preg_replace('/^https?:\/\//', '', $domain))
+            ->map(fn ($domain) => explode('/', $domain)[0] ?? '')
+            ->map(fn ($domain) => preg_replace('/:\d+$/', '', $domain))
+            ->map(fn ($domain) => preg_replace('/^www\./', '', $domain))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    private function jsString(string $value): string
+    {
+        return json_encode($value, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
     }
 }

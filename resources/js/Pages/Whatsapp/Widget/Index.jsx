@@ -18,10 +18,10 @@ export default function WhatsappWidgetIndex({ widgets }) {
         }
     };
 
-    const handleCopy = (key) => {
-        const snippet = `<script src="${window.location.origin}/widgets/whatsapp/${key}.js" async defer><\/script>`;
+    const handleCopy = (widget) => {
+        const snippet = `<script src="${widget.embed_url}" async defer></script>`;
         navigator.clipboard?.writeText(snippet) ?? fallbackCopy(snippet);
-        setCopied(key);
+        setCopied(widget.widget_key);
         setTimeout(() => setCopied(null), 2500);
     };
 
@@ -77,7 +77,7 @@ export default function WhatsappWidgetIndex({ widgets }) {
                                 key={w.id}
                                 widget={w}
                                 copied={copied === w.widget_key}
-                                onCopy={() => handleCopy(w.widget_key)}
+                                onCopy={() => handleCopy(w)}
                                 onDelete={() => handleDelete(w.id)}
                             />
                         ))}
@@ -152,13 +152,15 @@ function WidgetCard({ widget: w, copied, onCopy, onDelete }) {
                 </div>
 
                 {w.prefilled_message && (
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate italic">"{w.prefilled_message}"</p>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate italic">
+                        <span>&ldquo;</span>{w.prefilled_message}<span>&rdquo;</span>
+                    </p>
                 )}
 
                 {/* Embed snippet */}
                 <div className="rounded-lg bg-neutral-950 border border-neutral-800 px-3 py-2 mt-auto">
                     <p className="text-[11px] font-mono text-green-400 truncate select-all">
-                        {`<script src="${window.location.origin}/widgets/whatsapp/${w.widget_key}.js" async defer></script>`}
+                        {`<script src="${w.embed_url}" async defer></script>`}
                     </p>
                 </div>
 
@@ -170,7 +172,7 @@ function WidgetCard({ widget: w, copied, onCopy, onDelete }) {
                             ? <><Check className="h-3.5 w-3.5 text-green-500" /> {t('whatsapp.widget_copied')}</>
                             : <><Code className="h-3.5 w-3.5" /> {t('whatsapp.widget_copy_snippet')}</>}
                     </button>
-                    <a href={`/widgets/whatsapp/${w.widget_key}.js`} target="_blank" rel="noopener"
+                    <a href={w.embed_url} target="_blank" rel="noreferrer"
                         className="flex items-center gap-1 rounded-lg border border-neutral-300 dark:border-neutral-600 px-2.5 py-2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition"
                         title={t('whatsapp.widget_view_embed_js')}>
                         <ExternalLink className="h-3.5 w-3.5" />

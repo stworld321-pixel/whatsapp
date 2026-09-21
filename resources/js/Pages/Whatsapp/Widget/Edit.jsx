@@ -27,7 +27,7 @@ export default function EditWidget({ widget }) {
         put(route('client.whatsapp.widgets.update', widget.id));
     };
 
-    const embedSnippet = `<script src="${window.location.origin}/widgets/whatsapp/${widget.widget_key}.js" async defer><\/script>`;
+    const embedSnippet = `<script src="${widget.embed_url}" async defer></script>`;
 
     const handleCopy = () => {
         navigator.clipboard?.writeText(embedSnippet) ?? fallbackCopy(embedSnippet);
@@ -175,7 +175,7 @@ export default function EditWidget({ widget }) {
                                         <SectionHeader title={t('whatsapp.widget_tab_embed')} description={t('whatsapp.widget_embed_desc')} />
                                         <p className="text-sm text-neutral-600 dark:text-neutral-400">
                                             <Trans i18nKey="whatsapp.widget_embed_instructions">
-                                                Add this snippet to your website's <code className="bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 rounded text-xs font-mono">&lt;head&gt;</code> or just before the closing <code className="bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 rounded text-xs font-mono">&lt;/body&gt;</code> tag.
+                                                Add this snippet to your website <code className="bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 rounded text-xs font-mono">&lt;head&gt;</code> or just before the closing <code className="bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 rounded text-xs font-mono">&lt;/body&gt;</code> tag.
                                             </Trans>
                                         </p>
                                         <div className="relative rounded-xl bg-neutral-950 border border-neutral-800">
@@ -191,7 +191,7 @@ export default function EditWidget({ widget }) {
                                                 <li>{t('whatsapp.widget_install_tip_platforms')}</li>
                                                 <li>
                                                     <Trans i18nKey="whatsapp.widget_install_tip_async">
-                                                        The <code className="bg-blue-100 dark:bg-blue-900/40 px-1 rounded">async defer</code> attributes ensure it doesn't block page load.
+                                                        The <code className="bg-blue-100 dark:bg-blue-900/40 px-1 rounded">async defer</code> attributes keep page load smooth.
                                                     </Trans>
                                                 </li>
                                                 <li>{t('whatsapp.widget_install_tip_cache')}</li>
@@ -199,9 +199,9 @@ export default function EditWidget({ widget }) {
                                         </div>
                                         <div className="pt-1">
                                             <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">{t('whatsapp.widget_direct_js_link')}</p>
-                                            <a href={`/widgets/whatsapp/${widget.widget_key}.js`} target="_blank" rel="noopener"
+                                            <a href={widget.embed_url} target="_blank" rel="noreferrer"
                                                 className="inline-flex items-center gap-1.5 text-sm text-brand-600 hover:underline font-mono break-all">
-                                                {window.location.origin}/widgets/whatsapp/{widget.widget_key}.js
+                                                {widget.embed_url}
                                             </a>
                                         </div>
                                     </>
